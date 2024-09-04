@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client"
 import { TUser } from "../../domain/entities/user-entity";
 const prisma = new PrismaClient()
-
+ 
 export async function criarNovoCliente(userInput: TUser) {
     try {
       const user = await prisma.user.create({
