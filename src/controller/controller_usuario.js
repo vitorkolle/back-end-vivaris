@@ -36,38 +36,50 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.criarNovoCliente = criarNovoCliente;
-var client_1 = require("@prisma/client");
-var prisma = new client_1.PrismaClient();
-function criarNovoCliente(userInput) {
+exports.setInserirUsuario = setInserirUsuario;
+var config_1 = require("../../module/config");
+var usuario_1 = require("../model/DAO/usuario");
+function setInserirUsuario(user, contentType) {
     return __awaiter(this, void 0, void 0, function () {
-        var user, error_1;
+        var userData, newClient, responseJson, error_1;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    _a.trys.push([0, 2, , 3]);
-                    return [4 /*yield*/, prisma.tbl_clientes.create({
-                            data: {
-                                nome: userInput.nome,
-                                email: userInput.email,
-                                senha: userInput.senha,
-                                telefone: userInput.telefone,
-                                cpf: userInput.cpf,
-                                data_nascimento: userInput.data_nascimento,
-                                foto_perfil: userInput.foto_perfil,
-                                link_instagram: userInput.link_instagram,
-                                id_sexo: userInput.sexo,
-                            },
-                        })];
+                    _a.trys.push([0, 5, , 6]);
+                    if (!(String(contentType).toLowerCase() != 'application/json' || contentType == undefined)) return [3 /*break*/, 1];
+                    return [2 /*return*/, config_1.ERROR_CONTENT_TYPE];
                 case 1:
-                    user = _a.sent();
-                    console.log(user);
-                    return [2 /*return*/, user];
+                    if (!user) return [3 /*break*/, 3];
+                    userData = {
+                        nome: user.nome,
+                        email: user.email,
+                        senha: user.senha,
+                        telefone: user.telefone,
+                        cpf: user.cpf,
+                        data_nascimento: user.data_nascimento,
+                        sexo: user.sexo
+                    };
+                    return [4 /*yield*/, (0, usuario_1.criarNovoCliente)(userData)];
                 case 2:
+                    newClient = _a.sent();
+                    if (newClient) {
+                        responseJson = {
+                            user: userData,
+                            status_code: config_1.SUCCESS_CREATED_ITEM.status_code,
+                            message: config_1.SUCCESS_CREATED_ITEM.message
+                        };
+                        return [2 /*return*/, responseJson];
+                    }
+                    else {
+                        return [2 /*return*/, config_1.ERROR_INTERNAL_SERVER_DB];
+                    }
+                    return [3 /*break*/, 4];
+                case 3: return [2 /*return*/, config_1.ERROR_REQUIRED_FIELDS];
+                case 4: return [3 /*break*/, 6];
+                case 5:
                     error_1 = _a.sent();
-                    console.error("Erro ao criar novo cliente:", error_1);
-                    throw new Error("Não foi possível criar o cliente.");
-                case 3: return [2 /*return*/];
+                    return [2 /*return*/, config_1.ERROR_INTERNAL_SERVER];
+                case 6: return [2 /*return*/];
             }
         });
     });

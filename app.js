@@ -36,39 +36,58 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.criarNovoCliente = criarNovoCliente;
-var client_1 = require("@prisma/client");
-var prisma = new client_1.PrismaClient();
-function criarNovoCliente(userInput) {
-    return __awaiter(this, void 0, void 0, function () {
-        var user, error_1;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    _a.trys.push([0, 2, , 3]);
-                    return [4 /*yield*/, prisma.tbl_clientes.create({
-                            data: {
-                                nome: userInput.nome,
-                                email: userInput.email,
-                                senha: userInput.senha,
-                                telefone: userInput.telefone,
-                                cpf: userInput.cpf,
-                                data_nascimento: userInput.data_nascimento,
-                                foto_perfil: userInput.foto_perfil,
-                                link_instagram: userInput.link_instagram,
-                                id_sexo: userInput.sexo,
-                            },
-                        })];
-                case 1:
-                    user = _a.sent();
-                    console.log(user);
-                    return [2 /*return*/, user];
-                case 2:
-                    error_1 = _a.sent();
-                    console.error("Erro ao criar novo cliente:", error_1);
-                    throw new Error("Não foi possível criar o cliente.");
-                case 3: return [2 /*return*/];
-            }
-        });
+//Import pacotes express
+var express_1 = require("express");
+var express_2 = require("express");
+//Import pacotes cors
+var cors_1 = require("cors");
+//Import Controller
+var controller_usuario_1 = require("./src/controller/controller_usuario");
+//Criação do app
+var app = (0, express_1.default)();
+app.use(express_1.default.json());
+app.use(function (request, response, next) {
+    response.header('Access-Control-Allow-Origin', '*');
+    response.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    app.use((0, cors_1.default)());
+    next();
+});
+//Criação das configurações das rotas para endpoint
+var route = (0, express_2.Router)();
+/*********************************************************************************** */
+//Post de Usuario
+route.post('/cliente', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var contentType, userData, newUser;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                contentType = req.header('content-type');
+                userData = {
+                    nome: req.body.nome,
+                    email: req.body.email,
+                    senha: req.body.senha,
+                    telefone: req.body.telefone,
+                    cpf: req.body.cpf,
+                    data_nascimento: new Date(req.body.data_nascimento),
+                    sexo: req.body.sexo
+                };
+                console.log(userData);
+                return [4 /*yield*/, (0, controller_usuario_1.setInserirUsuario)(userData, contentType)];
+            case 1:
+                newUser = _a.sent();
+                res.status(newUser.status_code);
+                res.json(newUser);
+                return [2 /*return*/];
+        }
     });
-}
+}); });
+//Ativação das rotas
+app.use('/v1/vivaris', route);
+route.use(function (req, res, next) {
+    console.log("Request URL: ".concat(req.url));
+    next();
+});
+//Ativação na porta 8080
+app.listen('8080', function () {
+    console.log("API funcionando na porta 8080");
+});

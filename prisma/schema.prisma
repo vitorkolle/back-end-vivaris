@@ -29,3 +29,5 @@ model tbl_sexo {
   sexo         String         @db.VarChar(50)
   tbl_clientes tbl_clientes[]
 }
+
+

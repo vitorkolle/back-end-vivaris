@@ -1,3 +1,6 @@
+
+//npx ts-node app.ts
+
 //Import pacotes express
 import express from 'express'
 import { Router, Request, Response } from 'express'
