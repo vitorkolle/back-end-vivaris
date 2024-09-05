@@ -4,7 +4,7 @@ const prisma = new PrismaClient()
  
 export async function criarNovoCliente(userInput: TUser) {
     try {
-      const user = await prisma.user.create({
+      const user = await prisma.tbl_clientes.create({
         data: {
           nome: userInput.nome,
           email: userInput.email,
@@ -12,7 +12,9 @@ export async function criarNovoCliente(userInput: TUser) {
           telefone: userInput.telefone,
           cpf: userInput.cpf,
           data_nascimento: userInput.data_nascimento,
-          sexo: userInput.sexo,
+          foto_perfil: userInput.foto_perfil,
+          link_instagram: userInput.link_instagram,
+          id_sexo: userInput.sexo,
         },
       });
 
