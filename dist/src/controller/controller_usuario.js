@@ -11,7 +11,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.setInserirUsuario = setInserirUsuario;
 const config_1 = require("../../module/config");
-const usuario_1 = require("../model/DAO/usuario");
+const usuario_1 = require("../model/DAO/cliente/usuario");
+function validarData(data) {
+    // Verificar se a data é válida
+    return isNaN(data.getTime());
+}
 function setInserirUsuario(user, contentType) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -20,14 +24,27 @@ function setInserirUsuario(user, contentType) {
             }
             else {
                 if (user) {
-                    const userData = {
+                    // if (
+                    //     user.nome == '' || user.nome == undefined || user.nome == null       ||
+                    //     user.cpf == undefined || user.cpf == null || user.cpf == '' || user.cpf.length != 11 ||
+                    //     user.data_nascimento == undefined || user.data_nascimento == null || validarData(user.data_nascimento) == false || 
+                    //     user.email == '' || user.email == undefined || user.email == null ||
+                    //     user.senha == '' || user.senha == undefined || user.senha == null ||
+                    //     user.telefone == undefined || user.telefone == null || user.telefone == ''|| user.telefone.length != 11 ||
+                    //     user.id_sexo == undefined || user.id_sexo == null || isNaN(user.id_sexo)
+                    // ) {
+                    //     return ERROR_REQUIRED_FIELDS
+                    // }
+                    // else {
+                    let userData;
+                    userData = {
                         nome: user.nome,
                         email: user.email,
                         senha: user.senha,
                         telefone: user.telefone,
                         cpf: user.cpf,
                         data_nascimento: user.data_nascimento,
-                        sexo: user.sexo
+                        id_sexo: user.id_sexo
                     };
                     let newClient = yield (0, usuario_1.criarNovoCliente)(userData);
                     if (newClient) {
@@ -41,13 +58,16 @@ function setInserirUsuario(user, contentType) {
                     else {
                         return config_1.ERROR_INTERNAL_SERVER_DB;
                     }
+                    // }
                 }
                 else {
-                    return config_1.ERROR_REQUIRED_FIELDS;
+                    return config_1.ERROR_NOT_CREATED;
                 }
             }
         }
         catch (error) {
+            console.error('Error ao tentar inserir um novo usuário:', error);
+            throw new Error('Erro required fields');
             return config_1.ERROR_INTERNAL_SERVER;
         }
     });

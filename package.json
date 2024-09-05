@@ -16,6 +16,6 @@
     "ts-node": "^10.9.2"
   },
   "scripts": {
-  "start": "node dist/app.js"
-}
+    "start": "node dist/app.js"
+  }
 }

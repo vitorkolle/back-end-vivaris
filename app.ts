@@ -1,6 +1,8 @@
 
 //npx ts-node app.ts
 
+import { TUser } from './src/domain/entities/user-entity'
+
 //Import pacotes express
 import express from 'express'
 import { Router, Request, Response } from 'express'
@@ -34,14 +36,14 @@ route.post('/cliente',  async (req, res) =>{
     
     const contentType = req.header('content-type')
 
-    const userData = {
+    const userData: TUser = {
         nome: req.body.nome,
         email: req.body.email,  
         senha: req.body.senha,
         telefone: req.body.telefone,
         cpf: req.body.cpf,
         data_nascimento: new Date(req.body.data_nascimento),
-        sexo: req.body.sexo
+        id_sexo: req.body.sexo
     }
     console.log(userData);
     
@@ -51,6 +53,17 @@ route.post('/cliente',  async (req, res) =>{
     res.json(newUser)
 
 })
+
+// route.post('/cliente/preferencias', async (req, res) =>{
+//     const contentType = req.header('content-type')
+
+//     const userData = {
+//         id_cliente: req.body.id_cliente,
+//         preferencias: req.body.preferencias
+//     }
+    
+//     let newUser = await setInserirPreferencias(userData)
+// })
 
 //Ativação das rotas
 app.use('/v1/vivaris', route)

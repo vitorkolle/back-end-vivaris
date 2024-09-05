@@ -1,5 +1,6 @@
 generator client {
   provider = "prisma-client-js"
+  
 }
 
 datasource db {
@@ -12,12 +13,12 @@ model tbl_clientes {
   nome            String    @db.VarChar(50)
   email           String    @unique @db.VarChar(150)
   data_nascimento DateTime  @db.Date
-  cpf             BigInt
+  cpf             String    @db.VarChar(11)
   senha           String    @db.VarChar(20)
   foto_perfil     String?   @db.VarChar(300)
-  telefone        BigInt
+  telefone        String    @db.VarChar(11)
   link_instagram  String?   @db.VarChar(56)
-  id_sexo         Int
+  id_sexo         Int       
 
   tbl_sexo        tbl_sexo? @relation(fields: [id_sexo], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "SEXO_CLIENTE")
 

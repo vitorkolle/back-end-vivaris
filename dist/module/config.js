@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SUCCESS_UPDATED_ITEM = exports.SUCCESS_DELETED_ITEM = exports.SUCCESS_CREATED_ITEM = exports.ERROR_INTERNAL_SERVER = exports.ERROR_CONTENT_TYPE = exports.ERROR_INTERNAL_SERVER_DB = exports.ERROR_NOT_FOUND = exports.ERROR_REQUIRED_FIELDS = exports.ERROR_INVALID_ID = void 0;
+exports.ERROR_NOT_CREATED = exports.SUCCESS_UPDATED_ITEM = exports.SUCCESS_DELETED_ITEM = exports.SUCCESS_CREATED_ITEM = exports.ERROR_INTERNAL_SERVER = exports.ERROR_CONTENT_TYPE = exports.ERROR_INTERNAL_SERVER_DB = exports.ERROR_NOT_FOUND = exports.ERROR_REQUIRED_FIELDS = exports.ERROR_INVALID_ID = void 0;
 /*************** Mensagens de Erro ***************/
 const ERROR_INVALID_ID = { status: false, status_code: 400, message: 'O ID encaminhado na requisição não é válido!!' };
 exports.ERROR_INVALID_ID = ERROR_INVALID_ID;
@@ -14,6 +14,8 @@ const ERROR_CONTENT_TYPE = { status: false, status_code: 415, message: 'O conten
 exports.ERROR_CONTENT_TYPE = ERROR_CONTENT_TYPE;
 const ERROR_INTERNAL_SERVER = { status: false, status_code: 500, message: 'Não foi possível processar a requisição devido à um problema na camada de negócio/controle do projeto. Contate o administrador da API!!' };
 exports.ERROR_INTERNAL_SERVER = ERROR_INTERNAL_SERVER;
+const ERROR_NOT_CREATED = { status: false, status_code: 500, message: 'Não foi possível processar a requisição devido à algum problema com os dados recebidos!!' };
+exports.ERROR_NOT_CREATED = ERROR_NOT_CREATED;
 /****************** Mensagens de Sucesso *********/
 const SUCCESS_CREATED_ITEM = { status: true, status_code: 201, message: 'Item criado com sucesso!!' };
 exports.SUCCESS_CREATED_ITEM = SUCCESS_CREATED_ITEM;
