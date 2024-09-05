@@ -2,8 +2,10 @@ export type TUser = {
     nome: string;
     email: string;
     senha: string;
-    telefone: string; 
-    cpf: string; 
+    telefone: bigint; 
+    cpf: bigint; 
     data_nascimento: Date;
-    sexo: string;
+    foto_perfil?: string;
+    link_instagram?: string
+    sexo: number;
 }

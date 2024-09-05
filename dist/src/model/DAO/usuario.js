@@ -15,7 +15,7 @@ const prisma = new client_1.PrismaClient();
 function criarNovoCliente(userInput) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const user = yield prisma.user.create({
+            const user = yield prisma.tbl_clientes.create({
                 data: {
                     nome: userInput.nome,
                     email: userInput.email,
@@ -23,7 +23,9 @@ function criarNovoCliente(userInput) {
                     telefone: userInput.telefone,
                     cpf: userInput.cpf,
                     data_nascimento: userInput.data_nascimento,
-                    sexo: userInput.sexo,
+                    foto_perfil: userInput.foto_perfil,
+                    link_instagram: userInput.link_instagram,
+                    id_sexo: userInput.sexo,
                 },
             });
             console.log(user);
