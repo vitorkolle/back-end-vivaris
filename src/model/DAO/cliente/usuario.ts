@@ -13,13 +13,9 @@ export async function criarNovoCliente(userInput: TUser): Promise<TUser> {
           telefone: userInput.telefone,
           cpf: userInput.cpf,
           data_nascimento: userInput.data_nascimento,
-          id_sexo: userInput.id_sexo,
+          id_sexo: userInput.id_sexo
         },
       });
- 
-      console.log(user)
-      console.log("oi");
-      
 
       return user;
       
@@ -29,25 +25,123 @@ export async function criarNovoCliente(userInput: TUser): Promise<TUser> {
   }
 }
 
-// export async function criarPreferenciasUsuario(userId: number, preferences: number[]):Promise<void>{
-//   try{
-//     const userPreferences: number[]
+export async function obterUsuarioComPreferencias(userId: number) {
+  try {
+    // 1. Obter informações do usuário
+    const usuario = await prisma.tbl_clientes.findUnique({
+      where: {
+        id: userId,
+      },
+      select: {
+        id: true,
+        nome: true,
+        email: true,
+        telefone: true,
+      },
+    });
 
-//     preferences.map((preference => {
-//       const result = await prisma.tbl_clientes_preferencias.create({
-//         data: {
-//           id_cliente: userId,
-//           id_preferencia: preference,
-//         },
-//       });
+    if (!usuario) {
+      throw new Error('Usuário não encontrado.');
+    }
 
-//       userPreferences.push(result)
-//       console.log(userPreferences);
-      
-//     }))
-//     return userPreferences
-//   } catch (error){
-//     console.error("Erro ao gravar preferências do cliente:", error);
-//     throw new Error("Não foi possível gravar as preferências do cliente.");
-//   }
-// }
+    // 2. Obter as preferências associadas ao usuário
+    const preferencias = await prisma.tbl_clientes_preferencias.findMany({
+      where: {
+        id_clientes: userId,
+      },
+      include: {
+        tbl_preferencias: {
+          select: {
+            id: true,
+            nome: true, 
+            cor: true// Informações sobre a preferência
+          },
+        },
+      },
+    });
+
+    // 3. Estruturar a resposta para incluir as informações do usuário e das preferências associadas
+    const response = {
+      id: usuario.id,
+      nome: usuario.nome,
+      email: usuario.email,
+      telefone: usuario.telefone,
+      preferencias: preferencias.map((pref) => ({
+        id: pref.tbl_preferencias?.id,
+        nome: pref.tbl_preferencias?.nome,
+        hexcolor:pref.tbl_preferencias?.cor
+      })),
+    };
+
+    return response;
+  } catch (error) {
+    console.error("Erro ao obter o usuário com as preferências:", error);
+    throw new Error("Não foi possível obter o usuário com as preferências.");
+  }
+}
+
+
+export async function criarPreferenciasUsuario(userId: number, preferences: number[]){
+  try {
+    for (const preference of preferences) {
+      await prisma.tbl_clientes_preferencias.create({
+        data: {
+          id_clientes: userId,
+          id_preferencias: preference,
+        },
+      });
+    }
+
+    // 2. Obter as informações do usuário
+    const usuario = await prisma.tbl_clientes.findUnique({
+      where: {
+        id: userId,
+      },
+      select: {
+        id: true,
+        nome: true,
+        email: true,
+        telefone: true,
+      },
+    });
+
+    if (!usuario) {
+      throw new Error('Usuário não encontrado.');
+    }
+
+    // 3. Obter as preferências associadas ao usuário
+    const preferencias = await prisma.tbl_clientes_preferencias.findMany({
+      where: {
+        id_clientes: userId,
+      },
+      include: {
+        tbl_preferencias: {
+          select: {
+            id: true,
+            nome: true,
+            cor: true // Informações sobre a preferência
+          },
+        },
+      },
+    });
+
+    // 4. Montar o objeto de resposta
+    const response = {
+      id: usuario.id,
+      nome: usuario.nome,
+      email: usuario.email,
+      telefone: usuario.telefone,
+      preferencias: preferencias.map((pref) => ({
+        id: pref.tbl_preferencias?.id,
+        nome: pref.tbl_preferencias?.nome,
+        cor: pref.tbl_preferencias?.cor
+      })),
+    };
+
+    // 5. Retornar o objeto com as informações do usuário e suas preferências
+    return response;
+  } catch (error) {
+    console.error("Erro ao gravar preferências do cliente:", error);
+    throw new Error("Não foi possível gravar as preferências do cliente.");
+  }
+}

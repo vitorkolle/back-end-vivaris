@@ -7,5 +7,5 @@ export type TUser = {
     data_nascimento: Date;
     foto_perfil?: string | null;
     link_instagram?: string | null
-    id_sexo: number;
+    id_sexo: number | null
 }
