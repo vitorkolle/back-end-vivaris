@@ -10,9 +10,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.setInserirUsuario = setInserirUsuario;
-const config_1 = require("../../module/config");
-const usuario_1 = require("../model/DAO/cliente/usuario");
-const client_data_validation_1 = require("../infra/client-data-validation");
+const config_1 = require("../../../module/config");
+const usuario_1 = require("../../model/DAO/cliente/usuario");
+const client_data_validation_1 = require("../../infra/client-data-validation");
 function setInserirUsuario(user, contentType) {
     return __awaiter(this, void 0, void 0, function* () {
         try {

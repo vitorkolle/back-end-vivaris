@@ -1,7 +1,7 @@
-import { ERROR_CONTENT_TYPE, ERROR_INTERNAL_SERVER, ERROR_INTERNAL_SERVER_DB, ERROR_NOT_CREATED, ERROR_REQUIRED_FIELDS, SUCCESS_CREATED_ITEM } from "../../module/config"
-import { TUser } from "../domain/entities/user-entity"
-import { criarNovoCliente } from "../model/DAO/cliente/usuario"
-
+import { ERROR_CONTENT_TYPE, ERROR_INTERNAL_SERVER, ERROR_INTERNAL_SERVER_DB, ERROR_NOT_CREATED, ERROR_REQUIRED_FIELDS, SUCCESS_CREATED_ITEM } from "../../../module/config"
+import { TUser } from "../../domain/entities/user-entity"
+import { criarNovoCliente } from "../../model/DAO/cliente/usuario"
+import { verificacao } from "../../infra/client-data-validation";
 
 export async function setInserirUsuario(user: TUser, contentType: string | undefined) {
     try {
@@ -13,25 +13,33 @@ export async function setInserirUsuario(user: TUser, contentType: string | undef
             return ERROR_NOT_CREATED;
         }
 
-        function validarData(data: Date) : Date{
-            let dia = data.getDate()
-            let mes = data.getMonth()
-            let ano = data.getFullYear()
-
-            let dataFormatada = `${ano} + '/' + ${mes} + '/' + ${dia}`
-            let dataFinal = new Date(dataFormatada)
-            console.log(data.getMonth());
+        function validarData(data: string): boolean  {
             
-            return dataFinal
+            if(data.length != 10) return false
+
+            return true
+                   
+        }
+
+        function transformarData(data: string ) : Date{            
+            const dataFinal = new Date(data)
+            
+            if (dataFinal) {
+                return dataFinal;
+            } else {
+                throw new Error("Invalid date format");
+            }
+            
+          
         }
         
-
+        
         // Validação dos campos obrigatórios
         if (
             !user.nome || typeof user.nome !== 'string' ||
-            !user.cpf || user.cpf.length !== 11 ||
-            !user.data_nascimento ||  validarData(user.data_nascimento) ||
-            !user.email || typeof user.email !== 'string' ||
+            !user.cpf || user.cpf.length !== 11 ||  !await verificacao.verificarCpf(user.cpf) ||
+            !user.data_nascimento || !validarData(user.data_nascimento.toString()) ||
+            !user.email || typeof user.email !== 'string' ||  !await verificacao.verificarEmail(user.email) ||
             !user.senha || typeof user.senha !== 'string' ||
             !user.telefone || user.telefone.length !== 11 || typeof user.telefone !== 'string' ||
             !user.id_sexo || isNaN(Number(user.id_sexo))
@@ -46,7 +54,7 @@ export async function setInserirUsuario(user: TUser, contentType: string | undef
                 senha: user.senha,
                 telefone: user.telefone,
                 cpf: user.cpf,
-                data_nascimento: user.data_nascimento,
+                data_nascimento: transformarData(user.data_nascimento.toString()),
                 id_sexo: user.id_sexo,
             };
 

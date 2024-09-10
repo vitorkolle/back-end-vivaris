@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ERROR_NOT_CREATED = exports.SUCCESS_UPDATED_ITEM = exports.SUCCESS_DELETED_ITEM = exports.SUCCESS_CREATED_ITEM = exports.ERROR_INTERNAL_SERVER = exports.ERROR_CONTENT_TYPE = exports.ERROR_INTERNAL_SERVER_DB = exports.ERROR_NOT_FOUND = exports.ERROR_REQUIRED_FIELDS = exports.ERROR_INVALID_ID = void 0;
+exports.ERROR_ALREADY_EXISTS_PREFRENCE = exports.ERROR_NOT_FOUND_PREFERENCE = exports.ERROR_NOT_CREATED = exports.SUCCESS_UPDATED_ITEM = exports.SUCCESS_DELETED_ITEM = exports.SUCCESS_CREATED_ITEM = exports.ERROR_INTERNAL_SERVER = exports.ERROR_CONTENT_TYPE = exports.ERROR_INTERNAL_SERVER_DB = exports.ERROR_NOT_FOUND = exports.ERROR_REQUIRED_FIELDS = exports.ERROR_INVALID_ID = void 0;
 /*************** Mensagens de Erro ***************/
 const ERROR_INVALID_ID = { status: false, status_code: 400, message: 'O ID encaminhado na requisição não é válido!!' };
 exports.ERROR_INVALID_ID = ERROR_INVALID_ID;
@@ -8,6 +8,10 @@ const ERROR_REQUIRED_FIELDS = { status: false, status_code: 400, message: 'Exist
 exports.ERROR_REQUIRED_FIELDS = ERROR_REQUIRED_FIELDS;
 const ERROR_NOT_FOUND = { status: false, status_code: 404, message: 'Não foram encontrados itens na requisição!!' };
 exports.ERROR_NOT_FOUND = ERROR_NOT_FOUND;
+const ERROR_NOT_FOUND_PREFERENCE = { status: false, status_code: 404, message: 'Não foram encontradas preferências na requisição!!' };
+exports.ERROR_NOT_FOUND_PREFERENCE = ERROR_NOT_FOUND_PREFERENCE;
+const ERROR_ALREADY_EXISTS_PREFRENCE = { status: false, status_code: 404, message: 'As preferências da requisição já estão escolhidas!!' };
+exports.ERROR_ALREADY_EXISTS_PREFRENCE = ERROR_ALREADY_EXISTS_PREFRENCE;
 const ERROR_INTERNAL_SERVER_DB = { status: false, status_code: 500, message: 'Não foi possível processar a requisição devido à um problema na comunicação com o Banco de Dados. Contate o Administrador da API!!' };
 exports.ERROR_INTERNAL_SERVER_DB = ERROR_INTERNAL_SERVER_DB;
 const ERROR_CONTENT_TYPE = { status: false, status_code: 415, message: 'O content-type encaminhado na requisição não é permitido pelo servidor da API. Deve-se utilizar somente application/json!!!' };

@@ -1,27 +1,27 @@
 import { PrismaClient } from "@prisma/client"
 import { TUser } from "../../../domain/entities/user-entity";
 const prisma = new PrismaClient()
- 
+
 export async function criarNovoCliente(userInput: TUser): Promise<TUser> {
-    try {
+  try {
 
-      const user = await prisma.tbl_clientes.create({
-        data: {
-          nome: userInput.nome,
-          email: userInput.email,
-          senha: userInput.senha,
-          telefone: userInput.telefone,
-          cpf: userInput.cpf,
-          data_nascimento: userInput.data_nascimento,
-          id_sexo: userInput.id_sexo
-        },
-      });
+    const user = await prisma.tbl_clientes.create({
+      data: {
+        nome: userInput.nome,
+        email: userInput.email,
+        senha: userInput.senha,
+        telefone: userInput.telefone,
+        cpf: userInput.cpf,
+        data_nascimento: userInput.data_nascimento,
+        id_sexo: userInput.id_sexo
+      },
+    });
 
-      return user;
-      
-    } catch (error) {
-      console.error("Erro ao criar novo cliente:", error);
-      throw new Error("Não foi possível criar o cliente.");
+    return user;
+
+  } catch (error) {
+    console.error("Erro ao criar novo cliente:", error);
+    throw new Error("Não foi possível criar o cliente.");
   }
 }
 
@@ -53,8 +53,8 @@ export async function obterUsuarioComPreferencias(userId: number) {
         tbl_preferencias: {
           select: {
             id: true,
-            nome: true, 
-            cor: true// Informações sobre a preferência
+            nome: true,
+            cor: true
           },
         },
       },
@@ -69,7 +69,7 @@ export async function obterUsuarioComPreferencias(userId: number) {
       preferencias: preferencias.map((pref: any | string) => ({
         id: pref.tbl_preferencias?.id,
         nome: pref.tbl_preferencias?.nome,
-        hexcolor:pref.tbl_preferencias?.cor
+        hexcolor: pref.tbl_preferencias?.cor
       })),
     };
 
@@ -81,16 +81,15 @@ export async function obterUsuarioComPreferencias(userId: number) {
 }
 
 
-export async function criarPreferenciasUsuario(userId: number, preferences: number[]){
+export async function criarPreferenciasUsuario(userId: number, preference: number) {
   try {
-    for (const preference of preferences) {
-      await prisma.tbl_clientes_preferencias.create({
-        data: {
-          id_clientes: userId,
-          id_preferencias: preference,
-        },
-      });
-    }
+
+    await prisma.tbl_clientes_preferencias.create({
+      data: {
+        id_clientes: userId,
+        id_preferencias: preference,
+      },
+    });
 
     // 2. Obter as informações do usuário
     const usuario = await prisma.tbl_clientes.findUnique({
@@ -119,7 +118,7 @@ export async function criarPreferenciasUsuario(userId: number, preferences: numb
           select: {
             id: true,
             nome: true,
-            cor: true // Informações sobre a preferência
+            cor: true
           },
         },
       },

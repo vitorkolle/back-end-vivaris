@@ -18,10 +18,11 @@ const express_1 = __importDefault(require("express"));
 const express_2 = require("express");
 //Criação das configurações das rotas para endpoint
 const route = (0, express_2.Router)();
-//Import pacotes cors
+//Import pacotes cors 
 const cors_1 = __importDefault(require("cors"));
 //Import Controller 
-const controller_usuario_1 = require("./src/controller/controller_usuario");
+const controller_usuario_1 = require("./src/controller/usuario/controller_usuario");
+const controller_preferencia_1 = require("./src/controller/preferencia/controller_preferencia");
 //Criação do app
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
@@ -41,7 +42,7 @@ route.post('/cliente', (req, res) => __awaiter(void 0, void 0, void 0, function*
         senha: req.body.senha,
         telefone: req.body.telefone,
         cpf: req.body.cpf,
-        data_nascimento: new Date(req.body.data_nascimento),
+        data_nascimento: req.body.data_nascimento,
         id_sexo: req.body.sexo
     };
     console.log(userData);
@@ -49,14 +50,16 @@ route.post('/cliente', (req, res) => __awaiter(void 0, void 0, void 0, function*
     res.status(newUser.status_code);
     res.json(newUser);
 }));
-// route.post('/cliente/preferencias', async (req, res) =>{
-//     const contentType = req.header('content-type')
-//     const userData = {
-//         id_cliente: req.body.id_cliente,
-//         preferencias: req.body.preferencias
-//     }
-//     let newUser = await setInserirPreferencias(userData)
-// })
+route.post('/cliente/preferencias', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const contentType = req.header('content-type');
+    const userData = {
+        id_cliente: req.body.id_cliente,
+        preferencias: req.body.preferencias
+    };
+    let newUserPrefence = yield (0, controller_preferencia_1.setInserirPreferencias)(userData, contentType);
+    res.status(newUserPrefence.status_code);
+    res.json(newUserPrefence);
+}));
 //Ativação das rotas
 app.use('/v1/vivaris', route);
 route.use((req, res, next) => {

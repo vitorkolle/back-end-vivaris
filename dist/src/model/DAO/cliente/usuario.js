@@ -64,7 +64,7 @@ function obterUsuarioComPreferencias(userId) {
                         select: {
                             id: true,
                             nome: true,
-                            cor: true // Informações sobre a preferência
+                            cor: true
                         },
                     },
                 },
@@ -92,17 +92,15 @@ function obterUsuarioComPreferencias(userId) {
         }
     });
 }
-function criarPreferenciasUsuario(userId, preferences) {
+function criarPreferenciasUsuario(userId, preference) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            for (const preference of preferences) {
-                yield prisma.tbl_clientes_preferencias.create({
-                    data: {
-                        id_clientes: userId,
-                        id_preferencias: preference,
-                    },
-                });
-            }
+            yield prisma.tbl_clientes_preferencias.create({
+                data: {
+                    id_clientes: userId,
+                    id_preferencias: preference,
+                },
+            });
             // 2. Obter as informações do usuário
             const usuario = yield prisma.tbl_clientes.findUnique({
                 where: {
@@ -128,7 +126,7 @@ function criarPreferenciasUsuario(userId, preferences) {
                         select: {
                             id: true,
                             nome: true,
-                            cor: true // Informações sobre a preferência
+                            cor: true
                         },
                     },
                 },
