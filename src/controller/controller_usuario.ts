@@ -2,6 +2,7 @@ import { ERROR_CONTENT_TYPE, ERROR_INTERNAL_SERVER, ERROR_INTERNAL_SERVER_DB, ER
 import { TUser } from "../domain/entities/user-entity"
 import { criarNovoCliente } from "../model/DAO/cliente/usuario"
 
+
 function validarData(data: Date): boolean {
     
     if (isNaN(data.getTime())) return false; 
@@ -31,7 +32,7 @@ export async function setInserirUsuario(user: TUser, contentType: string | undef
         ) {
             return ERROR_REQUIRED_FIELDS;
         }
-
+      else {
         // Preparar os dados do usuário
         const userData: TUser = {
             nome: user.nome,

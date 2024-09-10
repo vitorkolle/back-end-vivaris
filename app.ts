@@ -7,10 +7,13 @@ import { TUser } from './src/domain/entities/user-entity'
 import express from 'express'
 import { Router, Request, Response } from 'express'
 
+//Criação das configurações das rotas para endpoint
+const route = Router()
+
 //Import pacotes cors
 import cors from 'cors'
 
-//Import Controller
+//Import Controller 
 import { setInserirUsuario } from './src/controller/controller_usuario'
 
 //Criação do app
@@ -26,13 +29,10 @@ app.use((request, response, next) =>{
     next()
 })
 
-//Criação das configurações das rotas para endpoint
-const route = Router()
-
 /*********************************************************************************** */
 
 //Post de Usuario
-route.post('/cliente',  async (req, res) =>{   
+route.post('/cliente', async (req, res) =>{   
     
     const contentType = req.header('content-type')
 

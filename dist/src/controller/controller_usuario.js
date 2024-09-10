@@ -12,12 +12,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.setInserirUsuario = setInserirUsuario;
 const config_1 = require("../../module/config");
 const usuario_1 = require("../model/DAO/cliente/usuario");
+
 function validarData(data) {
     if (isNaN(data.getTime()))
         return false;
     const hoje = new Date();
     return data <= hoje;
 }
+
 function setInserirUsuario(user, contentType) {
     return __awaiter(this, void 0, void 0, function* () {
         try {

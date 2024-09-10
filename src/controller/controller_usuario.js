@@ -38,7 +38,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.setInserirUsuario = setInserirUsuario;
 var config_1 = require("../../module/config");
-var usuario_1 = require("../model/DAO/usuario");
+var usuario_1 = require("../model/DAO/cliente/usuario");
 function setInserirUsuario(user, contentType) {
     return __awaiter(this, void 0, void 0, function () {
         var userData, newClient, responseJson, error_1;
