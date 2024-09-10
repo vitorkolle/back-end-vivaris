@@ -10,8 +10,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.setInserirUsuario = setInserirUsuario;
+exports.getListarSexo = getListarSexo;
 const config_1 = require("../../../module/config");
 const usuario_1 = require("../../model/DAO/cliente/usuario");
+const sexo_1 = require("../../model/DAO/cliente/sexo");
 const client_data_validation_1 = require("../../infra/client-data-validation");
 function setInserirUsuario(user, contentType) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -74,6 +76,21 @@ function setInserirUsuario(user, contentType) {
         catch (error) {
             console.error('Erro ao tentar inserir um novo usuário:', error);
             return config_1.ERROR_INTERNAL_SERVER;
+        }
+    });
+}
+function getListarSexo() {
+    return __awaiter(this, void 0, void 0, function* () {
+        let genderData = yield (0, sexo_1.getAllSexos)();
+        if (genderData) {
+            return {
+                data: genderData,
+                status_code: 200,
+                quantidade: genderData.length
+            };
+        }
+        else {
+            return config_1.ERROR_NOT_FOUND;
         }
     });
 }

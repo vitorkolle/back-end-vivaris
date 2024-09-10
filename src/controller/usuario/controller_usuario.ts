@@ -1,6 +1,7 @@
-import { ERROR_CONTENT_TYPE, ERROR_INTERNAL_SERVER, ERROR_INTERNAL_SERVER_DB, ERROR_NOT_CREATED, ERROR_REQUIRED_FIELDS, SUCCESS_CREATED_ITEM } from "../../../module/config"
+import { ERROR_CONTENT_TYPE, ERROR_INTERNAL_SERVER, ERROR_INTERNAL_SERVER_DB, ERROR_NOT_CREATED, ERROR_NOT_FOUND, ERROR_REQUIRED_FIELDS, SUCCESS_CREATED_ITEM } from "../../../module/config"
 import { TUser } from "../../domain/entities/user-entity"
 import { criarNovoCliente } from "../../model/DAO/cliente/usuario"
+import { getAllSexos } from "../../model/DAO/cliente/sexo";
 import { verificacao } from "../../infra/client-data-validation";
 
 export async function setInserirUsuario(user: TUser, contentType: string | undefined) {
@@ -75,5 +76,20 @@ export async function setInserirUsuario(user: TUser, contentType: string | undef
     catch (error) {
         console.error('Erro ao tentar inserir um novo usuário:', error);
         return ERROR_INTERNAL_SERVER;
+    }
+}
+
+export async function getListarSexo(){
+    let genderData = await getAllSexos()
+
+    if(genderData){
+        return{
+            data: genderData,
+            status_code: 200,
+            quantidade: genderData.length
+        }
+    }
+    else{
+        return ERROR_NOT_FOUND
     }
 }

@@ -7,6 +7,7 @@ import { TUserPreferences } from './src/domain/entities/user-preferences'
 //Import pacotes express
 import express from 'express'
 import { Router } from 'express'
+
 //Criação das configurações das rotas para endpoint
 const route = Router()
 
@@ -15,8 +16,9 @@ const route = Router()
 import cors from 'cors'
 
 //Import Controller 
-import { setInserirUsuario } from './src/controller/usuario/controller_usuario'
+import { getListarSexo, setInserirUsuario } from './src/controller/usuario/controller_usuario'
 import { setInserirPreferencias } from './src/controller/preferencia/controller_preferencia'
+import { getAllSexos } from './src/model/DAO/cliente/sexo'
 
 //Criação do app
 const app = express()
@@ -33,7 +35,7 @@ app.use((request, response, next) => {
 
 /*********************************************************************************** */
 
-//Post de Usuario
+/****************************************************USUARIO****************************************************/
 route.post('/cliente', async (req, res) => {
 
     const contentType = req.header('content-type')
@@ -55,11 +57,11 @@ route.post('/cliente', async (req, res) => {
     res.json(newUser)
 
 })
-
+// de Preferências de Usuário
 route.post('/cliente/preferencias', async (req, res) => {
     const contentType = req.header('content-type')
 
-    const userData : TUserPreferences = {
+    const userData: TUserPreferences = {
         id_cliente: req.body.id_cliente,
         preferencias: req.body.preferencias
     }
@@ -68,16 +70,26 @@ route.post('/cliente/preferencias', async (req, res) => {
 
     res.status(newUserPrefence.status_code)
     res.json(newUserPrefence)
- 
+
 })
+
+/****************************************************GÊNERO****************************************************/
+route.get('/cliente/sexo', async (req, res) => {
+    let allSex = await getListarSexo()
+
+
+    res.status(allSex.status_code)
+    res.json(allSex)
+
+})
+
+
+
+
+
 
 //Ativação das rotas
 app.use('/v1/vivaris', route)
-
-route.use((req, res, next) => {
-    console.log(`Request URL: ${req.url}`);
-    next();
-});
 
 //Ativação na porta 8080
 app.listen('8080', () => {

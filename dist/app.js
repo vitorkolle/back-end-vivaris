@@ -33,7 +33,7 @@ app.use((request, response, next) => {
     next();
 });
 /*********************************************************************************** */
-//Post de Usuario
+/****************************************************USUARIO****************************************************/
 route.post('/cliente', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const contentType = req.header('content-type');
     const userData = {
@@ -50,6 +50,7 @@ route.post('/cliente', (req, res) => __awaiter(void 0, void 0, void 0, function*
     res.status(newUser.status_code);
     res.json(newUser);
 }));
+// de Preferências de Usuário
 route.post('/cliente/preferencias', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const contentType = req.header('content-type');
     const userData = {
@@ -60,12 +61,14 @@ route.post('/cliente/preferencias', (req, res) => __awaiter(void 0, void 0, void
     res.status(newUserPrefence.status_code);
     res.json(newUserPrefence);
 }));
+/****************************************************GÊNERO****************************************************/
+route.get('/cliente/sexo', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    let allSex = yield (0, controller_usuario_1.getListarSexo)();
+    res.status(allSex.status_code);
+    res.json(allSex);
+}));
 //Ativação das rotas
 app.use('/v1/vivaris', route);
-route.use((req, res, next) => {
-    console.log(`Request URL: ${req.url}`);
-    next();
-});
 //Ativação na porta 8080
 app.listen('8080', () => {
     console.log("API funcionando na porta 8080");
