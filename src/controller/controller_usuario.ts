@@ -3,31 +3,37 @@ import { TUser } from "../domain/entities/user-entity"
 import { criarNovoCliente } from "../model/DAO/cliente/usuario"
 
 
-function validarData(data: Date): boolean {
-
-    if (isNaN(data.getTime())) return false;
-    const hoje = new Date();
-    return data <= hoje;
-}
-
 export async function setInserirUsuario(user: TUser, contentType: string | undefined) {
     try {
+        
         if (String(contentType).toLowerCase() !== 'application/json' || contentType === undefined) {
             return ERROR_CONTENT_TYPE;
         }
-
         if (!user) {
             return ERROR_NOT_CREATED;
         }
+
+        function validarData(data: Date) : Date{
+            let dia = data.getDate()
+            let mes = data.getMonth()
+            let ano = data.getFullYear()
+
+            let dataFormatada = `${ano} + '/' + ${mes} + '/' + ${dia}`
+            let dataFinal = new Date(dataFormatada)
+            console.log(data.getMonth());
+            
+            return dataFinal
+        }
+        
 
         // Validação dos campos obrigatórios
         if (
             !user.nome || typeof user.nome !== 'string' ||
             !user.cpf || user.cpf.length !== 11 ||
-            !user.data_nascimento || !(user.data_nascimento instanceof Date) || !validarData(user.data_nascimento) ||
+            !user.data_nascimento ||  validarData(user.data_nascimento) ||
             !user.email || typeof user.email !== 'string' ||
             !user.senha || typeof user.senha !== 'string' ||
-            !user.telefone || user.telefone.length !== 11 ||
+            !user.telefone || user.telefone.length !== 11 || typeof user.telefone !== 'string' ||
             !user.id_sexo || isNaN(Number(user.id_sexo))
         ) {
             return ERROR_REQUIRED_FIELDS;
@@ -48,7 +54,6 @@ export async function setInserirUsuario(user: TUser, contentType: string | undef
             const newClient = await criarNovoCliente(userData);
 
             if (newClient) {
-
                 return {
                     user: newClient,
                     status_code: SUCCESS_CREATED_ITEM.status_code,

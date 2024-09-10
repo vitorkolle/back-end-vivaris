@@ -66,7 +66,7 @@ export async function obterUsuarioComPreferencias(userId: number) {
       nome: usuario.nome,
       email: usuario.email,
       telefone: usuario.telefone,
-      preferencias: preferencias.map((pref) => ({
+      preferencias: preferencias.map((pref: any | string) => ({
         id: pref.tbl_preferencias?.id,
         nome: pref.tbl_preferencias?.nome,
         hexcolor:pref.tbl_preferencias?.cor
@@ -131,7 +131,7 @@ export async function criarPreferenciasUsuario(userId: number, preferences: numb
       nome: usuario.nome,
       email: usuario.email,
       telefone: usuario.telefone,
-      preferencias: preferencias.map((pref) => ({
+      preferencias: preferencias.map((pref: any | string) => ({
         id: pref.tbl_preferencias?.id,
         nome: pref.tbl_preferencias?.nome,
         cor: pref.tbl_preferencias?.cor

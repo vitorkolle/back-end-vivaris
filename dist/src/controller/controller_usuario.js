@@ -12,12 +12,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.setInserirUsuario = setInserirUsuario;
 const config_1 = require("../../module/config");
 const usuario_1 = require("../model/DAO/cliente/usuario");
-function validarData(data) {
-    if (isNaN(data.getTime()))
-        return false;
-    const hoje = new Date();
-    return data <= hoje;
-}
 function setInserirUsuario(user, contentType) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -27,13 +21,22 @@ function setInserirUsuario(user, contentType) {
             if (!user) {
                 return config_1.ERROR_NOT_CREATED;
             }
+            function validarData(data) {
+                let dia = data.getDate();
+                let mes = data.getMonth();
+                let ano = data.getFullYear();
+                let dataFormatada = `${ano} + '/' + ${mes} + '/' + ${dia}`;
+                let dataFinal = new Date(dataFormatada);
+                console.log(data.getMonth());
+                return dataFinal;
+            }
             // Validação dos campos obrigatórios
             if (!user.nome || typeof user.nome !== 'string' ||
                 !user.cpf || user.cpf.length !== 11 ||
-                !user.data_nascimento || !(user.data_nascimento instanceof Date) || !validarData(user.data_nascimento) ||
+                !user.data_nascimento || validarData(user.data_nascimento) ||
                 !user.email || typeof user.email !== 'string' ||
                 !user.senha || typeof user.senha !== 'string' ||
-                !user.telefone || user.telefone.length !== 11 ||
+                !user.telefone || user.telefone.length !== 11 || typeof user.telefone !== 'string' ||
                 !user.id_sexo || isNaN(Number(user.id_sexo))) {
                 return config_1.ERROR_REQUIRED_FIELDS;
             }

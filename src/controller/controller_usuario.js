@@ -9,8 +9,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 var __generator = (this && this.__generator) || function (thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
-    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    var _ = { label: 0, sent: function () { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function () { return this; }), g;
     function verb(n) { return function (v) { return step([n, v]); }; }
     function step(op) {
         if (f) throw new TypeError("Generator is already executing.");
@@ -59,27 +59,37 @@ function setInserirUsuario(user, contentType) {
                         data_nascimento: user.data_nascimento,
                         sexo: user.sexo
                     };
-                    return [4 /*yield*/, (0, usuario_1.criarNovoCliente)(userData)];
+                   
                 case 2:
+                    if (!user.nome || typeof user.nome !== 'string' ||
+                        !user.cpf || user.cpf.length !== 11 ||
+                        !user.data_nascimento || !(user.data_nascimento instanceof Date) || !validarData(user.data_nascimento) ||
+                        !user.email || typeof user.email !== 'string' ||
+                        !user.senha || typeof user.senha !== 'string' ||
+                        !user.telefone || user.telefone.length !== 11 || typeof user.telefone !== 'string' ||
+                        !user.id_sexo || isNaN(Number(user.id_sexo))) return [3, config_1.ERROR_REQUIRED_FIELDS, 3];
+                        return [4 /*yield*/, (0, usuario_1.criarNovoCliente)(userData)];
+
+
+                case 3:
                     newClient = _a.sent();
                     if (newClient) {
-                        responseJson = {
-                            user: userData,
-                            status_code: config_1.SUCCESS_CREATED_ITEM.status_code,
-                            message: config_1.SUCCESS_CREATED_ITEM.message
+                        return {
+                            user: newClient,
+                            status_code: SUCCESS_CREATED_ITEM.status_code,
+                            message: SUCCESS_CREATED_ITEM.message,
                         };
-                        return [2 /*return*/, responseJson];
                     }
                     else {
                         return [2 /*return*/, config_1.ERROR_INTERNAL_SERVER_DB];
                     }
                     return [3 /*break*/, 4];
-                case 3: return [2 /*return*/, config_1.ERROR_REQUIRED_FIELDS];
-                case 4: return [3 /*break*/, 6];
-                case 5:
+                case 4: return [2 /*return*/, config_1.ERROR_REQUIRED_FIELDS];
+                case 5: return [3 /*break*/, 6];
+                case 6:
                     error_1 = _a.sent();
                     return [2 /*return*/, config_1.ERROR_INTERNAL_SERVER];
-                case 6: return [2 /*return*/];
+                case 7: return [2 /*return*/];
             }
         });
     });
