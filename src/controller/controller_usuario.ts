@@ -4,10 +4,10 @@ import { criarNovoCliente } from "../model/DAO/cliente/usuario"
 
 
 function validarData(data: Date): boolean {
-    
-    if (isNaN(data.getTime())) return false; 
+
+    if (isNaN(data.getTime())) return false;
     const hoje = new Date();
-    return data <= hoje; 
+    return data <= hoje;
 }
 
 export async function setInserirUsuario(user: TUser, contentType: string | undefined) {
@@ -32,32 +32,34 @@ export async function setInserirUsuario(user: TUser, contentType: string | undef
         ) {
             return ERROR_REQUIRED_FIELDS;
         }
-      else {
-        // Preparar os dados do usuário
-        const userData: TUser = {
-            nome: user.nome,
-            email: user.email,
-            senha: user.senha,
-            telefone: user.telefone,
-            cpf: user.cpf,
-            data_nascimento: user.data_nascimento,
-            id_sexo: user.id_sexo,
-        };
-
-        // Inserir novo cliente
-        const newClient = await criarNovoCliente(userData);
-
-        if (newClient) {
-
-            return {
-                user: newClient,
-                status_code: SUCCESS_CREATED_ITEM.status_code,
-                message: SUCCESS_CREATED_ITEM.message,
+        else {
+            // Preparar os dados do usuário
+            const userData: TUser = {
+                nome: user.nome,
+                email: user.email,
+                senha: user.senha,
+                telefone: user.telefone,
+                cpf: user.cpf,
+                data_nascimento: user.data_nascimento,
+                id_sexo: user.id_sexo,
             };
-        } else {
-            return ERROR_INTERNAL_SERVER_DB;
+
+            // Inserir novo cliente
+            const newClient = await criarNovoCliente(userData);
+
+            if (newClient) {
+
+                return {
+                    user: newClient,
+                    status_code: SUCCESS_CREATED_ITEM.status_code,
+                    message: SUCCESS_CREATED_ITEM.message,
+                };
+            } else {
+                return ERROR_INTERNAL_SERVER_DB;
+            }
         }
-    } catch (error) {
+    }
+    catch (error) {
         console.error('Erro ao tentar inserir um novo usuário:', error);
         return ERROR_INTERNAL_SERVER;
     }

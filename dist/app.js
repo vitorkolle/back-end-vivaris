@@ -16,6 +16,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 //Import pacotes express
 const express_1 = __importDefault(require("express"));
 const express_2 = require("express");
+//Criação das configurações das rotas para endpoint
+const route = (0, express_2.Router)();
 //Import pacotes cors
 const cors_1 = __importDefault(require("cors"));
 //Import Controller 
@@ -29,8 +31,6 @@ app.use((request, response, next) => {
     app.use((0, cors_1.default)());
     next();
 });
-//Criação das configurações das rotas para endpoint
-const route = (0, express_2.Router)();
 /*********************************************************************************** */
 //Post de Usuario
 route.post('/cliente', (req, res) => __awaiter(void 0, void 0, void 0, function* () {

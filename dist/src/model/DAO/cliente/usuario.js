@@ -25,7 +25,7 @@ function criarNovoCliente(userInput) {
                     telefone: userInput.telefone,
                     cpf: userInput.cpf,
                     data_nascimento: userInput.data_nascimento,
-                    id_sexo: userInput.id_sexo,
+                    id_sexo: userInput.id_sexo
                 },
             });
             return user;
@@ -57,13 +57,14 @@ function obterUsuarioComPreferencias(userId) {
             // 2. Obter as preferências associadas ao usuário
             const preferencias = yield prisma.tbl_clientes_preferencias.findMany({
                 where: {
-                    id_cliente: userId,
+                    id_clientes: userId,
                 },
                 include: {
-                    preferencia: {
+                    tbl_preferencias: {
                         select: {
                             id: true,
-                            descricao: true, // Informações sobre a preferência
+                            nome: true,
+                            cor: true // Informações sobre a preferência
                         },
                     },
                 },
@@ -74,11 +75,14 @@ function obterUsuarioComPreferencias(userId) {
                 nome: usuario.nome,
                 email: usuario.email,
                 telefone: usuario.telefone,
-                preferencias: preferencias.map((pref) => ({
-                    id: pref.preferencia.id,
-                    nome: pref.preferencia.nome,
-                    hexcolor: pref.preferencia.cor
-                })),
+                preferencias: preferencias.map((pref) => {
+                    var _a, _b, _c;
+                    return ({
+                        id: (_a = pref.tbl_preferencias) === null || _a === void 0 ? void 0 : _a.id,
+                        nome: (_b = pref.tbl_preferencias) === null || _b === void 0 ? void 0 : _b.nome,
+                        hexcolor: (_c = pref.tbl_preferencias) === null || _c === void 0 ? void 0 : _c.cor
+                    });
+                }),
             };
             return response;
         }
@@ -120,7 +124,7 @@ function criarPreferenciasUsuario(userId, preferences) {
                     id_clientes: userId,
                 },
                 include: {
-                    preferencia: {
+                    tbl_preferencias: {
                         select: {
                             id: true,
                             nome: true,
@@ -135,11 +139,14 @@ function criarPreferenciasUsuario(userId, preferences) {
                 nome: usuario.nome,
                 email: usuario.email,
                 telefone: usuario.telefone,
-                preferencias: preferencias.map((pref) => ({
-                    id: pref.preferencia.id,
-                    nome: pref.preferencia.nome,
-                    hexcolor: pref.preferencia.cor
-                })),
+                preferencias: preferencias.map((pref) => {
+                    var _a, _b, _c;
+                    return ({
+                        id: (_a = pref.tbl_preferencias) === null || _a === void 0 ? void 0 : _a.id,
+                        nome: (_b = pref.tbl_preferencias) === null || _b === void 0 ? void 0 : _b.nome,
+                        cor: (_c = pref.tbl_preferencias) === null || _c === void 0 ? void 0 : _c.cor
+                    });
+                }),
             };
             // 5. Retornar o objeto com as informações do usuário e suas preferências
             return response;

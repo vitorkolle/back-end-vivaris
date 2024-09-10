@@ -5,10 +5,10 @@ import { TUser } from './src/domain/entities/user-entity'
 
 //Import pacotes express
 import express from 'express'
-import { Router, Request, Response } from 'express'
-
+import { Router } from 'express'
 //Criação das configurações das rotas para endpoint
 const route = Router()
+
 
 //Import pacotes cors
 import cors from 'cors'

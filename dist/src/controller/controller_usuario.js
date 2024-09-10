@@ -12,14 +12,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.setInserirUsuario = setInserirUsuario;
 const config_1 = require("../../module/config");
 const usuario_1 = require("../model/DAO/cliente/usuario");
-
 function validarData(data) {
     if (isNaN(data.getTime()))
         return false;
     const hoje = new Date();
     return data <= hoje;
 }
-
 function setInserirUsuario(user, contentType) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -39,27 +37,29 @@ function setInserirUsuario(user, contentType) {
                 !user.id_sexo || isNaN(Number(user.id_sexo))) {
                 return config_1.ERROR_REQUIRED_FIELDS;
             }
-            // Preparar os dados do usuário
-            const userData = {
-                nome: user.nome,
-                email: user.email,
-                senha: user.senha,
-                telefone: user.telefone,
-                cpf: user.cpf,
-                data_nascimento: user.data_nascimento,
-                id_sexo: user.id_sexo,
-            };
-            // Inserir novo cliente
-            const newClient = yield (0, usuario_1.criarNovoCliente)(userData);
-            if (newClient) {
-                return {
-                    user: newClient,
-                    status_code: config_1.SUCCESS_CREATED_ITEM.status_code,
-                    message: config_1.SUCCESS_CREATED_ITEM.message,
-                };
-            }
             else {
-                return config_1.ERROR_INTERNAL_SERVER_DB;
+                // Preparar os dados do usuário
+                const userData = {
+                    nome: user.nome,
+                    email: user.email,
+                    senha: user.senha,
+                    telefone: user.telefone,
+                    cpf: user.cpf,
+                    data_nascimento: user.data_nascimento,
+                    id_sexo: user.id_sexo,
+                };
+                // Inserir novo cliente
+                const newClient = yield (0, usuario_1.criarNovoCliente)(userData);
+                if (newClient) {
+                    return {
+                        user: newClient,
+                        status_code: config_1.SUCCESS_CREATED_ITEM.status_code,
+                        message: config_1.SUCCESS_CREATED_ITEM.message,
+                    };
+                }
+                else {
+                    return config_1.ERROR_INTERNAL_SERVER_DB;
+                }
             }
         }
         catch (error) {
