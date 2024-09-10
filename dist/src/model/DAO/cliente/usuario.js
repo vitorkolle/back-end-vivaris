@@ -10,6 +10,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.criarNovoCliente = criarNovoCliente;
+exports.obterUsuarioComPreferencias = obterUsuarioComPreferencias;
+exports.criarPreferenciasUsuario = criarPreferenciasUsuario;
 const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
 function criarNovoCliente(userInput) {
@@ -26,8 +28,6 @@ function criarNovoCliente(userInput) {
                     id_sexo: userInput.id_sexo,
                 },
             });
-            console.log(user);
-            console.log("oi");
             return user;
         }
         catch (error) {
@@ -36,22 +36,117 @@ function criarNovoCliente(userInput) {
         }
     });
 }
-// export async function criarPreferenciasUsuario(userId: number, preferences: number[]):Promise<void>{
-//   try{
-//     const userPreferences: number[]
-//     preferences.map((preference => {
-//       const result = await prisma.tbl_clientes_preferencias.create({
-//         data: {
-//           id_cliente: userId,
-//           id_preferencia: preference,
-//         },
-//       });
-//       userPreferences.push(result)
-//       console.log(userPreferences);
-//     }))
-//     return userPreferences
-//   } catch (error){
-//     console.error("Erro ao gravar preferências do cliente:", error);
-//     throw new Error("Não foi possível gravar as preferências do cliente.");
-//   }
-// }
+function obterUsuarioComPreferencias(userId) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            // 1. Obter informações do usuário
+            const usuario = yield prisma.tbl_clientes.findUnique({
+                where: {
+                    id: userId,
+                },
+                select: {
+                    id: true,
+                    nome: true,
+                    email: true,
+                    telefone: true,
+                },
+            });
+            if (!usuario) {
+                throw new Error('Usuário não encontrado.');
+            }
+            // 2. Obter as preferências associadas ao usuário
+            const preferencias = yield prisma.tbl_clientes_preferencias.findMany({
+                where: {
+                    id_cliente: userId,
+                },
+                include: {
+                    preferencia: {
+                        select: {
+                            id: true,
+                            descricao: true, // Informações sobre a preferência
+                        },
+                    },
+                },
+            });
+            // 3. Estruturar a resposta para incluir as informações do usuário e das preferências associadas
+            const response = {
+                id: usuario.id,
+                nome: usuario.nome,
+                email: usuario.email,
+                telefone: usuario.telefone,
+                preferencias: preferencias.map((pref) => ({
+                    id: pref.preferencia.id,
+                    nome: pref.preferencia.nome,
+                    hexcolor: pref.preferencia.cor
+                })),
+            };
+            return response;
+        }
+        catch (error) {
+            console.error("Erro ao obter o usuário com as preferências:", error);
+            throw new Error("Não foi possível obter o usuário com as preferências.");
+        }
+    });
+}
+function criarPreferenciasUsuario(userId, preferences) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            for (const preference of preferences) {
+                yield prisma.tbl_clientes_preferencias.create({
+                    data: {
+                        id_clientes: userId,
+                        id_preferencias: preference,
+                    },
+                });
+            }
+            // 2. Obter as informações do usuário
+            const usuario = yield prisma.tbl_clientes.findUnique({
+                where: {
+                    id: userId,
+                },
+                select: {
+                    id: true,
+                    nome: true,
+                    email: true,
+                    telefone: true,
+                },
+            });
+            if (!usuario) {
+                throw new Error('Usuário não encontrado.');
+            }
+            // 3. Obter as preferências associadas ao usuário
+            const preferencias = yield prisma.tbl_clientes_preferencias.findMany({
+                where: {
+                    id_clientes: userId,
+                },
+                include: {
+                    preferencia: {
+                        select: {
+                            id: true,
+                            nome: true,
+                            cor: true // Informações sobre a preferência
+                        },
+                    },
+                },
+            });
+            // 4. Montar o objeto de resposta
+            const response = {
+                id: usuario.id,
+                nome: usuario.nome,
+                email: usuario.email,
+                telefone: usuario.telefone,
+                preferencias: preferencias.map((pref) => ({
+                    id: pref.preferencia.id,
+                    nome: pref.preferencia.nome,
+                    hexcolor: pref.preferencia.cor
+                })),
+            };
+            // 5. Retornar o objeto com as informações do usuário e suas preferências
+            return response;
+        }
+        catch (error) {
+            console.error("Erro ao gravar preferências do cliente:", error);
+            throw new Error("Não foi possível gravar as preferências do cliente.");
+        }
+    });
+}
