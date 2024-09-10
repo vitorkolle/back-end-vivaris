@@ -3,3 +3,4 @@ export type TPreference = {
       nome: string;
       cor: string;
   };
+  //
