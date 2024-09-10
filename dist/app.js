@@ -18,7 +18,7 @@ const express_1 = __importDefault(require("express"));
 const express_2 = require("express");
 //Import pacotes cors
 const cors_1 = __importDefault(require("cors"));
-//Import Controller
+//Import Controller 
 const controller_usuario_1 = require("./src/controller/controller_usuario");
 //Criação do app
 const app = (0, express_1.default)();

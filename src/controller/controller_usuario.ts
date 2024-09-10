@@ -2,30 +2,25 @@ import { ERROR_CONTENT_TYPE, ERROR_INTERNAL_SERVER, ERROR_INTERNAL_SERVER_DB, ER
 import { TUser } from "../domain/entities/user-entity"
 import { criarNovoCliente } from "../model/DAO/cliente/usuario"
 
-function validarData(data: Date): boolean {
-    // Verificar se a data é válida
-    return isNaN(data.getTime());
-}
-
 export async function setInserirUsuario(user: TUser, contentType: String | undefined) {
     try {
         if (String(contentType).toLowerCase() != 'application/json' || contentType == undefined) {
             return ERROR_CONTENT_TYPE
         } else {
             if (user) {
-                // if (
-                //     user.nome == '' || user.nome == undefined || user.nome == null       ||
-                //     user.cpf == undefined || user.cpf == null || user.cpf == '' || user.cpf.length != 11 ||
-                //     user.data_nascimento == undefined || user.data_nascimento == null || validarData(user.data_nascimento) == false || 
-                //     user.email == '' || user.email == undefined || user.email == null ||
-                //     user.senha == '' || user.senha == undefined || user.senha == null ||
-                //     user.telefone == undefined || user.telefone == null || user.telefone == ''|| user.telefone.length != 11 ||
-                //     user.id_sexo == undefined || user.id_sexo == null || isNaN(user.id_sexo)
+                 if (
+                     user.nome == '' || user.nome == undefined || user.nome == null       ||
+                    user.cpf == undefined || user.cpf == null || user.cpf == '' || user.cpf.length != 11 ||
+                     user.data_nascimento == undefined || user.data_nascimento == null || user.data_nascimento || 
+                     user.email == '' || user.email == undefined || user.email == null ||
+                     user.senha == '' || user.senha == undefined || user.senha == null ||
+                     user.telefone == undefined || user.telefone == null || user.telefone == ''|| user.telefone.length != 11 ||
+                     user.id_sexo == undefined || user.id_sexo == null || isNaN(user.id_sexo)
 
-                // ) {
-                //     return ERROR_REQUIRED_FIELDS
-                // }
-                // else {
+                 ) {
+                     return ERROR_REQUIRED_FIELDS
+                 }
+                 else {
                     let userData: TUser
                     userData = {
                         nome: user.nome,
@@ -50,7 +45,7 @@ export async function setInserirUsuario(user: TUser, contentType: String | undef
                     } else {
                         return ERROR_INTERNAL_SERVER_DB
                     }
-                // }
+                 }
             }else{
                 return ERROR_NOT_CREATED
             }
