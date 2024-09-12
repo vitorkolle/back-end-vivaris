@@ -9,7 +9,7 @@ export async function setInserirUsuario(user: TUser, contentType: string | undef
 
         if (String(contentType).toLowerCase() !== 'application/json' || contentType === undefined) {
             return ERROR_CONTENT_TYPE;
-        }
+        } 
         if (!user) {
             return ERROR_NOT_CREATED;
         }
@@ -40,7 +40,7 @@ export async function setInserirUsuario(user: TUser, contentType: string | undef
             !user.cpf || user.cpf.length !== 11 || !await verificacao.verificarCpf(user.cpf) ||
             !user.data_nascimento || !validarData(user.data_nascimento.toString()) ||
             !user.email || typeof user.email !== 'string' || !await verificacao.verificarEmail(user.email) || user.email.length > 256 ||
-            !user.senha || typeof user.senha !== 'string' || user.senha.length < 8 ||
+            !user.senha || typeof user.senha !== 'string' || user.senha.length < 8 || user.senha.length > 8 ||
             !user.telefone || user.telefone.length !== 11 || typeof user.telefone !== 'string' ||
             !user.id_sexo || isNaN(Number(user.id_sexo))
         ) {

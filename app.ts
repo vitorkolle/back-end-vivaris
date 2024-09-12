@@ -19,6 +19,8 @@ import cors from 'cors'
 import { getBuscarSexo, getListarSexo, setInserirUsuario } from './src/controller/usuario/controller_usuario'
 import { setInserirPreferencias } from './src/controller/preferencia/controller_preferencia'
 import { getAllSexos } from './src/model/DAO/cliente/sexo'
+import { TProfessional } from './src/domain/entities/professional-entity'
+import { setInserirPsicologo } from './src/controller/usuario/controller_psicologo'
 
 //Criação do app
 const app = express()
@@ -34,6 +36,7 @@ app.use((request, response, next) => {
 })
 
 /****************************************************USUARIO****************************************************/
+//post de clientes
 route.post('/cliente', async (req, res) => {
 
     const contentType = req.header('content-type')
@@ -55,7 +58,8 @@ route.post('/cliente', async (req, res) => {
     res.json(newUser)
 
 })
-// de Preferências de Usuário
+
+//post de Preferências de Usuário
 route.post('/cliente/preferencias', async (req, res) => {
     const contentType = req.header('content-type')
 
@@ -63,13 +67,38 @@ route.post('/cliente/preferencias', async (req, res) => {
         id_cliente: req.body.id_cliente,
         preferencias: req.body.preferencias
     }
-
+ 
     let newUserPrefence = await setInserirPreferencias(userData, contentType)
 
     res.status(newUserPrefence.status_code)
     res.json(newUserPrefence)
 
 })
+
+//post de psicólogos
+route.post('/psicologo', async (req, res) => {
+    const contentType = req.header('content-type')
+
+    const professionalData: TProfessional = {
+        nome: req.body.nome,
+        email: req.body.email,
+        senha: req.body.senha,
+        telefone: req.body.telefone,
+        cpf: req.body.cpf,
+        cip: req.body.cip,
+        data_nascimento: req.body.data_nascimento,
+        id_sexo: req.body.id_sexo
+    }
+
+    console.log(professionalData);
+
+    const newProfesional = await setInserirPsicologo(professionalData, contentType)
+
+    res.status(newProfesional.status_code)
+    res.json(newProfesional)
+})
+
+
 
 /****************************************************GÊNERO****************************************************/
 route.get('/cliente/sexo', async (req, res) => {

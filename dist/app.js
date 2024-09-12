@@ -23,6 +23,7 @@ const cors_1 = __importDefault(require("cors"));
 //Import Controller 
 const controller_usuario_1 = require("./src/controller/usuario/controller_usuario");
 const controller_preferencia_1 = require("./src/controller/preferencia/controller_preferencia");
+const controller_psicologo_1 = require("./src/controller/usuario/controller_psicologo");
 //Criação do app
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
@@ -33,6 +34,7 @@ app.use((request, response, next) => {
     next();
 });
 /****************************************************USUARIO****************************************************/
+//post de clientes
 route.post('/cliente', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const contentType = req.header('content-type');
     const userData = {
@@ -49,7 +51,7 @@ route.post('/cliente', (req, res) => __awaiter(void 0, void 0, void 0, function*
     res.status(newUser.status_code);
     res.json(newUser);
 }));
-// de Preferências de Usuário
+//post de Preferências de Usuário
 route.post('/cliente/preferencias', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const contentType = req.header('content-type');
     const userData = {
@@ -59,6 +61,24 @@ route.post('/cliente/preferencias', (req, res) => __awaiter(void 0, void 0, void
     let newUserPrefence = yield (0, controller_preferencia_1.setInserirPreferencias)(userData, contentType);
     res.status(newUserPrefence.status_code);
     res.json(newUserPrefence);
+}));
+//post de psicólogos
+route.post('/psicologo', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const contentType = req.header('content-type');
+    const professionalData = {
+        nome: req.body.nome,
+        email: req.body.email,
+        senha: req.body.senha,
+        telefone: req.body.telefone,
+        cpf: req.body.cpf,
+        cip: req.body.cip,
+        data_nascimento: req.body.data_nascimento,
+        id_sexo: req.body.id_sexo
+    };
+    console.log(professionalData);
+    const newProfesional = yield (0, controller_psicologo_1.setInserirPsicologo)(professionalData, contentType);
+    res.status(newProfesional.status_code);
+    res.json(newProfesional);
 }));
 /****************************************************GÊNERO****************************************************/
 route.get('/cliente/sexo', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
