@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client"
 import { TUser } from "../../../domain/entities/user-entity";
+import { ERROR_NOT_FOUND } from "../../../../module/config";
 const prisma = new PrismaClient()
 
 export async function criarNovoCliente(userInput: TUser): Promise<TUser> {
@@ -28,7 +29,7 @@ export async function criarNovoCliente(userInput: TUser): Promise<TUser> {
 export async function obterUsuarioComPreferencias(userId: number) {
   try {
 
-    const usuario = await prisma.tbl_clientes.findUnique({
+    const usuario = await prisma.tbl_clientes.findUnique({ 
       where: {
         id: userId,
       },
@@ -138,4 +139,82 @@ export async function criarPreferenciasUsuario(userId: number, preference: numbe
     throw new Error("Não foi possível gravar as preferências do cliente.");
   }
 
+}
+
+export async function logarCliente(email: string, senha: string) {
+  try {
+    const usuario = await prisma.tbl_clientes.findUnique({
+      where: {
+        email: email,
+        senha: senha
+      },
+      select:{
+        id: true,
+        nome: true,
+        telefone: true,
+        data_nascimento: true,
+        foto_perfil: true
+      }
+    })
+    if (!usuario) {
+      return ERROR_NOT_FOUND
+    }
+
+    const preferencias_usuario = await prisma.tbl_clientes_preferencias.findMany({
+      where: {
+        id_clientes: usuario.id
+      },
+      select: {
+        id_preferencias: true,
+        id_clientes: true
+      }
+    })
+
+    if(!preferencias_usuario){
+      const response = {
+        usuario: usuario
+      }
+
+      return response
+    }
+
+    const preferenciasArray = []
+
+    for (let index = 0; index < preferencias_usuario.length; index++) {
+      const array = preferencias_usuario[index];
+
+      const preferencias = await prisma.tbl_preferencias.findMany({
+        where: {
+          id: Number(array.id_preferencias),
+        },
+        select: {
+          id: true,
+          nome: true,
+          cor: true
+        }
+      })
+
+      preferenciasArray.push(preferencias)
+    }
+
+    if(preferenciasArray.length = 0){
+      const response = {
+        usuario: usuario
+      }
+
+      return response
+    }
+
+    const response = {
+      usuario: usuario,
+      preferencias_usuario: preferenciasArray
+    }
+
+    return response
+
+    
+  } catch (error) {
+    console.error("Erro ao obter o usuário", error);
+    throw new Error("Não foi possível obter o usuário");
+  }
 }

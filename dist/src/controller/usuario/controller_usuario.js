@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.setInserirUsuario = setInserirUsuario;
 exports.getListarSexo = getListarSexo;
 exports.getBuscarSexo = getBuscarSexo;
+exports.getLogarCliente = getLogarCliente;
 const config_1 = require("../../../module/config");
 const usuario_1 = require("../../model/DAO/cliente/usuario");
 const sexo_1 = require("../../model/DAO/cliente/sexo");
@@ -102,6 +103,24 @@ function getBuscarSexo(id) {
         if (sexData) {
             return {
                 data: sexData,
+                status_code: 200
+            };
+        }
+        else {
+            return config_1.ERROR_NOT_FOUND;
+        }
+    });
+}
+function getLogarCliente(email, senha) {
+    return __awaiter(this, void 0, void 0, function* () {
+        if (!email || typeof email != 'string' ||
+            !senha || typeof senha != 'string') {
+            return config_1.ERROR_REQUIRED_FIELDS;
+        }
+        let clientData = (0, usuario_1.logarCliente)(email, senha);
+        if (clientData) {
+            return {
+                data: clientData,
                 status_code: 200
             };
         }

@@ -1,6 +1,6 @@
 import { ERROR_CONTENT_TYPE, ERROR_INTERNAL_SERVER, ERROR_INTERNAL_SERVER_DB, ERROR_NOT_CREATED, ERROR_NOT_FOUND, ERROR_REQUIRED_FIELDS, SUCCESS_CREATED_ITEM } from "../../../module/config"
 import { TUser } from "../../domain/entities/user-entity"
-import { criarNovoCliente } from "../../model/DAO/cliente/usuario"
+import { criarNovoCliente, logarCliente } from "../../model/DAO/cliente/usuario"
 import { getAllSexos, getSexoById } from "../../model/DAO/cliente/sexo";
 import { verificacao } from "../../infra/client-data-validation";
 
@@ -106,6 +106,27 @@ export async function getBuscarSexo(id: number) {
         }
     }
     else {
+        return ERROR_NOT_FOUND
+    }
+}
+
+export async function getLogarCliente(email: string | undefined, senha: string | undefined) {
+    if(
+        !email || typeof email != 'string' ||
+        !senha || typeof senha != 'string'
+    ){
+        return ERROR_REQUIRED_FIELDS
+    }
+
+    let clientData = logarCliente(email, senha)
+
+    if(clientData){
+        return {
+            data: clientData,
+            status_code: 200
+        }
+    }
+    else{
         return ERROR_NOT_FOUND
     }
 }

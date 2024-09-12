@@ -12,7 +12,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.criarNovoCliente = criarNovoCliente;
 exports.obterUsuarioComPreferencias = obterUsuarioComPreferencias;
 exports.criarPreferenciasUsuario = criarPreferenciasUsuario;
+exports.logarCliente = logarCliente;
 const client_1 = require("@prisma/client");
+const config_1 = require("../../../../module/config");
 const prisma = new client_1.PrismaClient();
 function criarNovoCliente(userInput) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -145,6 +147,73 @@ function criarPreferenciasUsuario(userId, preference) {
         catch (error) {
             console.error("Erro ao gravar preferências do cliente:", error);
             throw new Error("Não foi possível gravar as preferências do cliente.");
+        }
+    });
+}
+function logarCliente(email, senha) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const usuario = yield prisma.tbl_clientes.findUnique({
+                where: {
+                    email: email,
+                    senha: senha
+                },
+                select: {
+                    id: true,
+                    nome: true,
+                    telefone: true,
+                    data_nascimento: true,
+                    foto_perfil: true
+                }
+            });
+            if (!usuario) {
+                return config_1.ERROR_NOT_FOUND;
+            }
+            const preferencias_usuario = yield prisma.tbl_clientes_preferencias.findMany({
+                where: {
+                    id_clientes: usuario.id
+                },
+                select: {
+                    id_preferencias: true,
+                    id_clientes: true
+                }
+            });
+            if (!preferencias_usuario) {
+                const response = {
+                    usuario: usuario
+                };
+                return response;
+            }
+            const preferenciasArray = [];
+            for (let index = 0; index < preferencias_usuario.length; index++) {
+                const array = preferencias_usuario[index];
+                const preferencias = yield prisma.tbl_preferencias.findMany({
+                    where: {
+                        id: Number(array.id_preferencias),
+                    },
+                    select: {
+                        id: true,
+                        nome: true,
+                        cor: true
+                    }
+                });
+                preferenciasArray.push(preferencias);
+            }
+            if (preferenciasArray.length = 0) {
+                const response = {
+                    usuario: usuario
+                };
+                return response;
+            }
+            const response = {
+                usuario: usuario,
+                preferencias_usuario: preferenciasArray
+            };
+            return response;
+        }
+        catch (error) {
+            console.error("Erro ao obter o usuário", error);
+            throw new Error("Não foi possível obter o usuário");
         }
     });
 }

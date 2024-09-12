@@ -5,7 +5,7 @@ import { TUser } from './src/domain/entities/user-entity'
 import { TUserPreferences } from './src/domain/entities/user-preferences'
 
 //Import pacotes express
-import express from 'express'
+import express, { query } from 'express'
 import { Router } from 'express'
 
 //Criação das configurações das rotas para endpoint
@@ -16,7 +16,7 @@ const route = Router()
 import cors from 'cors'
 
 //Import Controller 
-import { getBuscarSexo, getListarSexo, setInserirUsuario } from './src/controller/usuario/controller_usuario'
+import { getBuscarSexo, getListarSexo, getLogarCliente, setInserirUsuario } from './src/controller/usuario/controller_usuario'
 import { setInserirPreferencias } from './src/controller/preferencia/controller_preferencia'
 import { getAllSexos } from './src/model/DAO/cliente/sexo'
 import { TProfessional } from './src/domain/entities/professional-entity'
@@ -96,6 +96,22 @@ route.post('/psicologo', async (req, res) => {
 
     res.status(newProfesional.status_code)
     res.json(newProfesional)
+})
+
+//login de usuário
+route.get('/login/usuario', async (req, res) => {
+    let email = req.query.email
+    let senha = req.query.senha
+
+    if(email && senha){
+        let user = await getLogarCliente(String(email), String(senha))
+
+        res.status(user.status_code)
+        res.json(user)
+    }
+
+    res.status(400)
+    res.json({"message": "Email e/ou senha não informados"})
 })
 
 
