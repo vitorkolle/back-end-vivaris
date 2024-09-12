@@ -199,7 +199,8 @@ function logarCliente(email, senha) {
                 });
                 preferenciasArray.push(preferencias);
             }
-            if (preferenciasArray.length = 0) {
+            if (preferenciasArray.length < 1) {
+                console.log('oi');
                 const response = {
                     usuario: usuario
                 };

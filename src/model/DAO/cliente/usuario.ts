@@ -157,7 +157,7 @@ export async function logarCliente(email: string, senha: string) {
       }
     })
     if (!usuario) {
-      return ERROR_NOT_FOUND
+      return ERROR_NOT_FOUND      
     }
 
     const preferencias_usuario = await prisma.tbl_clientes_preferencias.findMany({
@@ -197,7 +197,7 @@ export async function logarCliente(email: string, senha: string) {
       preferenciasArray.push(preferencias)
     }
 
-    if(preferenciasArray.length = 0){
+    if(preferenciasArray.length < 1){
       const response = {
         usuario: usuario
       }

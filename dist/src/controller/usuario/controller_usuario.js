@@ -117,7 +117,7 @@ function getLogarCliente(email, senha) {
             !senha || typeof senha != 'string') {
             return config_1.ERROR_REQUIRED_FIELDS;
         }
-        let clientData = (0, usuario_1.logarCliente)(email, senha);
+        let clientData = yield (0, usuario_1.logarCliente)(email, senha);
         if (clientData) {
             return {
                 data: clientData,

@@ -67,7 +67,7 @@ route.post('/cliente/preferencias', async (req, res) => {
         id_cliente: req.body.id_cliente,
         preferencias: req.body.preferencias
     }
- 
+
     let newUserPrefence = await setInserirPreferencias(userData, contentType)
 
     res.status(newUserPrefence.status_code)
@@ -99,19 +99,18 @@ route.post('/psicologo', async (req, res) => {
 })
 
 //login de usuário
-route.get('/login/usuario', async (req, res) => {
-    let email = req.query.email
-    let senha = req.query.senha
+route.post('/login/usuario', async (req, res) => {
+    let email = req.body.email
+    let senha = req.body.senha
 
-    if(email && senha){
-        let user = await getLogarCliente(String(email), String(senha))
+    let user = await getLogarCliente(String(email), String(senha))
 
-        res.status(user.status_code)
-        res.json(user)
-    }
+    console.log(user);
+    
 
-    res.status(400)
-    res.json({"message": "Email e/ou senha não informados"})
+    res.status(user.status_code)
+    res.json(user)
+
 })
 
 

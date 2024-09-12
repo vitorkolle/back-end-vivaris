@@ -118,7 +118,7 @@ export async function getLogarCliente(email: string | undefined, senha: string |
         return ERROR_REQUIRED_FIELDS
     }
 
-    let clientData = logarCliente(email, senha)
+    let clientData = await logarCliente(email, senha)
 
     if(clientData){
         return {

@@ -81,16 +81,13 @@ route.post('/psicologo', (req, res) => __awaiter(void 0, void 0, void 0, functio
     res.json(newProfesional);
 }));
 //login de usuário
-route.get('/login/usuario', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    let email = req.query.email;
-    let senha = req.query.senha;
-    if (email && senha) {
-        let user = yield (0, controller_usuario_1.getLogarCliente)(String(email), String(senha));
-        res.status(user.status_code);
-        res.json(user);
-    }
-    res.status(400);
-    res.json({ "message": "Email e/ou senha não informados" });
+route.post('/login/usuario', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    let email = req.body.email;
+    let senha = req.body.senha;
+    let user = yield (0, controller_usuario_1.getLogarCliente)(String(email), String(senha));
+    console.log(user);
+    res.status(user.status_code);
+    res.json(user);
 }));
 /****************************************************GÊNERO****************************************************/
 route.get('/cliente/sexo', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
