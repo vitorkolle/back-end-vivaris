@@ -16,7 +16,7 @@ const route = Router()
 import cors from 'cors'
 
 //Import Controller 
-import { getListarSexo, setInserirUsuario } from './src/controller/usuario/controller_usuario'
+import { getBuscarSexo, getListarSexo, setInserirUsuario } from './src/controller/usuario/controller_usuario'
 import { setInserirPreferencias } from './src/controller/preferencia/controller_preferencia'
 import { getAllSexos } from './src/model/DAO/cliente/sexo'
 
@@ -33,8 +33,6 @@ app.use((request, response, next) => {
     next()
 })
 
-/*********************************************************************************** */
-
 /****************************************************USUARIO****************************************************/
 route.post('/cliente', async (req, res) => {
 
@@ -47,7 +45,7 @@ route.post('/cliente', async (req, res) => {
         telefone: req.body.telefone,
         cpf: req.body.cpf,
         data_nascimento: req.body.data_nascimento,
-        id_sexo: req.body.sexo
+        id_sexo: req.body.id_sexo
     }
     console.log(userData);
 
@@ -81,6 +79,16 @@ route.get('/cliente/sexo', async (req, res) => {
     res.status(allSex.status_code)
     res.json(allSex)
 
+})
+
+route.get('/cliente/sexo/:id', async (req, res) => {
+    let id = req.params.id
+    let idFormat = Number(id)
+
+    let buscarSexo = await getBuscarSexo(idFormat)
+
+    res.status(buscarSexo.status_code)
+    res.json(buscarSexo)
 })
 
 

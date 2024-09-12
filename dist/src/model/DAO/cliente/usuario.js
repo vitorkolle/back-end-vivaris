@@ -39,7 +39,6 @@ function criarNovoCliente(userInput) {
 function obterUsuarioComPreferencias(userId) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            // 1. Obter informações do usuário
             const usuario = yield prisma.tbl_clientes.findUnique({
                 where: {
                     id: userId,
@@ -54,7 +53,6 @@ function obterUsuarioComPreferencias(userId) {
             if (!usuario) {
                 throw new Error('Usuário não encontrado.');
             }
-            // 2. Obter as preferências associadas ao usuário
             const preferencias = yield prisma.tbl_clientes_preferencias.findMany({
                 where: {
                     id_clientes: userId,
@@ -69,7 +67,6 @@ function obterUsuarioComPreferencias(userId) {
                     },
                 },
             });
-            // 3. Estruturar a resposta para incluir as informações do usuário e das preferências associadas
             const response = {
                 id: usuario.id,
                 nome: usuario.nome,
@@ -101,7 +98,6 @@ function criarPreferenciasUsuario(userId, preference) {
                     id_preferencias: preference,
                 },
             });
-            // 2. Obter as informações do usuário
             const usuario = yield prisma.tbl_clientes.findUnique({
                 where: {
                     id: userId,
@@ -116,7 +112,6 @@ function criarPreferenciasUsuario(userId, preference) {
             if (!usuario) {
                 throw new Error('Usuário não encontrado.');
             }
-            // 3. Obter as preferências associadas ao usuário
             const preferencias = yield prisma.tbl_clientes_preferencias.findMany({
                 where: {
                     id_clientes: userId,
@@ -131,7 +126,6 @@ function criarPreferenciasUsuario(userId, preference) {
                     },
                 },
             });
-            // 4. Montar o objeto de resposta
             const response = {
                 id: usuario.id,
                 nome: usuario.nome,
@@ -146,7 +140,6 @@ function criarPreferenciasUsuario(userId, preference) {
                     });
                 }),
             };
-            // 5. Retornar o objeto com as informações do usuário e suas preferências
             return response;
         }
         catch (error) {

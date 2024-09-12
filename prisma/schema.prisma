@@ -25,9 +25,35 @@ model tbl_clientes {
 }
 
 model tbl_sexo {
-  id           Int            @id @default(autoincrement())
-  sexo         String?        @db.VarChar(50)
-  tbl_clientes tbl_clientes[]
+  id             Int              @id @default(autoincrement())
+  sexo           String?          @db.VarChar(50)
+  tbl_clientes   tbl_clientes[]
+  tbl_psicologos tbl_psicologos[]
+}
+
+model tbl_preferencias {
+  id                        Int                         @id @default(autoincrement())
+  nome                      String                      @unique(map: "nome") @db.VarChar(15)
+  cor                       String                      @unique(map: "cor") @db.VarChar(7)
+  tbl_clientes_preferencias tbl_clientes_preferencias[]
+}
+
+model tbl_psicologos {
+  id              Int       @id @default(autoincrement())
+  nome            String    @db.VarChar(50)
+  data_nascimento DateTime  @db.Date
+  cip             String    @unique(map: "cip") @db.VarChar(9)
+  cpf             String    @unique(map: "cpf") @db.VarChar(11)
+  email           String    @unique(map: "email") @db.VarChar(256)
+  senha           String    @db.VarChar(20)
+  telefone        String    @db.VarChar(11)
+  foto_perfil     String?   @db.VarChar(300)
+  descricao       String?   @db.VarChar(500)
+  link_instagram  String?   @db.VarChar(56)
+  id_sexo         Int?
+  tbl_sexo        tbl_sexo? @relation(fields: [id_sexo], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "SEXO_PSICOLOGOS")
+
+  @@index([id_sexo], map: "SEXO_PSICOLOGOS")
 }
 
 model tbl_clientes_preferencias {
@@ -39,11 +65,4 @@ model tbl_clientes_preferencias {
 
   @@index([id_clientes], map: "CLIENTES_CLIENTES_PREFERENCIAS")
   @@index([id_preferencias], map: "PREFERENCIAS_CLIENTES_PREFERENCIAS")
-}
-
-model tbl_preferencias {
-  id                        Int                         @id @default(autoincrement())
-  nome                      String                      @unique(map: "nome") @db.VarChar(15)
-  cor                       String                      @unique(map: "cor") @db.VarChar(7)
-  tbl_clientes_preferencias tbl_clientes_preferencias[]
 }

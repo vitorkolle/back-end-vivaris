@@ -27,7 +27,7 @@ export async function criarNovoCliente(userInput: TUser): Promise<TUser> {
 
 export async function obterUsuarioComPreferencias(userId: number) {
   try {
-    // 1. Obter informações do usuário
+
     const usuario = await prisma.tbl_clientes.findUnique({
       where: {
         id: userId,
@@ -44,7 +44,6 @@ export async function obterUsuarioComPreferencias(userId: number) {
       throw new Error('Usuário não encontrado.');
     }
 
-    // 2. Obter as preferências associadas ao usuário
     const preferencias = await prisma.tbl_clientes_preferencias.findMany({
       where: {
         id_clientes: userId,
@@ -60,7 +59,6 @@ export async function obterUsuarioComPreferencias(userId: number) {
       },
     });
 
-    // 3. Estruturar a resposta para incluir as informações do usuário e das preferências associadas
     const response = {
       id: usuario.id,
       nome: usuario.nome,
@@ -91,7 +89,6 @@ export async function criarPreferenciasUsuario(userId: number, preference: numbe
       },
     });
 
-    // 2. Obter as informações do usuário
     const usuario = await prisma.tbl_clientes.findUnique({
       where: {
         id: userId,
@@ -108,7 +105,6 @@ export async function criarPreferenciasUsuario(userId: number, preference: numbe
       throw new Error('Usuário não encontrado.');
     }
 
-    // 3. Obter as preferências associadas ao usuário
     const preferencias = await prisma.tbl_clientes_preferencias.findMany({
       where: {
         id_clientes: userId,
@@ -124,7 +120,6 @@ export async function criarPreferenciasUsuario(userId: number, preference: numbe
       },
     });
 
-    // 4. Montar o objeto de resposta
     const response = {
       id: usuario.id,
       nome: usuario.nome,
@@ -137,10 +132,10 @@ export async function criarPreferenciasUsuario(userId: number, preference: numbe
       })),
     };
 
-    // 5. Retornar o objeto com as informações do usuário e suas preferências
     return response;
   } catch (error) {
     console.error("Erro ao gravar preferências do cliente:", error);
     throw new Error("Não foi possível gravar as preferências do cliente.");
   }
+
 }

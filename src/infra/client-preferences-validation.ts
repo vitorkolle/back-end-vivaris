@@ -12,8 +12,8 @@ export const verificarPreferencias: IVerificarPreferencias = {
         return preference === null
     },
     alreadyExists: async (idCliente: number): Promise<boolean> => {
-        const preferences = await prisma.tbl_clientes_preferencias.findMany({
-            where: { id_clientes: idCliente },
+        const preferences = await prisma.tbl_clientes.findMany({
+            where: { id: idCliente }, 
         });
 
         return preferences === null

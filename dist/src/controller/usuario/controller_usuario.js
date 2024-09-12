@@ -11,6 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.setInserirUsuario = setInserirUsuario;
 exports.getListarSexo = getListarSexo;
+exports.getBuscarSexo = getBuscarSexo;
 const config_1 = require("../../../module/config");
 const usuario_1 = require("../../model/DAO/cliente/usuario");
 const sexo_1 = require("../../model/DAO/cliente/sexo");
@@ -39,11 +40,11 @@ function setInserirUsuario(user, contentType) {
                 }
             }
             // Validação dos campos obrigatórios
-            if (!user.nome || typeof user.nome !== 'string' ||
+            if (!user.nome || typeof user.nome !== 'string' || user.nome.length > 50 || user.nome.match("\\d") ||
                 !user.cpf || user.cpf.length !== 11 || !(yield client_data_validation_1.verificacao.verificarCpf(user.cpf)) ||
                 !user.data_nascimento || !validarData(user.data_nascimento.toString()) ||
-                !user.email || typeof user.email !== 'string' || !(yield client_data_validation_1.verificacao.verificarEmail(user.email)) ||
-                !user.senha || typeof user.senha !== 'string' ||
+                !user.email || typeof user.email !== 'string' || /*!await verificacao.verificarEmail(user.email) || */ user.email.length > 256 ||
+                !user.senha || typeof user.senha !== 'string' || user.senha.length < 8 ||
                 !user.telefone || user.telefone.length !== 11 || typeof user.telefone !== 'string' ||
                 !user.id_sexo || isNaN(Number(user.id_sexo))) {
                 return config_1.ERROR_REQUIRED_FIELDS;
@@ -87,6 +88,21 @@ function getListarSexo() {
                 data: genderData,
                 status_code: 200,
                 quantidade: genderData.length
+            };
+        }
+        else {
+            return config_1.ERROR_NOT_FOUND;
+        }
+    });
+}
+function getBuscarSexo(id) {
+    return __awaiter(this, void 0, void 0, function* () {
+        let sexId = id;
+        let sexData = yield (0, sexo_1.getSexoById)(sexId);
+        if (sexData) {
+            return {
+                data: sexData,
+                status_code: 200
             };
         }
         else {

@@ -20,8 +20,8 @@ exports.verificarPreferencias = {
         return preference === null;
     }),
     alreadyExists: (idCliente) => __awaiter(void 0, void 0, void 0, function* () {
-        const preferences = yield prisma.tbl_clientes_preferencias.findMany({
-            where: { id_clientes: idCliente },
+        const preferences = yield prisma.tbl_clientes.findMany({
+            where: { id: idCliente },
         });
         return preferences === null;
     })

@@ -32,7 +32,6 @@ app.use((request, response, next) => {
     app.use((0, cors_1.default)());
     next();
 });
-/*********************************************************************************** */
 /****************************************************USUARIO****************************************************/
 route.post('/cliente', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const contentType = req.header('content-type');
@@ -43,7 +42,7 @@ route.post('/cliente', (req, res) => __awaiter(void 0, void 0, void 0, function*
         telefone: req.body.telefone,
         cpf: req.body.cpf,
         data_nascimento: req.body.data_nascimento,
-        id_sexo: req.body.sexo
+        id_sexo: req.body.id_sexo
     };
     console.log(userData);
     let newUser = yield (0, controller_usuario_1.setInserirUsuario)(userData, contentType);
@@ -66,6 +65,13 @@ route.get('/cliente/sexo', (req, res) => __awaiter(void 0, void 0, void 0, funct
     let allSex = yield (0, controller_usuario_1.getListarSexo)();
     res.status(allSex.status_code);
     res.json(allSex);
+}));
+route.get('/cliente/sexo/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    let id = req.params.id;
+    let idFormat = Number(id);
+    let buscarSexo = yield (0, controller_usuario_1.getBuscarSexo)(idFormat);
+    res.status(buscarSexo.status_code);
+    res.json(buscarSexo);
 }));
 //Ativação das rotas
 app.use('/v1/vivaris', route);

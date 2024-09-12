@@ -9,47 +9,29 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAllSexos = getAllSexos;
-exports.getSexoById = getSexoById;
+exports.criarNovoPsicologo = criarNovoPsicologo;
 const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
-function getAllSexos() {
+function criarNovoPsicologo(userInput) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const sexos = yield prisma.tbl_sexo.findMany({
-                select: {
-                    id: true,
-                    sexo: true,
-                }
-            });
-            return sexos;
-        }
-        catch (error) {
-            console.error("Error acessando todos os sexos", error);
-            throw error;
-        }
-    });
-}
-function getSexoById(sexoId) {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            const sexo = yield prisma.tbl_sexo.findUnique({
-                where: {
-                    id: sexoId,
+            const user = yield prisma.tbl_psicologos.create({
+                data: {
+                    nome: userInput.nome,
+                    email: userInput.email,
+                    senha: userInput.senha,
+                    telefone: userInput.telefone,
+                    cpf: userInput.cpf,
+                    data_nascimento: userInput.data_nascimento,
+                    id_sexo: userInput.id_sexo,
+                    cip: userInput.cip
                 },
-                select: {
-                    id: true,
-                    sexo: true,
-                }
             });
-            if (!sexo) {
-                throw new Error("Sexo não encontrado");
-            }
-            return sexo;
+            return user;
         }
         catch (error) {
-            console.error("Error acessando o sexo por ID", error);
-            throw error;
+            console.error("Erro ao criar novo profissional:", error);
+            throw new Error("Não foi possível criar o profissional.");
         }
     });
 }
