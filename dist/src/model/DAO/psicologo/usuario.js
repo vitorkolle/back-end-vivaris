@@ -23,8 +23,8 @@ function criarNovoPsicologo(userInput) {
                     telefone: userInput.telefone,
                     cpf: userInput.cpf,
                     data_nascimento: userInput.data_nascimento,
-                    id_sexo: userInput.id_sexo,
-                    cip: userInput.cip
+                    cip: userInput.cip,
+                    id_sexo: userInput.id_sexo
                 },
             });
             return user;

@@ -11,7 +11,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.setInserirPsicologo = setInserirPsicologo;
 const config_1 = require("../../../module/config");
-const client_data_validation_1 = require("../../infra/client-data-validation");
 const professional_data_validation_1 = require("../../infra/professional-data-validation");
 const usuario_1 = require("../../model/DAO/psicologo/usuario");
 function setInserirPsicologo(user, contentType) {
@@ -39,10 +38,10 @@ function setInserirPsicologo(user, contentType) {
             }
             // Validação dos campos obrigatórios
             if (!user.nome || typeof user.nome !== 'string' || user.nome.length > 50 || user.nome.match("\\d") ||
-                !user.cpf || user.cpf.length !== 11 || !(yield client_data_validation_1.verificacao.verificarCpf(user.cpf)) ||
-                !user.cip || user.cip.length !== 11 || !(yield professional_data_validation_1.verificacaoProfissionais.verificarCip(user.cip)) ||
+                !user.cpf || user.cpf.length !== 11 || !(yield professional_data_validation_1.verificacaoProfissionais.verificarCpf(user.cpf)) ||
+                !user.cip || user.cip.length !== 9 || !(yield professional_data_validation_1.verificacaoProfissionais.verificarCip(user.cip)) ||
                 !user.data_nascimento || !validarData(user.data_nascimento.toString()) ||
-                !user.email || typeof user.email !== 'string' || !(yield client_data_validation_1.verificacao.verificarEmail(user.email)) || user.email.length > 256 ||
+                !user.email || typeof user.email !== 'string' || !(yield professional_data_validation_1.verificacaoProfissionais.verificarEmail(user.email)) || user.email.length > 256 ||
                 !user.senha || typeof user.senha !== 'string' || user.senha.length < 8 || user.senha.length > 20 ||
                 !user.telefone || user.telefone.length !== 11 || typeof user.telefone !== 'string' ||
                 !user.id_sexo || isNaN(Number(user.id_sexo))) {

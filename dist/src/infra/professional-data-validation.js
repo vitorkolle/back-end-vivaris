@@ -18,5 +18,17 @@ exports.verificacaoProfissionais = {
             where: { cip: cipInput },
         });
         return client === null;
+    }),
+    verificarEmail: (emailInput) => __awaiter(void 0, void 0, void 0, function* () {
+        const client = yield prisma.tbl_psicologos.findUnique({
+            where: { email: emailInput },
+        });
+        return client === null;
+    }),
+    verificarCpf: (cpfInput) => __awaiter(void 0, void 0, void 0, function* () {
+        const client = yield prisma.tbl_psicologos.findUnique({
+            where: { cpf: cpfInput },
+        });
+        return client === null;
     })
 };

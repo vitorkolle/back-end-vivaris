@@ -1,6 +1,5 @@
 import { ERROR_CONTENT_TYPE, ERROR_INTERNAL_SERVER, ERROR_INTERNAL_SERVER_DB, ERROR_NOT_CREATED, ERROR_NOT_FOUND, ERROR_REQUIRED_FIELDS, SUCCESS_CREATED_ITEM } from "../../../module/config"
 import { TProfessional } from "../../domain/entities/professional-entity";
-import { verificacao } from "../../infra/client-data-validation";
 import { verificacaoProfissionais } from "../../infra/professional-data-validation";
 import { criarNovoPsicologo } from "../../model/DAO/psicologo/usuario";
 
@@ -35,10 +34,10 @@ export async function setInserirPsicologo(user: TProfessional, contentType: stri
         // Validação dos campos obrigatórios
         if (
             !user.nome || typeof user.nome !== 'string' || user.nome.length > 50 || user.nome.match("\\d") ||
-            !user.cpf || user.cpf.length !== 11 || !await verificacao.verificarCpf(user.cpf) ||
-            !user.cip || user.cip.length !== 11 || !await verificacaoProfissionais.verificarCip(user.cip) ||
+            !user.cpf || user.cpf.length !== 11 || !await verificacaoProfissionais.verificarCpf(user.cpf) ||
+            !user.cip || user.cip.length !== 9 || !await verificacaoProfissionais.verificarCip(user.cip) ||
             !user.data_nascimento || !validarData(user.data_nascimento.toString()) ||
-            !user.email || typeof user.email !== 'string' || !await verificacao.verificarEmail(user.email) || user.email.length > 256 ||
+            !user.email || typeof user.email !== 'string' || !await verificacaoProfissionais.verificarEmail(user.email) || user.email.length > 256 ||
             !user.senha || typeof user.senha !== 'string' || user.senha.length < 8 || user.senha.length > 20 ||
             !user.telefone || user.telefone.length !== 11 || typeof user.telefone !== 'string' ||
             !user.id_sexo || isNaN(Number(user.id_sexo))

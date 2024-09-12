@@ -9,5 +9,22 @@ export const verificacaoProfissionais: IVerificarDadosProfissionais = {
         });
         
         return client === null;
+    },
+
+    verificarEmail: async (emailInput: string): Promise<boolean> => {
+       
+        const client = await prisma.tbl_psicologos.findUnique({
+            where: { email: emailInput },
+        });
+    
+        return client === null;
+    },
+
+    verificarCpf: async (cpfInput: string): Promise<boolean> => {
+        const client = await prisma.tbl_psicologos.findUnique({
+            where: { cpf: cpfInput },
+        });
+        
+        return client === null;
     }
 }
