@@ -39,18 +39,19 @@ model tbl_preferencias {
 }
 
 model tbl_psicologos {
-  id              Int      @id @default(autoincrement())
-  nome            String   @db.VarChar(50)
-  data_nascimento DateTime @db.Date
-  cip             String   @unique(map: "cip") @db.VarChar(9)
-  cpf             String   @unique(map: "cpf") @db.VarChar(11)
-  email           String   @unique(map: "email") @db.VarChar(256)
-  senha           String   @db.VarChar(20)
-  telefone        String   @db.VarChar(11)
-  foto_perfil     String?  @db.VarChar(300)
-  link_instagram  String?  @db.VarChar(56)
-  id_sexo         Int
-  tbl_sexo        tbl_sexo @relation(fields: [id_sexo], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "SEXO_PSICOLOGOS")
+  id                            Int                             @id @default(autoincrement())
+  nome                          String                          @db.VarChar(50)
+  data_nascimento               DateTime                        @db.Date
+  cip                           String                          @unique(map: "cip") @db.VarChar(9)
+  cpf                           String                          @unique(map: "cpf") @db.VarChar(11)
+  email                         String                          @unique(map: "email") @db.VarChar(256)
+  senha                         String                          @db.VarChar(20)
+  telefone                      String                          @db.VarChar(11)
+  foto_perfil                   String?                         @db.VarChar(300)
+  link_instagram                String?                         @db.VarChar(56)
+  id_sexo                       Int
+  tbl_psicologo_disponibilidade tbl_psicologo_disponibilidade[]
+  tbl_sexo                      tbl_sexo                        @relation(fields: [id_sexo], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "SEXO_PSICOLOGOS")
 
   @@index([id_sexo], map: "SEXO_PSICOLOGOS")
 }
@@ -64,4 +65,33 @@ model tbl_clientes_preferencias {
 
   @@index([id_clientes], map: "CLIENTES_CLIENTES_PREFERENCIAS")
   @@index([id_preferencias], map: "PREFERENCIAS_CLIENTES_PREFERENCIAS")
+}
+
+model tbl_disponibilidade {
+  id                            Int                             @id @default(autoincrement())
+  dia_semana                    tbl_disponibilidade_dia_semana
+  horario_inicio                DateTime                        @db.Time(0)
+  horario_fim                   DateTime                        @db.Time(0)
+  tbl_psicologo_disponibilidade tbl_psicologo_disponibilidade[]
+}
+
+model tbl_psicologo_disponibilidade {
+  id                  Int                 @id @default(autoincrement())
+  psicologo_id        Int
+  disponibilidade_id  Int
+  tbl_psicologos      tbl_psicologos      @relation(fields: [psicologo_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "tbl_psicologo_disponibilidade_ibfk_1")
+  tbl_disponibilidade tbl_disponibilidade @relation(fields: [disponibilidade_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "tbl_psicologo_disponibilidade_ibfk_2")
+
+  @@index([disponibilidade_id], map: "disponibilidade_id")
+  @@index([psicologo_id], map: "psicologo_id")
+}
+
+enum tbl_disponibilidade_dia_semana {
+  Domingo
+  Segunda
+  Ter_a   @map("Terça")
+  Quarta
+  Quinta
+  Sexta
+  S_bado  @map("Sábado")
 }
