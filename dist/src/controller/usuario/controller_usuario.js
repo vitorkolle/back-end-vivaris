@@ -45,7 +45,7 @@ function setInserirUsuario(user, contentType) {
                 !user.cpf || user.cpf.length !== 11 || !(yield client_data_validation_1.verificacao.verificarCpf(user.cpf)) ||
                 !user.data_nascimento || !validarData(user.data_nascimento.toString()) ||
                 !user.email || typeof user.email !== 'string' || !(yield client_data_validation_1.verificacao.verificarEmail(user.email)) || user.email.length > 256 ||
-                !user.senha || typeof user.senha !== 'string' || user.senha.length < 8 || user.senha.length > 8 ||
+                !user.senha || typeof user.senha !== 'string' || user.senha.length < 8 || user.senha.length > 20 ||
                 !user.telefone || user.telefone.length !== 11 || typeof user.telefone !== 'string' ||
                 !user.id_sexo || isNaN(Number(user.id_sexo))) {
                 return config_1.ERROR_REQUIRED_FIELDS;
