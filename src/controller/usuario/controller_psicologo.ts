@@ -96,3 +96,4 @@ export async function getLogarPsicologo(email: string | null, senha: string | nu
         return ERROR_NOT_FOUND
     }
 }
+
