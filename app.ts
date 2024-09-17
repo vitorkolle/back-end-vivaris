@@ -18,9 +18,8 @@ import cors from 'cors'
 //Import Controller 
 import { getBuscarSexo, getListarSexo, getLogarCliente, setInserirUsuario } from './src/controller/usuario/controller_usuario'
 import { setInserirPreferencias } from './src/controller/preferencia/controller_preferencia'
-import { getAllSexos } from './src/model/DAO/cliente/sexo'
 import { TProfessional } from './src/domain/entities/professional-entity'
-import { setInserirPsicologo } from './src/controller/usuario/controller_psicologo'
+import { getLogarPsicologo, setInserirPsicologo } from './src/controller/usuario/controller_psicologo'
 
 //Criação do app
 const app = express()
@@ -35,7 +34,7 @@ app.use((request, response, next) => {
     next()
 })
 
-/****************************************************USUARIO****************************************************/
+/****************************************************USUARIO-CLIENTE****************************************************/
 //post de clientes
 route.post('/cliente', async (req, res) => {
 
@@ -75,6 +74,44 @@ route.post('/cliente/preferencias', async (req, res) => {
 
 })
 
+//login de usuário
+route.post('/login/usuario', async (req, res) => {
+    let email = req.body.email
+    let senha = req.body.senha
+
+    let user = await getLogarCliente(email, senha)
+
+    console.log(user);
+    
+
+    res.status(user.status_code)
+    res.json(user)
+
+})
+
+
+/****************************************************GÊNERO****************************************************/
+route.get('/sexo', async (req, res) => {
+    let allSex = await getListarSexo()
+
+    res.status(allSex.status_code)
+    res.json(allSex)
+
+})
+
+route.get('/usuario/sexo/:id', async (req, res) => {
+    let id = req.params.id
+    let idFormat = Number(id)
+
+    let buscarSexo = await getBuscarSexo(idFormat)
+
+    res.status(buscarSexo.status_code)
+    res.json(buscarSexo)
+})
+
+
+/****************************************************PSICÓLOGO****************************************************/
+
 //post de psicólogos
 route.post('/psicologo', async (req, res) => {
     const contentType = req.header('content-type')
@@ -98,45 +135,18 @@ route.post('/psicologo', async (req, res) => {
     res.json(newProfesional)
 })
 
-//login de usuário
-route.post('/login/usuario', async (req, res) => {
+route.post('/profissional/login', async (req, res) => {
     let email = req.body.email
     let senha = req.body.senha
 
-    let user = await getLogarCliente(String(email), String(senha))
+    let user = await getLogarPsicologo(email, senha)
 
     console.log(user);
-    
 
     res.status(user.status_code)
     res.json(user)
 
 })
-
-
-
-/****************************************************GÊNERO****************************************************/
-route.get('/cliente/sexo', async (req, res) => {
-    let allSex = await getListarSexo()
-
-
-    res.status(allSex.status_code)
-    res.json(allSex)
-
-})
-
-route.get('/cliente/sexo/:id', async (req, res) => {
-    let id = req.params.id
-    let idFormat = Number(id)
-
-    let buscarSexo = await getBuscarSexo(idFormat)
-
-    res.status(buscarSexo.status_code)
-    res.json(buscarSexo)
-})
-
-
-
 
 
 

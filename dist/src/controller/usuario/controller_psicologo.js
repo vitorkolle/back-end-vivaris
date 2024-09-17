@@ -10,6 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.setInserirPsicologo = setInserirPsicologo;
+exports.getLogarPsicologo = getLogarPsicologo;
 const config_1 = require("../../../module/config");
 const professional_data_validation_1 = require("../../infra/professional-data-validation");
 const usuario_1 = require("../../model/DAO/psicologo/usuario");
@@ -36,7 +37,6 @@ function setInserirPsicologo(user, contentType) {
                     throw new Error("Invalid date format");
                 }
             }
-            // Validação dos campos obrigatórios
             if (!user.nome || typeof user.nome !== 'string' || user.nome.length > 50 || user.nome.match("\\d") ||
                 !user.cpf || user.cpf.length !== 11 || !(yield professional_data_validation_1.verificacaoProfissionais.verificarCpf(user.cpf)) ||
                 !user.cip || user.cip.length !== 9 || !(yield professional_data_validation_1.verificacaoProfissionais.verificarCip(user.cip)) ||
@@ -74,8 +74,26 @@ function setInserirPsicologo(user, contentType) {
             }
         }
         catch (error) {
-            console.error('Erro ao tentar inserir um novo usuário:', error);
+            console.error('Erro ao tentar inserir um novo psicólogo:', error);
             return config_1.ERROR_INTERNAL_SERVER;
+        }
+    });
+}
+function getLogarPsicologo(email, senha) {
+    return __awaiter(this, void 0, void 0, function* () {
+        if (!email || typeof email != 'string' || email.length > 256 ||
+            !senha || typeof senha != 'string' || senha.length < 8) {
+            return config_1.ERROR_REQUIRED_FIELDS;
+        }
+        let clientData = yield (0, usuario_1.logarPsicologo)(email, senha);
+        if (clientData) {
+            return {
+                data: clientData,
+                status_code: 200
+            };
+        }
+        else {
+            return config_1.ERROR_NOT_FOUND;
         }
     });
 }

@@ -14,19 +14,19 @@ const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
 exports.verificacaoProfissionais = {
     verificarCip: (cipInput) => __awaiter(void 0, void 0, void 0, function* () {
-        const client = yield prisma.tbl_psicologos.findUnique({
+        const client = yield prisma.tbl_psicologos.findFirst({
             where: { cip: cipInput },
         });
         return client === null;
     }),
     verificarEmail: (emailInput) => __awaiter(void 0, void 0, void 0, function* () {
-        const client = yield prisma.tbl_psicologos.findUnique({
+        const client = yield prisma.tbl_psicologos.findFirst({
             where: { email: emailInput },
         });
         return client === null;
     }),
     verificarCpf: (cpfInput) => __awaiter(void 0, void 0, void 0, function* () {
-        const client = yield prisma.tbl_psicologos.findUnique({
+        const client = yield prisma.tbl_psicologos.findFirst({
             where: { cpf: cpfInput },
         });
         return client === null;
