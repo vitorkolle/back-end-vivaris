@@ -1,4 +1,4 @@
-import { ERROR_CONTENT_TYPE, ERROR_INTERNAL_SERVER, ERROR_INTERNAL_SERVER_DB, ERROR_NOT_CREATED, ERROR_NOT_FOUND, ERROR_REQUIRED_FIELDS, SUCCESS_CREATED_ITEM } from "../../../module/config"
+import { ERROR_ALREADY_EXISTS_ACCOUNT, ERROR_ALREADY_EXISTS_ACCOUNT_CPF, ERROR_ALREADY_EXISTS_ACCOUNT_EMAIL, ERROR_CONTENT_TYPE, ERROR_INTERNAL_SERVER, ERROR_INTERNAL_SERVER_DB, ERROR_NOT_CREATED, ERROR_NOT_FOUND, ERROR_REQUIRED_FIELDS, SUCCESS_CREATED_ITEM } from "../../../module/config"
 import { TUser } from "../../domain/entities/user-entity"
 import { criarNovoCliente, logarCliente } from "../../model/DAO/cliente/usuario"
 import { getAllSexos, getSexoById } from "../../model/DAO/cliente/sexo";
@@ -44,6 +44,13 @@ export async function setInserirUsuario(user: TUser, contentType: string | undef
             !user.telefone || user.telefone.length !== 11 || typeof user.telefone !== 'string' ||
             !user.id_sexo || isNaN(Number(user.id_sexo))
         ) {
+            if(!await verificacao.verificarEmail(user.email)){
+                return ERROR_ALREADY_EXISTS_ACCOUNT_EMAIL
+            }
+            if(!await verificacao.verificarCpf(user.cpf)){
+                return ERROR_ALREADY_EXISTS_ACCOUNT_CPF
+            }
+
             return ERROR_REQUIRED_FIELDS;
         }
         else {

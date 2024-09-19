@@ -8,7 +8,7 @@ import { TUserPreferences } from './src/domain/entities/user-preferences'
 import express, { query } from 'express'
 import { Router } from 'express'
 
-//Criação das configurações das rotas para endpoint
+//Criação das configurações das rotas para endpoint 
 const route = Router()
 
 
