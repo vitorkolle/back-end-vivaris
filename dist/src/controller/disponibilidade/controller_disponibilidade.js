@@ -12,9 +12,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.transformarHorario = transformarHorario;
 exports.setInserirDisponibilidade = setInserirDisponibilidade;
 exports.criarDisponibilidadePsicologo = criarDisponibilidadePsicologo;
+exports.getBuscarDisponibilidade = getBuscarDisponibilidade;
 const disponibilidade_1 = require("../../model/DAO/disponibilidade/disponibilidade");
 const config_1 = require("../../../module/config");
 const availability_data_validation_1 = require("../../infra/availability-data-validation");
+const controller_psicologo_1 = require("../usuario/controller_psicologo");
 function transformarHorario(horario) {
     const hoje = new Date();
     const [horas, minutos, segundos] = horario.split(':').map(Number);
@@ -63,10 +65,28 @@ function setInserirDisponibilidade(disponibilidade, contentType) {
 function criarDisponibilidadePsicologo(availability) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            if (!availability.disponibilidade_id || typeof availability.disponibilidade_id !== 'number' || !availability.status || !availability.id_psicologo) {
+            if (!availability.disponibilidade_id || typeof availability.disponibilidade_id !== 'number' ||
+                !availability.status || typeof availability.status !== 'string' ||
+                !availability.id_psicologo || typeof availability.id_psicologo !== 'number') {
                 return config_1.ERROR_REQUIRED_FIELDS;
             }
-            const novaDisponibilidade = yield (0, disponibilidade_1.criarDisponibilidadeProfissional)(availability.disponibilidade_id, availability.id_psicologo, availability.status);
+            const validateProfessional = yield (0, controller_psicologo_1.getBuscarPsicologo)(availability.id_psicologo);
+            if (!validateProfessional) {
+                return config_1.ERROR_NOT_FOUND_PROFESSIONAL;
+            }
+            const validateAvailbility = yield getBuscarDisponibilidade(availability.disponibilidade_id);
+            if (!validateAvailbility) {
+                return config_1.ERROR_NOT_FOUND_AVAILBILITY;
+            }
+            const searchProfessionalAvailbility = yield (0, disponibilidade_1.buscarDisponibilidadePsicologo)(availability.id_psicologo, availability.disponibilidade_id);
+            let novaDisponibilidade;
+            for (let index = 0; index < searchProfessionalAvailbility.length; index++) {
+                const disponibilidade = searchProfessionalAvailbility[index];
+                if (disponibilidade.psicologo_id == availability.id_psicologo && disponibilidade.disponibilidade_id == availability.disponibilidade_id && disponibilidade.status_disponibilidade == 'Concluido' || disponibilidade.status_disponibilidade == 'Livre') {
+                    novaDisponibilidade = yield (0, disponibilidade_1.criarDisponibilidadeProfissional)(availability.id_psicologo, availability.disponibilidade_id, availability.status);
+                }
+                return config_1.ERROR_ALREADY_EXISTS_PREFRENCE;
+            }
             if (novaDisponibilidade) {
                 return {
                     data: novaDisponibilidade,
@@ -75,12 +95,24 @@ function criarDisponibilidadePsicologo(availability) {
                 };
             }
             else {
-                return config_1.ERROR_INTERNAL_SERVER;
+                return config_1.ERROR_INTERNAL_SERVER_DB;
             }
         }
         catch (error) {
             console.error('Erro ao tentar criar a disponibilidade:', error);
             return config_1.ERROR_INTERNAL_SERVER;
         }
+    });
+}
+function getBuscarDisponibilidade(id) {
+    return __awaiter(this, void 0, void 0, function* () {
+        if (id < 1) {
+            return config_1.ERROR_REQUIRED_FIELDS;
+        }
+        const availabilityData = yield (0, disponibilidade_1.buscarDisponibilidade)(id);
+        if (availabilityData) {
+            return availabilityData;
+        }
+        return config_1.ERROR_NOT_FOUND;
     });
 }

@@ -30,7 +30,7 @@ export async function criarNovoPsicologo(userInput: TProfessional): Promise<TPro
 
 export async function logarPsicologo(email: string, senha: string){
   try {
-    const usuario = await prisma.tbl_psicologos.findUnique({
+    const user = await prisma.tbl_psicologos.findUnique({
       where: {
         email: email,
         senha: senha
@@ -52,12 +52,38 @@ export async function logarPsicologo(email: string, senha: string){
         }
       }
     })
-    if (!usuario) {
+    if (!user) {
       return Promise.resolve(ERROR_NOT_FOUND);      
     }
 
-    return usuario;
+    return user;
     
+  } catch (error) {
+    console.error("Erro ao obter o usuário", error);
+    throw new Error("Não foi possível obter o usuário");
+  }
+}
+
+export async function buscarPsicologo(id:number) {
+  try {
+    const professional = await prisma.tbl_psicologos.findUnique({
+      where: {
+        id: id
+      },
+      select: {
+        nome: true,
+        data_nascimento: true,
+        cip: true,
+        cpf: true,
+        telefone: true
+      }
+    })
+
+    if(professional){
+      return professional
+    }
+      return Promise.resolve(ERROR_NOT_FOUND)
+
   } catch (error) {
     console.error("Erro ao obter o usuário", error);
     throw new Error("Não foi possível obter o usuário");

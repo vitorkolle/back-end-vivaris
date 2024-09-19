@@ -1,8 +1,9 @@
-import { criarDisponibilidade, criarDisponibilidadeProfissional } from "../../model/DAO/disponibilidade/disponibilidade";
-import { ERROR_CONTENT_TYPE, ERROR_INTERNAL_SERVER, ERROR_INTERNAL_SERVER_DB, ERROR_NOT_CREATED, ERROR_NOT_FOUND, ERROR_REQUIRED_FIELDS, SUCCESS_CREATED_ITEM } from "../../../module/config"
+import { buscarDisponibilidade, buscarDisponibilidadePsicologo, criarDisponibilidade, criarDisponibilidadeProfissional } from "../../model/DAO/disponibilidade/disponibilidade";
+import { ERROR_ALREADY_EXISTS_PREFRENCE, ERROR_CONTENT_TYPE, ERROR_INTERNAL_SERVER, ERROR_INTERNAL_SERVER_DB, ERROR_NOT_CREATED, ERROR_NOT_FOUND, ERROR_NOT_FOUND_AVAILBILITY, ERROR_NOT_FOUND_PROFESSIONAL, ERROR_REQUIRED_FIELDS, SUCCESS_CREATED_ITEM } from "../../../module/config"
 import { DayOfWeek, TAvailability } from "../../domain/entities/availability-entity";
 import { verificacao } from "../../infra/availability-data-validation";
 import { TProfessionalAvailability } from "../../domain/entities/professional-availability";
+import { getBuscarPsicologo } from "../usuario/controller_psicologo";
 
  
 export function transformarHorario(horario: string): Date {
@@ -24,7 +25,7 @@ export async function setInserirDisponibilidade(disponibilidade: TAvailability, 
         if(!disponibilidade.dia_semana || disponibilidade.dia_semana.length > 7 || disponibilidade.dia_semana.length < 5 || typeof disponibilidade.dia_semana !== 'string' || !verificacao.isDayOfWeek(disponibilidade.dia_semana)||
             !disponibilidade.horario_inicio ||  !verificacao.verificarHorario(disponibilidade.horario_inicio.toString()) || 
             !disponibilidade.horario_fim || !verificacao.verificarHorario(disponibilidade.horario_fim.toString())
-        ) {
+        ) {            
             return ERROR_REQUIRED_FIELDS
         }else{
 
@@ -56,11 +57,41 @@ export async function criarDisponibilidadePsicologo(
     availability : TProfessionalAvailability
 ) {
     try {
-        if (!availability.disponibilidade_id ||typeof availability.disponibilidade_id !== 'number' || !availability.status ||!availability.id_psicologo) {
+        if (
+            !availability.disponibilidade_id ||typeof availability.disponibilidade_id !== 'number' || 
+            !availability.status             || typeof availability.status !== 'string'            ||
+            !availability.id_psicologo       || typeof availability.id_psicologo !== 'number'
+        ) {
             return ERROR_REQUIRED_FIELDS;
         }
 
-        const novaDisponibilidade = await criarDisponibilidadeProfissional(availability.disponibilidade_id, availability.id_psicologo, availability.status);
+        const validateProfessional = await getBuscarPsicologo(availability.id_psicologo)
+
+        if(!validateProfessional){
+            return ERROR_NOT_FOUND_PROFESSIONAL
+        }
+
+        const validateAvailbility = await getBuscarDisponibilidade(availability.disponibilidade_id)
+
+        if(!validateAvailbility){
+            return ERROR_NOT_FOUND_AVAILBILITY
+        }
+
+        const searchProfessionalAvailbility = await buscarDisponibilidadePsicologo(availability.id_psicologo, availability.disponibilidade_id)
+
+        
+        let novaDisponibilidade
+        for (let index = 0; index < searchProfessionalAvailbility.length; index++) {
+         
+        const disponibilidade = searchProfessionalAvailbility[index];
+
+        if(disponibilidade.psicologo_id == availability.id_psicologo && disponibilidade.disponibilidade_id == availability.disponibilidade_id && disponibilidade.status_disponibilidade == 'Concluido' || disponibilidade.status_disponibilidade == 'Livre'){
+            novaDisponibilidade = await criarDisponibilidadeProfissional(availability.id_psicologo, availability.disponibilidade_id, availability.status);
+         }
+         return ERROR_ALREADY_EXISTS_PREFRENCE     
+       }
+               
+        
 
         if (novaDisponibilidade) {
             return {
@@ -69,10 +100,24 @@ export async function criarDisponibilidadePsicologo(
                 message: SUCCESS_CREATED_ITEM.message
             };
         } else {
-            return ERROR_INTERNAL_SERVER;
+            return ERROR_INTERNAL_SERVER_DB;
         }
     } catch (error) {
         console.error('Erro ao tentar criar a disponibilidade:', error);
         return ERROR_INTERNAL_SERVER;
     }
+}
+
+export async function getBuscarDisponibilidade(id:number) {
+    if(id < 1){
+        return ERROR_REQUIRED_FIELDS
+    }
+
+    const availabilityData = await buscarDisponibilidade(id)
+
+    if(availabilityData){
+        return availabilityData
+    }
+
+    return ERROR_NOT_FOUND
 }

@@ -27,17 +27,14 @@ function setInserirUsuario(user, contentType) {
                 return config_1.ERROR_NOT_CREATED;
             }
             function validarData(data) {
-                // Verifica se a string tem o formato YYYY-MM-DD
                 if (data.length !== 10)
                     return false;
                 const partes = data.split("-");
                 const ano = parseInt(partes[0], 10);
                 const mes = parseInt(partes[1], 10);
                 const dia = parseInt(partes[2], 10);
-                // Verifica se o mês está entre 1 e 12
                 if (mes < 1 || mes > 12)
                     return false;
-                // Cria uma data a partir dos componentes
                 const dataTestada = new Date(ano, mes - 1, dia);
                 return dataTestada.getFullYear() === ano && dataTestada.getMonth() === mes - 1 && dataTestada.getDate() === dia;
             }
@@ -45,9 +42,8 @@ function setInserirUsuario(user, contentType) {
                 if (!validarData(data)) {
                     throw new Error("Formato de data inválido");
                 }
-                return new Date(data); // Retorna a data diretamente se for válida
+                return new Date(data);
             }
-            // Validação dos campos obrigatórios
             if (!user.nome || typeof user.nome !== 'string' || user.nome.length > 50 || user.nome.match("\\d") ||
                 !user.cpf || user.cpf.length !== 11 || !(yield client_data_validation_1.verificacao.verificarCpf(user.cpf)) ||
                 !user.data_nascimento || !validarData(user.data_nascimento.toString()) ||
@@ -60,6 +56,9 @@ function setInserirUsuario(user, contentType) {
                 }
                 if (!(yield client_data_validation_1.verificacao.verificarCpf(user.cpf))) {
                     return config_1.ERROR_ALREADY_EXISTS_ACCOUNT_CPF;
+                }
+                if (!validarData(user.data_nascimento.toString())) {
+                    return config_1.ERROR_INVALID_DATE;
                 }
                 return config_1.ERROR_REQUIRED_FIELDS;
             }

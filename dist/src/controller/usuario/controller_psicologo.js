@@ -11,6 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.setInserirPsicologo = setInserirPsicologo;
 exports.getLogarPsicologo = getLogarPsicologo;
+exports.getBuscarPsicologo = getBuscarPsicologo;
 const config_1 = require("../../../module/config");
 const professional_data_validation_1 = require("../../infra/professional-data-validation");
 const usuario_1 = require("../../model/DAO/psicologo/usuario");
@@ -24,18 +25,22 @@ function setInserirPsicologo(user, contentType) {
                 return config_1.ERROR_NOT_CREATED;
             }
             function validarData(data) {
-                if (data.length != 10)
+                if (data.length !== 10)
                     return false;
-                return true;
+                const partes = data.split("-");
+                const ano = parseInt(partes[0], 10);
+                const mes = parseInt(partes[1], 10);
+                const dia = parseInt(partes[2], 10);
+                if (mes < 1 || mes > 12)
+                    return false;
+                const dataTestada = new Date(ano, mes - 1, dia);
+                return dataTestada.getFullYear() === ano && dataTestada.getMonth() === mes - 1 && dataTestada.getDate() === dia;
             }
             function transformarData(data) {
-                const dataFinal = new Date(data);
-                if (dataFinal) {
-                    return dataFinal;
+                if (!validarData(data)) {
+                    throw new Error("Formato de data inválido");
                 }
-                else {
-                    throw new Error("Invalid date format");
-                }
+                return new Date(data);
             }
             if (!user.nome || typeof user.nome !== 'string' || user.nome.length > 50 || user.nome.match("\\d") ||
                 !user.cpf || user.cpf.length !== 11 || !(yield professional_data_validation_1.verificacaoProfissionais.verificarCpf(user.cpf)) ||
@@ -45,6 +50,15 @@ function setInserirPsicologo(user, contentType) {
                 !user.senha || typeof user.senha !== 'string' || user.senha.length < 8 || user.senha.length > 20 ||
                 !user.telefone || user.telefone.length !== 11 || typeof user.telefone !== 'string' ||
                 !user.id_sexo || isNaN(Number(user.id_sexo))) {
+                if (!(yield professional_data_validation_1.verificacaoProfissionais.verificarEmail(user.email))) {
+                    return config_1.ERROR_ALREADY_EXISTS_ACCOUNT_EMAIL;
+                }
+                if (!(yield professional_data_validation_1.verificacaoProfissionais.verificarCpf(user.cpf))) {
+                    return config_1.ERROR_ALREADY_EXISTS_ACCOUNT_CPF;
+                }
+                if (!validarData(user.data_nascimento.toString())) {
+                    return config_1.ERROR_INVALID_DATE;
+                }
                 return config_1.ERROR_REQUIRED_FIELDS;
             }
             else {
@@ -94,6 +108,22 @@ function getLogarPsicologo(email, senha) {
         }
         else {
             return config_1.ERROR_NOT_FOUND;
+        }
+    });
+}
+function getBuscarPsicologo(id) {
+    return __awaiter(this, void 0, void 0, function* () {
+        if (id < 1) {
+            return config_1.ERROR_REQUIRED_FIELDS;
+        }
+        else {
+            let professionalData = yield (0, usuario_1.buscarPsicologo)(id);
+            if (professionalData) {
+                return {
+                    data: professionalData,
+                    status_code: 200
+                };
+            }
         }
     });
 }

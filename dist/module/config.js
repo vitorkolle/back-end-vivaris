@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ERROR_ALREADY_EXISTS_ACCOUNT = exports.ERROR_ALREADY_EXISTS_ACCOUNT_EMAIL = exports.ERROR_ALREADY_EXISTS_ACCOUNT_CPF = exports.ERROR_ALREADY_EXISTS_PREFRENCE = exports.ERROR_NOT_FOUND_PREFERENCE = exports.ERROR_NOT_CREATED = exports.SUCCESS_UPDATED_ITEM = exports.SUCCESS_DELETED_ITEM = exports.SUCCESS_CREATED_ITEM = exports.ERROR_INTERNAL_SERVER = exports.ERROR_CONTENT_TYPE = exports.ERROR_INTERNAL_SERVER_DB = exports.ERROR_NOT_FOUND = exports.ERROR_REQUIRED_FIELDS = exports.ERROR_INVALID_ID = void 0;
+exports.ERROR_NOT_FOUND_AVAILBILITY = exports.ERROR_NOT_FOUND_PROFESSIONAL = exports.ERROR_INVALID_DATE = exports.ERROR_ALREADY_EXISTS_ACCOUNT = exports.ERROR_ALREADY_EXISTS_ACCOUNT_EMAIL = exports.ERROR_ALREADY_EXISTS_ACCOUNT_CPF = exports.ERROR_ALREADY_EXISTS_PREFRENCE = exports.ERROR_NOT_FOUND_PREFERENCE = exports.ERROR_NOT_CREATED = exports.SUCCESS_UPDATED_ITEM = exports.SUCCESS_DELETED_ITEM = exports.SUCCESS_CREATED_ITEM = exports.ERROR_INTERNAL_SERVER = exports.ERROR_CONTENT_TYPE = exports.ERROR_INTERNAL_SERVER_DB = exports.ERROR_NOT_FOUND = exports.ERROR_REQUIRED_FIELDS = exports.ERROR_INVALID_ID = void 0;
 /*************** Mensagens de Erro ***************/
 const ERROR_INVALID_ID = { status: false, status_code: 400, message: 'O ID encaminhado na requisição não é válido!!' };
 exports.ERROR_INVALID_ID = ERROR_INVALID_ID;
@@ -8,8 +8,12 @@ const ERROR_REQUIRED_FIELDS = { status: false, status_code: 400, message: 'Exist
 exports.ERROR_REQUIRED_FIELDS = ERROR_REQUIRED_FIELDS;
 const ERROR_NOT_FOUND = { status: false, status_code: 404, message: 'Não foram encontrados itens na requisição!!' };
 exports.ERROR_NOT_FOUND = ERROR_NOT_FOUND;
+const ERROR_NOT_FOUND_PROFESSIONAL = { status: false, status_code: 404, message: 'Não foram encontrados psicólogos na requisição!!' };
+exports.ERROR_NOT_FOUND_PROFESSIONAL = ERROR_NOT_FOUND_PROFESSIONAL;
 const ERROR_NOT_FOUND_PREFERENCE = { status: false, status_code: 404, message: 'Não foram encontradas preferências na requisição!!' };
 exports.ERROR_NOT_FOUND_PREFERENCE = ERROR_NOT_FOUND_PREFERENCE;
+const ERROR_NOT_FOUND_AVAILBILITY = { status: false, status_code: 404, message: 'Não foram encontradas disponibilidades na requisição!!' };
+exports.ERROR_NOT_FOUND_AVAILBILITY = ERROR_NOT_FOUND_AVAILBILITY;
 const ERROR_ALREADY_EXISTS_PREFRENCE = { status: false, status_code: 404, message: 'As preferências da requisição já estão escolhidas!!' };
 exports.ERROR_ALREADY_EXISTS_PREFRENCE = ERROR_ALREADY_EXISTS_PREFRENCE;
 const ERROR_INTERNAL_SERVER_DB = { status: false, status_code: 500, message: 'Não foi possível processar a requisição devido à um problema na comunicação com o Banco de Dados. Contate o Administrador da API!!' };
@@ -26,6 +30,9 @@ const ERROR_ALREADY_EXISTS_ACCOUNT_CPF = { status: false, status_code: 400, mess
 exports.ERROR_ALREADY_EXISTS_ACCOUNT_CPF = ERROR_ALREADY_EXISTS_ACCOUNT_CPF;
 const ERROR_ALREADY_EXISTS_ACCOUNT = { status: false, status_code: 400, message: 'Já existe uma conta cadastrada com os dados cadastrados, faça login ou use outros dados' };
 exports.ERROR_ALREADY_EXISTS_ACCOUNT = ERROR_ALREADY_EXISTS_ACCOUNT;
+const ERROR_ALREADY_EXISTS_PROFESSIONAL_AVAILBILITY = { status: false, status_code: 400, message: '' };
+const ERROR_INVALID_DATE = { status: false, status_code: 400, message: 'A data encaminhada é inválida!!' };
+exports.ERROR_INVALID_DATE = ERROR_INVALID_DATE;
 /****************** Mensagens de Sucesso *********/
 const SUCCESS_CREATED_ITEM = { status: true, status_code: 201, message: 'Item criado com sucesso!!' };
 exports.SUCCESS_CREATED_ITEM = SUCCESS_CREATED_ITEM;

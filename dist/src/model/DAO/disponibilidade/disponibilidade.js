@@ -12,7 +12,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.criarDisponibilidade = criarDisponibilidade;
 exports.listarDisponibilidadesPorProfissional = listarDisponibilidadesPorProfissional;
 exports.criarDisponibilidadeProfissional = criarDisponibilidadeProfissional;
+exports.buscarDisponibilidadePsicologo = buscarDisponibilidadePsicologo;
+exports.buscarDisponibilidade = buscarDisponibilidade;
 const client_1 = require("@prisma/client");
+const config_1 = require("../../../../module/config");
 const prisma = new client_1.PrismaClient();
 function criarDisponibilidade(disponibilidade) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -62,7 +65,7 @@ function listarDisponibilidadesPorProfissional(profissionalId) {
             if (!usuario) {
                 throw new Error('Usuário não encontrado.');
             }
-            const preferencias = yield prisma.tbl_psicologo_disponibilidade.findMany({
+            const disponibilidades = yield prisma.tbl_psicologo_disponibilidade.findMany({
                 where: {
                     psicologo_id: profissionalId,
                 },
@@ -82,16 +85,16 @@ function listarDisponibilidadesPorProfissional(profissionalId) {
                 nome: usuario.nome,
                 email: usuario.email,
                 telefone: usuario.telefone,
-                preferencias: preferencias.map((pref) => {
+                disponibilidades: disponibilidades.map((disp) => {
                     var _a, _b, _c;
                     return ({
-                        id: (_a = pref.tbl_preferencias) === null || _a === void 0 ? void 0 : _a.id,
-                        nome: (_b = pref.tbl_preferencias) === null || _b === void 0 ? void 0 : _b.nome,
-                        hexcolor: (_c = pref.tbl_preferencias) === null || _c === void 0 ? void 0 : _c.cor
+                        id: (_a = disp.tbl_disponibilidade) === null || _a === void 0 ? void 0 : _a.id,
+                        dia_semana: (_b = disp.tbl_preferencias) === null || _b === void 0 ? void 0 : _b.d,
+                        hexcolor: (_c = disp.tbl_preferencias) === null || _c === void 0 ? void 0 : _c.cor
                     });
                 }),
             };
-            return response;
+            //return response;
         }
         catch (error) {
             console.error("Erro ao obter o usuário com as preferências:", error);
@@ -101,6 +104,7 @@ function listarDisponibilidadesPorProfissional(profissionalId) {
 }
 function criarDisponibilidadeProfissional(profissionalId, disponibilidade, status) {
     return __awaiter(this, void 0, void 0, function* () {
+        console.log(profissionalId, disponibilidade, status);
         try {
             yield prisma.tbl_psicologo_disponibilidade.create({
                 data: {
@@ -141,6 +145,7 @@ function criarDisponibilidadeProfissional(profissionalId, disponibilidade, statu
                 include: {
                     tbl_disponibilidade: {
                         select: {
+                            id: true,
                             dia_semana: true,
                             horario_inicio: true,
                             horario_fim: true,
@@ -148,6 +153,9 @@ function criarDisponibilidadeProfissional(profissionalId, disponibilidade, statu
                     },
                 },
             });
+            if (!disponibilidades) {
+                console.log('oi');
+            }
             const response = {
                 id: usuario.id,
                 nome: usuario.nome,
@@ -169,6 +177,52 @@ function criarDisponibilidadeProfissional(profissionalId, disponibilidade, statu
         catch (error) {
             console.error("Erro ao gravar disponibilidade do profissional:", error);
             throw new Error("Não foi possível gravar as disponibilidades do profissional.");
+        }
+    });
+}
+function buscarDisponibilidadePsicologo(professionalId, availabilityId) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const disponibilidadePsicologo = yield prisma.tbl_psicologo_disponibilidade.findMany({
+                where: {
+                    psicologo_id: professionalId,
+                    disponibilidade_id: availabilityId
+                },
+                select: {
+                    psicologo_id: true,
+                    disponibilidade_id: true,
+                    status_disponibilidade: true
+                }
+            });
+            return disponibilidadePsicologo;
+        }
+        catch (error) {
+            console.error("Erro ao encontrar disponibilidade de psicólogos:", error);
+            throw new Error("Não foi possível achar disponibilidades");
+        }
+    });
+}
+function buscarDisponibilidade(id) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const user = yield prisma.tbl_disponibilidade.findUnique({
+                where: {
+                    id: id
+                },
+                select: {
+                    dia_semana: true,
+                    horario_inicio: true,
+                    horario_fim: true
+                }
+            });
+            if (user) {
+                return user;
+            }
+            return Promise.resolve(config_1.ERROR_NOT_FOUND);
+        }
+        catch (error) {
+            console.error("Erro ao encontrar disponibilidade:", error);
+            throw new Error("Não foi possível achar disponibilidades");
         }
     });
 }

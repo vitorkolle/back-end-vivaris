@@ -1,7 +1,7 @@
-import { ERROR_CONTENT_TYPE, ERROR_INTERNAL_SERVER, ERROR_INTERNAL_SERVER_DB, ERROR_NOT_CREATED, ERROR_NOT_FOUND, ERROR_REQUIRED_FIELDS, SUCCESS_CREATED_ITEM } from "../../../module/config"
+import { ERROR_ALREADY_EXISTS_ACCOUNT_CPF, ERROR_ALREADY_EXISTS_ACCOUNT_EMAIL, ERROR_CONTENT_TYPE, ERROR_INTERNAL_SERVER, ERROR_INTERNAL_SERVER_DB, ERROR_INVALID_DATE, ERROR_NOT_CREATED, ERROR_NOT_FOUND, ERROR_REQUIRED_FIELDS, SUCCESS_CREATED_ITEM } from "../../../module/config"
 import { TProfessional } from "../../domain/entities/professional-entity";
 import { verificacaoProfissionais } from "../../infra/professional-data-validation";
-import { criarNovoPsicologo, logarPsicologo } from "../../model/DAO/psicologo/usuario";
+import { buscarPsicologo, criarNovoPsicologo, logarPsicologo } from "../../model/DAO/psicologo/usuario";
 
 export async function setInserirPsicologo(user: TProfessional, contentType: string | undefined) {
     try {
@@ -48,7 +48,17 @@ export async function setInserirPsicologo(user: TProfessional, contentType: stri
             !user.telefone || user.telefone.length !== 11 || typeof user.telefone !== 'string' ||
             !user.id_sexo || isNaN(Number(user.id_sexo)) 
         ){
-            return ERROR_REQUIRED_FIELDS
+            if(!await verificacaoProfissionais.verificarEmail(user.email)){
+                return ERROR_ALREADY_EXISTS_ACCOUNT_EMAIL
+            }
+            if(!await verificacaoProfissionais.verificarCpf(user.cpf)){
+                return ERROR_ALREADY_EXISTS_ACCOUNT_CPF
+            }
+            if(!validarData(user.data_nascimento.toString())){
+                return ERROR_INVALID_DATE
+            }
+
+            return ERROR_REQUIRED_FIELDS;
         }
         else{
             // Preparar os dados do usuário
@@ -101,6 +111,24 @@ export async function getLogarPsicologo(email: string | null, senha: string | nu
     }
     else{
         return ERROR_NOT_FOUND
+    }
+}
+
+export async function getBuscarPsicologo(id: number) {
+    if (
+        id < 1
+    ) {
+        return ERROR_REQUIRED_FIELDS
+    }
+    else{
+        let professionalData = await buscarPsicologo(id)
+
+        if(professionalData){
+            return {
+                data: professionalData,
+                status_code: 200
+            }
+        }
     }
 }
 

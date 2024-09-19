@@ -1,11 +1,12 @@
 import { PrismaClient } from "@prisma/client"
 import { TAvailability} from "../../../domain/entities/availability-entity"
+import { ERROR_NOT_FOUND } from "../../../../module/config";
 const prisma = new PrismaClient()
 
 
 export async function criarDisponibilidade(disponibilidade: TAvailability) {
     try {
-        let disponibilidadeExistente = await prisma.tbl_disponibilidade.findFirst({
+        let disponibilidadeExistente = await prisma.tbl_disponibilidade.findFirst({ 
           where: {
             dia_semana: disponibilidade.dia_semana,
             horario_inicio: disponibilidade.horario_inicio,
@@ -35,7 +36,7 @@ export async function criarDisponibilidade(disponibilidade: TAvailability) {
       }
 }
 
-export async function listarDisponibilidadesPorProfissional(profissionalId: number): Promise<TAvailability[]> {
+export async function listarDisponibilidadesPorProfissional(profissionalId: number): Promise <TAvailability> {
   try {
 
     const usuario = await prisma.tbl_psicologos.findUnique({ 
@@ -91,6 +92,10 @@ export async function listarDisponibilidadesPorProfissional(profissionalId: numb
 }
 
 export async function criarDisponibilidadeProfissional(profissionalId: number, disponibilidade: number, status:string){
+
+  console.log(profissionalId, disponibilidade, status);
+  
+  
   try {
     await prisma.tbl_psicologo_disponibilidade.create({
       data: {
@@ -134,6 +139,7 @@ export async function criarDisponibilidadeProfissional(profissionalId: number, d
       include: {
         tbl_disponibilidade: {
           select: {
+            id: true,
             dia_semana: true,
             horario_inicio: true,
             horario_fim: true,
@@ -141,6 +147,11 @@ export async function criarDisponibilidadeProfissional(profissionalId: number, d
         },
       },
     });
+
+    if (!disponibilidades) {
+      console.log('oi');
+      
+    }
 
     const response = {
       id: usuario.id,
@@ -160,5 +171,53 @@ export async function criarDisponibilidadeProfissional(profissionalId: number, d
   } catch (error) {
     console.error("Erro ao gravar disponibilidade do profissional:", error);
     throw new Error("Não foi possível gravar as disponibilidades do profissional.");
+  }
+}
+
+export async function buscarDisponibilidadePsicologo(professionalId: number, availabilityId: number){
+  try {
+    const disponibilidadePsicologo = await prisma.tbl_psicologo_disponibilidade.findMany({
+      where: {
+        psicologo_id: professionalId,
+        disponibilidade_id: availabilityId
+      },
+      select:{
+        psicologo_id: true,
+        disponibilidade_id: true,
+        status_disponibilidade: true
+      }
+    })
+
+
+  
+      return disponibilidadePsicologo
+
+
+  } catch (error) {
+    console.error("Erro ao encontrar disponibilidade de psicólogos:", error);
+    throw new Error("Não foi possível achar disponibilidades");
+  }
+}
+
+export async function buscarDisponibilidade(id: number){
+  try {
+    const user = await prisma.tbl_disponibilidade.findUnique({
+      where: {
+        id: id
+      },
+      select: {
+        dia_semana: true,
+        horario_inicio: true,
+        horario_fim: true
+      }
+    })
+
+    if(user){
+      return user
+    }
+    return Promise.resolve(ERROR_NOT_FOUND)
+  } catch (error) {
+    console.error("Erro ao encontrar disponibilidade:", error);
+    throw new Error("Não foi possível achar disponibilidades");
   }
 }
