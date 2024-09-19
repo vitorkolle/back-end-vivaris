@@ -76,11 +76,12 @@ model tbl_disponibilidade {
 }
 
 model tbl_psicologo_disponibilidade {
-  id                  Int                 @id @default(autoincrement())
-  psicologo_id        Int
-  disponibilidade_id  Int
-  tbl_psicologos      tbl_psicologos      @relation(fields: [psicologo_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "tbl_psicologo_disponibilidade_ibfk_1")
-  tbl_disponibilidade tbl_disponibilidade @relation(fields: [disponibilidade_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "tbl_psicologo_disponibilidade_ibfk_2")
+  id                     Int                 @id @default(autoincrement())
+  psicologo_id           Int
+  disponibilidade_id     Int
+  status_disponibilidade String              @db.VarChar(20)
+  tbl_psicologos         tbl_psicologos      @relation(fields: [psicologo_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "tbl_psicologo_disponibilidade_ibfk_1")
+  tbl_disponibilidade    tbl_disponibilidade @relation(fields: [disponibilidade_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "tbl_psicologo_disponibilidade_ibfk_2")
 
   @@index([disponibilidade_id], map: "disponibilidade_id")
   @@index([psicologo_id], map: "psicologo_id")
@@ -89,9 +90,9 @@ model tbl_psicologo_disponibilidade {
 enum tbl_disponibilidade_dia_semana {
   Domingo
   Segunda
-  Ter_a   @map("Terça")
+  Terca
   Quarta
   Quinta
   Sexta
-  S_bado  @map("Sábado")
+  Sabado
 }

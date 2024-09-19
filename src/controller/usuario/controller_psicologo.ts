@@ -14,21 +14,28 @@ export async function setInserirPsicologo(user: TProfessional, contentType: stri
         }
         
         function validarData(data: string): boolean {
-
-            if (data.length != 10) return false
-
-            return true
-
+      
+            if (data.length !== 10) return false;
+        
+            const partes = data.split("-");
+            const ano = parseInt(partes[0], 10);
+            const mes = parseInt(partes[1], 10);
+            const dia = parseInt(partes[2], 10);
+        
+     
+            if (mes < 1 || mes > 12) return false;
+        
+       
+            const dataTestada = new Date(ano, mes - 1, dia);
+            return dataTestada.getFullYear() === ano && dataTestada.getMonth() === mes - 1 && dataTestada.getDate() === dia;
         }
-
+        
         function transformarData(data: string): Date {
-            const dataFinal = new Date(data)
-
-            if (dataFinal) {
-                return dataFinal;
-            } else {
-                throw new Error("Invalid date format");
-            } 
+            if (!validarData(data)) {
+                throw new Error("Formato de data inválido");
+            }
+        
+            return new Date(data);
         }
 
         if (

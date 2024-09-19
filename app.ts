@@ -20,6 +20,9 @@ import { getBuscarSexo, getListarSexo, getLogarCliente, setInserirUsuario } from
 import { setInserirPreferencias } from './src/controller/preferencia/controller_preferencia'
 import { TProfessional } from './src/domain/entities/professional-entity'
 import { getLogarPsicologo, setInserirPsicologo } from './src/controller/usuario/controller_psicologo'
+import { criarDisponibilidadePsicologo, setInserirDisponibilidade } from './src/controller/disponibilidade/controller_disponibilidade'
+import { TAvailability } from './src/domain/entities/availability-entity'
+import { TProfessionalAvailability } from './src/domain/entities/professional-availability'
 
 //Criação do app
 const app = express()
@@ -148,7 +151,41 @@ route.post('/profissional/login', async (req, res) => {
 
 })
 
+/****************************************************DISPONIBILIDADE****************************************************/
+ route.post ('/disponibilidade', async (req, res) => {
+    const contentType = req.header('content-type') 
 
+   const disponibilidade: TAvailability = {
+    dia_semana: req.body.dia_semana,
+    horario_inicio: req.body.horario_inicio,
+    horario_fim: req.body.horario_fim
+   }
+
+   let rsDisponilidade = await setInserirDisponibilidade(disponibilidade, contentType)
+
+   console.log(rsDisponilidade);
+   
+   res.status(rsDisponilidade.status_code)
+   res.json(rsDisponilidade)
+})
+
+route.post ('/disponibilidade/psicologo/:id', async (req, res) => {
+    let id = req.params.id
+    let idFormat = Number(id)
+
+    const availability: TProfessionalAvailability =  {
+        disponibilidade_id: req.body.disponibilidade,
+        status: req.body.status,
+        id_psicologo: idFormat
+    }
+
+    let rsDisponilidade = await criarDisponibilidadePsicologo(availability)
+
+    console.log(rsDisponilidade);
+
+    res.status(rsDisponilidade.status_code)
+    res.json(rsDisponilidade)
+})
 
 //Ativação das rotas
 app.use('/v1/vivaris', route)

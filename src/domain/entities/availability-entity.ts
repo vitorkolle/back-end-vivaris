@@ -1,8 +1,13 @@
 export type DayOfWeek = 
-  'Domingo' | 'Segunda' | 'Terça' | 'Quarta' | 'Quinta' | 'Sexta' | 'Sábado';
+  'Domingo' | 'Segunda' | 'Terca' | 'Quarta' | 'Quinta' | 'Sexta' | 'Sabado';
 
 export type TAvailability = {
-    day: DayOfWeek;
-    from: string;
-    to: string;
+    dia_semana: DayOfWeek;
+    horario_inicio: Date;
+    horario_fim: Date;
+}
+
+export type TProfessionalSchedule = {
+  profissional_id: number;
+  disponibilidades: number[];
 }
