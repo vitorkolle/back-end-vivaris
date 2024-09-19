@@ -27,18 +27,25 @@ function setInserirUsuario(user, contentType) {
                 return config_1.ERROR_NOT_CREATED;
             }
             function validarData(data) {
-                if (data.length != 10)
+                // Verifica se a string tem o formato YYYY-MM-DD
+                if (data.length !== 10)
                     return false;
-                return true;
+                const partes = data.split("-");
+                const ano = parseInt(partes[0], 10);
+                const mes = parseInt(partes[1], 10);
+                const dia = parseInt(partes[2], 10);
+                // Verifica se o mês está entre 1 e 12
+                if (mes < 1 || mes > 12)
+                    return false;
+                // Cria uma data a partir dos componentes
+                const dataTestada = new Date(ano, mes - 1, dia);
+                return dataTestada.getFullYear() === ano && dataTestada.getMonth() === mes - 1 && dataTestada.getDate() === dia;
             }
             function transformarData(data) {
-                const dataFinal = new Date(data);
-                if (dataFinal) {
-                    return dataFinal;
+                if (!validarData(data)) {
+                    throw new Error("Formato de data inválido");
                 }
-                else {
-                    throw new Error("Invalid date format");
-                }
+                return new Date(data); // Retorna a data diretamente se for válida
             }
             // Validação dos campos obrigatórios
             if (!user.nome || typeof user.nome !== 'string' || user.nome.length > 50 || user.nome.match("\\d") ||
