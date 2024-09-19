@@ -27,25 +27,32 @@ function setInserirUsuario(user, contentType) {
                 return config_1.ERROR_NOT_CREATED;
             }
             function validarData(data) {
-                if (data.length != 10)
+                // Verifica se a string tem o formato YYYY-MM-DD
+                if (data.length !== 10)
                     return false;
-                return true;
+                const partes = data.split("-");
+                const ano = parseInt(partes[0], 10);
+                const mes = parseInt(partes[1], 10);
+                const dia = parseInt(partes[2], 10);
+                // Verifica se o mês está entre 1 e 12
+                if (mes < 1 || mes > 12)
+                    return false;
+                // Cria uma data a partir dos componentes
+                const dataTestada = new Date(ano, mes - 1, dia);
+                return dataTestada.getFullYear() === ano && dataTestada.getMonth() === mes - 1 && dataTestada.getDate() === dia;
             }
             function transformarData(data) {
-                const dataFinal = new Date(data);
-                if (dataFinal) {
-                    return dataFinal;
+                if (!validarData(data)) {
+                    throw new Error("Formato de data inválido");
                 }
-                else {
-                    throw new Error("Invalid date format");
-                }
+                return new Date(data); // Retorna a data diretamente se for válida
             }
             // Validação dos campos obrigatórios
             if (!user.nome || typeof user.nome !== 'string' || user.nome.length > 50 || user.nome.match("\\d") ||
                 !user.cpf || user.cpf.length !== 11 || !(yield client_data_validation_1.verificacao.verificarCpf(user.cpf)) ||
                 !user.data_nascimento || !validarData(user.data_nascimento.toString()) ||
                 !user.email || typeof user.email !== 'string' || !(yield client_data_validation_1.verificacao.verificarEmail(user.email)) || user.email.length > 256 ||
-                !user.senha || typeof user.senha !== 'string' || user.senha.length < 8 || user.senha.length > 8 ||
+                !user.senha || typeof user.senha !== 'string' || user.senha.length < 8 || user.senha.length > 20 ||
                 !user.telefone || user.telefone.length !== 11 || typeof user.telefone !== 'string' ||
                 !user.id_sexo || isNaN(Number(user.id_sexo))) {
                 if (!(yield client_data_validation_1.verificacao.verificarEmail(user.email))) {

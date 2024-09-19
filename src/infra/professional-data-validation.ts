@@ -4,7 +4,7 @@ const prisma = new PrismaClient()
 
 export const verificacaoProfissionais: IVerificarDadosProfissionais = {
     verificarCip: async (cipInput: string): Promise<boolean> => {
-        const client = await prisma.tbl_psicologos.findUnique({
+        const client = await prisma.tbl_psicologos.findFirst({
             where: { cip: cipInput },
         });
         
@@ -13,7 +13,7 @@ export const verificacaoProfissionais: IVerificarDadosProfissionais = {
 
     verificarEmail: async (emailInput: string): Promise<boolean> => {
        
-        const client = await prisma.tbl_psicologos.findUnique({
+        const client = await prisma.tbl_psicologos.findFirst({
             where: { email: emailInput },
         });
     
@@ -21,7 +21,7 @@ export const verificacaoProfissionais: IVerificarDadosProfissionais = {
     },
 
     verificarCpf: async (cpfInput: string): Promise<boolean> => {
-        const client = await prisma.tbl_psicologos.findUnique({
+        const client = await prisma.tbl_psicologos.findFirst({
             where: { cpf: cpfInput },
         });
         

@@ -24,6 +24,7 @@ const cors_1 = __importDefault(require("cors"));
 const controller_usuario_1 = require("./src/controller/usuario/controller_usuario");
 const controller_preferencia_1 = require("./src/controller/preferencia/controller_preferencia");
 const controller_psicologo_1 = require("./src/controller/usuario/controller_psicologo");
+const controller_disponibilidade_1 = require("./src/controller/disponibilidade/controller_disponibilidade");
 //Criação do app
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
@@ -33,7 +34,7 @@ app.use((request, response, next) => {
     app.use((0, cors_1.default)());
     next();
 });
-/****************************************************USUARIO****************************************************/
+/****************************************************USUARIO-CLIENTE****************************************************/
 //post de clientes
 route.post('/cliente', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const contentType = req.header('content-type');
@@ -62,6 +63,29 @@ route.post('/cliente/preferencias', (req, res) => __awaiter(void 0, void 0, void
     res.status(newUserPrefence.status_code);
     res.json(newUserPrefence);
 }));
+//login de usuário
+route.post('/login/usuario', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    let email = req.body.email;
+    let senha = req.body.senha;
+    let user = yield (0, controller_usuario_1.getLogarCliente)(email, senha);
+    console.log(user);
+    res.status(user.status_code);
+    res.json(user);
+}));
+/****************************************************GÊNERO****************************************************/
+route.get('/sexo', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    let allSex = yield (0, controller_usuario_1.getListarSexo)();
+    res.status(allSex.status_code);
+    res.json(allSex);
+}));
+route.get('/usuario/sexo/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    let id = req.params.id;
+    let idFormat = Number(id);
+    let buscarSexo = yield (0, controller_usuario_1.getBuscarSexo)(idFormat);
+    res.status(buscarSexo.status_code);
+    res.json(buscarSexo);
+}));
+/****************************************************PSICÓLOGO****************************************************/
 //post de psicólogos
 route.post('/psicologo', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const contentType = req.header('content-type');
@@ -80,27 +104,39 @@ route.post('/psicologo', (req, res) => __awaiter(void 0, void 0, void 0, functio
     res.status(newProfesional.status_code);
     res.json(newProfesional);
 }));
-//login de usuário
-route.post('/login/usuario', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+route.post('/profissional/login', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let email = req.body.email;
     let senha = req.body.senha;
-    let user = yield (0, controller_usuario_1.getLogarCliente)(String(email), String(senha));
+    let user = yield (0, controller_psicologo_1.getLogarPsicologo)(email, senha);
     console.log(user);
     res.status(user.status_code);
     res.json(user);
 }));
-/****************************************************GÊNERO****************************************************/
-route.get('/cliente/sexo', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    let allSex = yield (0, controller_usuario_1.getListarSexo)();
-    res.status(allSex.status_code);
-    res.json(allSex);
+/****************************************************DISPONIBILIDADE****************************************************/
+route.post('/disponibilidade', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const contentType = req.header('content-type');
+    const disponibilidade = {
+        dia_semana: req.body.dia_semana,
+        horario_inicio: req.body.horario_inicio,
+        horario_fim: req.body.horario_fim
+    };
+    let rsDisponilidade = yield (0, controller_disponibilidade_1.setInserirDisponibilidade)(disponibilidade, contentType);
+    console.log(rsDisponilidade);
+    res.status(rsDisponilidade.status_code);
+    res.json(rsDisponilidade);
 }));
-route.get('/cliente/sexo/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+route.post('/disponibilidade/psicologo/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let id = req.params.id;
     let idFormat = Number(id);
-    let buscarSexo = yield (0, controller_usuario_1.getBuscarSexo)(idFormat);
-    res.status(buscarSexo.status_code);
-    res.json(buscarSexo);
+    const availability = {
+        disponibilidade_id: req.body.disponibilidade,
+        status: req.body.status,
+        id_psicologo: idFormat
+    };
+    let rsDisponilidade = yield (0, controller_disponibilidade_1.criarDisponibilidadePsicologo)(availability);
+    console.log(rsDisponilidade);
+    res.status(rsDisponilidade.status_code);
+    res.json(rsDisponilidade);
 }));
 //Ativação das rotas
 app.use('/v1/vivaris', route);

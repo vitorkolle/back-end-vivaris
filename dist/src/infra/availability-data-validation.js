@@ -9,26 +9,19 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.verificacaoProfissionais = void 0;
+exports.verificacao = void 0;
 const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
-exports.verificacaoProfissionais = {
-    verificarCip: (cipInput) => __awaiter(void 0, void 0, void 0, function* () {
-        const client = yield prisma.tbl_psicologos.findFirst({
-            where: { cip: cipInput },
-        });
-        return client === null;
-    }),
-    verificarEmail: (emailInput) => __awaiter(void 0, void 0, void 0, function* () {
-        const client = yield prisma.tbl_psicologos.findFirst({
-            where: { email: emailInput },
-        });
-        return client === null;
-    }),
-    verificarCpf: (cpfInput) => __awaiter(void 0, void 0, void 0, function* () {
-        const client = yield prisma.tbl_psicologos.findFirst({
-            where: { cpf: cpfInput },
-        });
-        return client === null;
+exports.verificacao = {
+    isDayOfWeek: (dia) => {
+        const diasValidos = ["Segunda", "Terca", "Quarta", "Quinta", "Sexta", "Sabado", "Domingo"];
+        return diasValidos.includes(dia);
+    },
+    verificarHorario: (horarioInput) => __awaiter(void 0, void 0, void 0, function* () {
+        const horarioRegex = /^([01]\d|2[0-3]):([0-5]\d):([0-5]\d$)/;
+        if (!horarioRegex.test(horarioInput)) {
+            return false;
+        }
+        return true;
     })
 };
