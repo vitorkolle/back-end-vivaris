@@ -13,6 +13,7 @@ exports.transformarHorario = transformarHorario;
 exports.setInserirDisponibilidade = setInserirDisponibilidade;
 exports.criarDisponibilidadePsicologo = criarDisponibilidadePsicologo;
 exports.getBuscarDisponibilidade = getBuscarDisponibilidade;
+exports.getListarDisponibilidadesProfissional = getListarDisponibilidadesProfissional;
 const disponibilidade_1 = require("../../model/DAO/disponibilidade/disponibilidade");
 const config_1 = require("../../../module/config");
 const availability_data_validation_1 = require("../../infra/availability-data-validation");
@@ -131,5 +132,30 @@ function getBuscarDisponibilidade(id) {
             return config_1.ERROR_NOT_FOUND;
         }
         return availabilityData;
+    });
+}
+function getListarDisponibilidadesProfissional(idProfessional) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            if (!idProfessional || typeof idProfessional !== 'number' || idProfessional < 1) {
+                return config_1.ERROR_REQUIRED_FIELDS;
+            }
+            let availabilityProfessionalData = yield (0, disponibilidade_1.listarDisponibilidadesPorProfissional)(idProfessional);
+            if (availabilityProfessionalData.id !== false) {
+                return {
+                    data: availabilityProfessionalData,
+                    status_code: 200
+                };
+            }
+            else
+                return {
+                    data: config_1.ERROR_NOT_FOUND.message,
+                    status_code: 404
+                };
+        }
+        catch (error) {
+            console.error('Erro ao tentar consultar as disponibilidades por psicólogo:', error);
+            return config_1.ERROR_INTERNAL_SERVER;
+        }
     });
 }

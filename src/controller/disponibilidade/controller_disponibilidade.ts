@@ -1,4 +1,4 @@
-import { buscarDisponibilidade, buscarDisponibilidadePsicologo, criarDisponibilidade, criarDisponibilidadeProfissional } from "../../model/DAO/disponibilidade/disponibilidade";
+import { buscarDisponibilidade, buscarDisponibilidadePsicologo, criarDisponibilidade, criarDisponibilidadeProfissional, listarDisponibilidadesPorProfissional } from "../../model/DAO/disponibilidade/disponibilidade";
 import { ERROR_ALREADY_EXISTS_PREFRENCE, ERROR_ALREADY_EXISTS_PROFESSIONAL_AVAILBILITY, ERROR_CONTENT_TYPE, ERROR_INTERNAL_SERVER, ERROR_INTERNAL_SERVER_DB, ERROR_NOT_CREATED, ERROR_NOT_FOUND, ERROR_NOT_FOUND_AVAILBILITY, ERROR_NOT_FOUND_PROFESSIONAL, ERROR_REQUIRED_FIELDS, SUCCESS_CREATED_ITEM } from "../../../module/config"
 import { DayOfWeek, TAvailability } from "../../domain/entities/availability-entity";
 import { verificacao } from "../../infra/availability-data-validation";
@@ -133,4 +133,33 @@ export async function getBuscarDisponibilidade(id: number) {
     }
 
     return availabilityData
+}
+
+export async function getListarDisponibilidadesProfissional(idProfessional:number) {
+    try {
+        if
+        (
+            !idProfessional || typeof idProfessional !== 'number' || idProfessional < 1
+        )
+        {
+            return ERROR_REQUIRED_FIELDS
+        }
+    
+        let availabilityProfessionalData = await listarDisponibilidadesPorProfissional(idProfessional)
+    
+        if(availabilityProfessionalData.id !== false){
+            return{
+                data: availabilityProfessionalData,
+                status_code: 200
+            }
+        }
+        else
+        return{
+            data: ERROR_NOT_FOUND.message,
+            status_code: 404
+        }    
+    } catch (error) {
+        console.error('Erro ao tentar consultar as disponibilidades por psicólogo:', error);
+        return ERROR_INTERNAL_SERVER;
+    }
 }

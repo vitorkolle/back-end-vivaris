@@ -137,6 +137,12 @@ route.post('/disponibilidade/psicologo/:id', (req, res) => __awaiter(void 0, voi
     res.status(rsDisponilidade.status_code);
     res.json(rsDisponilidade);
 }));
+route.get('/disponibilidade/psicologo/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    let id = Number(req.params.id);
+    const professionalAvailbility = yield (0, controller_disponibilidade_1.getListarDisponibilidadesProfissional)(id);
+    res.status(professionalAvailbility.status_code);
+    res.json(professionalAvailbility);
+}));
 /****************************************************PREFERÊNCIAS****************************************************/
 route.get('/preferencias', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let preferenceData = yield (0, controller_preferencia_1.getListarPreferencias)();

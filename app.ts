@@ -20,7 +20,7 @@ import { getBuscarSexo, getListarSexo, getLogarCliente, setInserirUsuario } from
 import { getBuscarPreferencia, getListarPreferencias, setInserirPreferencias } from './src/controller/preferencia/controller_preferencia'
 import { TProfessional } from './src/domain/entities/professional-entity'
 import { getLogarPsicologo, setInserirPsicologo } from './src/controller/usuario/controller_psicologo'
-import { criarDisponibilidadePsicologo, setInserirDisponibilidade } from './src/controller/disponibilidade/controller_disponibilidade'
+import { criarDisponibilidadePsicologo, getListarDisponibilidadesProfissional, setInserirDisponibilidade } from './src/controller/disponibilidade/controller_disponibilidade'
 import { TAvailability } from './src/domain/entities/availability-entity'
 import { TProfessionalAvailability } from './src/domain/entities/professional-availability'
 
@@ -184,6 +184,15 @@ route.post ('/disponibilidade/psicologo/:id', async (req, res) => {
 
     res.status(rsDisponilidade.status_code!!)
     res.json(rsDisponilidade)
+})
+
+route.get('/disponibilidade/psicologo/:id', async (req, res) =>{
+    let id = Number(req.params.id)
+
+    const professionalAvailbility = await getListarDisponibilidadesProfissional(id)
+
+    res.status(professionalAvailbility.status_code)
+    res.json(professionalAvailbility)
 })
 
 /****************************************************PREFERÊNCIAS****************************************************/

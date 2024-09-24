@@ -36,7 +36,7 @@ export async function criarDisponibilidade(disponibilidade: TAvailability) {
       }
 }
 
-export async function listarDisponibilidadesPorProfissional(profissionalId: number): Promise <TAvailability> {
+export async function listarDisponibilidadesPorProfissional(profissionalId: number) {
   try {
 
     const usuario = await prisma.tbl_psicologos.findUnique({ 
@@ -52,7 +52,9 @@ export async function listarDisponibilidadesPorProfissional(profissionalId: numb
     });
 
     if (!usuario) {
-      throw new Error('Usuário não encontrado.');
+      return{
+        id: false
+      };
     }
 
     const disponibilidades = await prisma.tbl_psicologo_disponibilidade.findMany({
@@ -83,7 +85,7 @@ export async function listarDisponibilidadesPorProfissional(profissionalId: numb
       })),
     };
 
-    //return response;
+    return response;
 
   } catch (error) {
     console.error("Erro ao obter o usuário com as preferências:", error);

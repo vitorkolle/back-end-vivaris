@@ -62,7 +62,9 @@ function listarDisponibilidadesPorProfissional(profissionalId) {
                 },
             });
             if (!usuario) {
-                throw new Error('Usuário não encontrado.');
+                return {
+                    id: false
+                };
             }
             const disponibilidades = yield prisma.tbl_psicologo_disponibilidade.findMany({
                 where: {
@@ -93,7 +95,7 @@ function listarDisponibilidadesPorProfissional(profissionalId) {
                     });
                 }),
             };
-            //return response;
+            return response;
         }
         catch (error) {
             console.error("Erro ao obter o usuário com as preferências:", error);
