@@ -16,11 +16,11 @@ const route = Router()
 import cors from 'cors'
 
 //Import Controller 
-import { getBuscarSexo, getListarSexo, getLogarCliente, setInserirUsuario } from './src/controller/usuario/controller_usuario'
-import { setInserirPreferencias } from './src/controller/preferencia/controller_preferencia'
+import { getBuscarCliente, getBuscarSexo, getListarSexo, getLogarCliente, setInserirUsuario } from './src/controller/usuario/controller_usuario'
+import { getBuscarPreferencia, getListarPreferencias, setInserirPreferencias } from './src/controller/preferencia/controller_preferencia'
 import { TProfessional } from './src/domain/entities/professional-entity'
 import { getLogarPsicologo, setInserirPsicologo } from './src/controller/usuario/controller_psicologo'
-import { criarDisponibilidadePsicologo, setInserirDisponibilidade } from './src/controller/disponibilidade/controller_disponibilidade'
+import { criarDisponibilidadePsicologo, getListarDisponibilidadesProfissional, setInserirDisponibilidade } from './src/controller/disponibilidade/controller_disponibilidade'
 import { TAvailability } from './src/domain/entities/availability-entity'
 import { TProfessionalAvailability } from './src/domain/entities/professional-availability'
 
@@ -92,6 +92,15 @@ route.post('/login/usuario', async (req, res) => {
 
 })
 
+route.get('/usuario/:id', async (req, res) => {
+    let id = Number(req.params.id)
+
+    let userData = await getBuscarCliente(id)
+
+    res.status(userData.status_code)
+    res.json(userData)
+})
+
 
 /****************************************************GÊNERO****************************************************/
 route.get('/sexo', async (req, res) => {
@@ -117,7 +126,7 @@ route.get('/usuario/sexo/:id', async (req, res) => {
 
 //post de psicólogos
 route.post('/psicologo', async (req, res) => {
-    const contentType = req.header('content-type')
+    const contentType = req.header('Content-Type')
 
     const professionalData: TProfessional = {
         nome: req.body.nome,
@@ -170,22 +179,61 @@ route.post('/profissional/login', async (req, res) => {
 })
 
 route.post ('/disponibilidade/psicologo/:id', async (req, res) => {
-    let id = req.params.id
-    let idFormat = Number(id)
+    let id = Number(req.params.id)
 
     const availability: TProfessionalAvailability =  {
         disponibilidade_id: req.body.disponibilidade,
         status: req.body.status,
-        id_psicologo: idFormat
+        id_psicologo: id
     }
 
     let rsDisponilidade = await criarDisponibilidadePsicologo(availability)
 
     console.log(rsDisponilidade);
 
-    res.status(rsDisponilidade.status_code)
+    res.status(rsDisponilidade.status_code!!)
     res.json(rsDisponilidade)
 })
+
+route.get('/disponibilidade/psicologo/:id', async (req, res) =>{
+    let id = Number(req.params.id)
+
+    const professionalAvailbility = await getListarDisponibilidadesProfissional(id)
+
+    res.status(professionalAvailbility.status_code)
+    res.json(professionalAvailbility)
+})
+
+/****************************************************PREFERÊNCIAS****************************************************/
+route.get('/preferencias', async (req, res) =>{
+    let preferenceData = await getListarPreferencias()
+
+    console.log(preferenceData)
+
+    res.status(preferenceData.status_code)
+    res.json(preferenceData)
+    
+})
+
+route.get('/preferencias/:id', async (req, res) =>{
+    let id = Number(req.params.id)
+
+    let preferenceData = await getBuscarPreferencia(id)
+
+    res.status(preferenceData.status_code)
+    res.json(preferenceData)
+})
+
+
+// Configurações do CORS
+const corsOptions = {
+    origin: 'http://localhost:5173', // Permita o seu frontend
+    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Métodos permitidos
+    allowedHeaders: ['Content-Type', 'Authorization'], // Cabeçalhos permitidos
+    optionsSuccessStatus: 200
+  };
+  
+app.use(cors(corsOptions));
 
 //Ativação das rotas
 app.use('/v1/vivaris', route)
@@ -194,3 +242,5 @@ app.use('/v1/vivaris', route)
 app.listen('8080', () => {
     console.log("API funcionando na porta 8080");
 })
+
+

@@ -72,6 +72,12 @@ route.post('/login/usuario', (req, res) => __awaiter(void 0, void 0, void 0, fun
     res.status(user.status_code);
     res.json(user);
 }));
+route.get('/usuario/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    let id = Number(req.params.id);
+    let userData = yield (0, controller_usuario_1.getBuscarCliente)(id);
+    res.status(userData.status_code);
+    res.json(userData);
+}));
 /****************************************************GÊNERO****************************************************/
 route.get('/sexo', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let allSex = yield (0, controller_usuario_1.getListarSexo)();
@@ -88,7 +94,7 @@ route.get('/usuario/sexo/:id', (req, res) => __awaiter(void 0, void 0, void 0, f
 /****************************************************PSICÓLOGO****************************************************/
 //post de psicólogos
 route.post('/psicologo', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const contentType = req.header('content-type');
+    const contentType = req.header('Content-Type');
     const professionalData = {
         nome: req.body.nome,
         email: req.body.email,
@@ -126,18 +132,44 @@ route.post('/disponibilidade', (req, res) => __awaiter(void 0, void 0, void 0, f
     res.json(rsDisponilidade);
 }));
 route.post('/disponibilidade/psicologo/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    let id = req.params.id;
-    let idFormat = Number(id);
+    let id = Number(req.params.id);
     const availability = {
         disponibilidade_id: req.body.disponibilidade,
         status: req.body.status,
-        id_psicologo: idFormat
+        id_psicologo: id
     };
     let rsDisponilidade = yield (0, controller_disponibilidade_1.criarDisponibilidadePsicologo)(availability);
     console.log(rsDisponilidade);
     res.status(rsDisponilidade.status_code);
     res.json(rsDisponilidade);
 }));
+route.get('/disponibilidade/psicologo/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    let id = Number(req.params.id);
+    const professionalAvailbility = yield (0, controller_disponibilidade_1.getListarDisponibilidadesProfissional)(id);
+    res.status(professionalAvailbility.status_code);
+    res.json(professionalAvailbility);
+}));
+/****************************************************PREFERÊNCIAS****************************************************/
+route.get('/preferencias', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    let preferenceData = yield (0, controller_preferencia_1.getListarPreferencias)();
+    console.log(preferenceData);
+    res.status(preferenceData.status_code);
+    res.json(preferenceData);
+}));
+route.get('/preferencias/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    let id = Number(req.params.id);
+    let preferenceData = yield (0, controller_preferencia_1.getBuscarPreferencia)(id);
+    res.status(preferenceData.status_code);
+    res.json(preferenceData);
+}));
+// Configurações do CORS
+const corsOptions = {
+    origin: 'http://localhost:5173', // Permita o seu frontend
+    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Métodos permitidos
+    allowedHeaders: ['Content-Type', 'Authorization'], // Cabeçalhos permitidos
+    optionsSuccessStatus: 200
+};
+app.use((0, cors_1.default)(corsOptions));
 //Ativação das rotas
 app.use('/v1/vivaris', route);
 //Ativação na porta 8080

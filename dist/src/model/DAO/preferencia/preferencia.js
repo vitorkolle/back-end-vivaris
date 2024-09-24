@@ -9,46 +9,45 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAllSexos = getAllSexos;
-exports.getSexoById = getSexoById;
+exports.listarPreferencias = listarPreferencias;
+exports.buscarPreferencia = buscarPreferencia;
 const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
-function getAllSexos() {
+function listarPreferencias() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const sexos = yield prisma.tbl_sexo.findMany({
+            const preferences = yield prisma.tbl_preferencias.findMany({
                 select: {
                     id: true,
-                    sexo: true,
-                }
+                    cor: true,
+                    nome: true
+                },
             });
-            return sexos;
+            return preferences;
         }
         catch (error) {
-            console.error("Erro acessando todos os sexos", error);
+            console.error("Erro acessando todas as preferências", error);
             throw error;
         }
     });
 }
-function getSexoById(sexoId) {
+function buscarPreferencia(id) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const sexo = yield prisma.tbl_sexo.findUnique({
-                where: {
-                    id: sexoId,
-                },
+            const preference = yield prisma.tbl_preferencias.findUnique({
                 select: {
                     id: true,
-                    sexo: true,
+                    cor: true,
+                    nome: true
+                },
+                where: {
+                    id: id
                 }
             });
-            if (!sexo) {
-                throw new Error("Sexo não encontrado");
-            }
-            return sexo;
+            return preference;
         }
         catch (error) {
-            console.error("Error acessando o sexo por ID", error);
+            console.error("Erro buscando preferencia", error);
             throw error;
         }
     });

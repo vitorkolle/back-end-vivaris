@@ -13,6 +13,7 @@ exports.criarNovoCliente = criarNovoCliente;
 exports.obterUsuarioComPreferencias = obterUsuarioComPreferencias;
 exports.criarPreferenciasUsuario = criarPreferenciasUsuario;
 exports.logarCliente = logarCliente;
+exports.buscarCliente = buscarCliente;
 const client_1 = require("@prisma/client");
 const config_1 = require("../../../../module/config");
 const prisma = new client_1.PrismaClient();
@@ -210,6 +211,34 @@ function logarCliente(email, senha) {
                 preferencias_usuario: preferenciasArray
             };
             return response;
+        }
+        catch (error) {
+            console.error("Erro ao obter o usuário", error);
+            throw new Error("Não foi possível obter o usuário");
+        }
+    });
+}
+function buscarCliente(id) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            let clientData = yield prisma.tbl_clientes.findUnique({
+                select: {
+                    id: true,
+                    nome: true,
+                    email: true,
+                    senha: true,
+                    telefone: true,
+                    cpf: true,
+                    data_nascimento: true,
+                    foto_perfil: true,
+                    link_instagram: true,
+                    id_sexo: true
+                },
+                where: {
+                    id: id
+                }
+            });
+            return clientData;
         }
         catch (error) {
             console.error("Erro ao obter o usuário", error);

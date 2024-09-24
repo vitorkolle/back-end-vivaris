@@ -4,7 +4,7 @@ import { ERROR_NOT_FOUND } from "../../../../module/config";
 
 const prisma = new PrismaClient()
 
-export async function criarNovoPsicologo(userInput: TProfessional): Promise<TProfessional> {
+export async function criarNovoPsicologo(userInput: TProfessional) {
   try {
 
     const user = await prisma.tbl_psicologos.create({
@@ -20,7 +20,7 @@ export async function criarNovoPsicologo(userInput: TProfessional): Promise<TPro
       }, 
     });
 
-    return user;
+    return user
 
   } catch (error) {
     console.error("Erro ao criar novo profissional:", error);

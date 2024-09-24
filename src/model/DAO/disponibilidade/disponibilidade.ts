@@ -36,7 +36,7 @@ export async function criarDisponibilidade(disponibilidade: TAvailability) {
       }
 }
 
-export async function listarDisponibilidadesPorProfissional(profissionalId: number): Promise <TAvailability> {
+export async function listarDisponibilidadesPorProfissional(profissionalId: number) {
   try {
 
     const usuario = await prisma.tbl_psicologos.findUnique({ 
@@ -52,7 +52,9 @@ export async function listarDisponibilidadesPorProfissional(profissionalId: numb
     });
 
     if (!usuario) {
-      throw new Error('Usuário não encontrado.');
+      return{
+        id: false
+      };
     }
 
     const disponibilidades = await prisma.tbl_psicologo_disponibilidade.findMany({
@@ -83,7 +85,7 @@ export async function listarDisponibilidadesPorProfissional(profissionalId: numb
       })),
     };
 
-    //return response;
+    return response;
 
   } catch (error) {
     console.error("Erro ao obter o usuário com as preferências:", error);
@@ -188,10 +190,11 @@ export async function buscarDisponibilidadePsicologo(professionalId: number, ava
       }
     })
 
-
-  
+    if(disponibilidadePsicologo){
       return disponibilidadePsicologo
-
+    }
+    else 
+    return false
 
   } catch (error) {
     console.error("Erro ao encontrar disponibilidade de psicólogos:", error);
@@ -201,7 +204,7 @@ export async function buscarDisponibilidadePsicologo(professionalId: number, ava
 
 export async function buscarDisponibilidade(id: number){
   try {
-    const user = await prisma.tbl_disponibilidade.findUnique({
+    let availability = await prisma.tbl_disponibilidade.findMany({
       where: {
         id: id
       },
@@ -212,10 +215,12 @@ export async function buscarDisponibilidade(id: number){
       }
     })
 
-    if(user){
-      return user
+    if(availability.length < 1){
+      return false
     }
-    return Promise.resolve(ERROR_NOT_FOUND)
+
+    return availability
+
   } catch (error) {
     console.error("Erro ao encontrar disponibilidade:", error);
     throw new Error("Não foi possível achar disponibilidades");

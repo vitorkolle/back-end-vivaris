@@ -12,7 +12,7 @@ export async function getAllSexos(){
         })
         return sexos;
     }catch(error){
-        console.error("Error acessando todos os sexos", error);
+        console.error("Erro acessando todos os sexos", error);
         throw error;
     }
 }

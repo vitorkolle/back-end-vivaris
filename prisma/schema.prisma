@@ -14,7 +14,7 @@ model tbl_clientes {
   data_nascimento           DateTime                    @db.Date
   cpf                       String                      @unique(map: "cpf") @db.VarChar(11)
   senha                     String                      @db.VarChar(20)
-  foto_perfil               String?                     @db.VarChar(2000)
+  foto_perfil               String?                     @db.VarChar(300)
   telefone                  String                      @db.VarChar(11)
   link_instagram            String?                     @db.VarChar(56)
   id_sexo                   Int?
@@ -47,12 +47,11 @@ model tbl_psicologos {
   email                         String                          @unique(map: "email") @db.VarChar(256)
   senha                         String                          @db.VarChar(20)
   telefone                      String                          @db.VarChar(11)
-  foto_perfil                   String?                         @db.VarChar(2000)
-  descricao                     String?                         @db.VarChar(500)
+  foto_perfil                   String?                         @db.VarChar(300)
   link_instagram                String?                         @db.VarChar(56)
-  id_sexo                       Int?
+  id_sexo                       Int
   tbl_psicologo_disponibilidade tbl_psicologo_disponibilidade[]
-  tbl_sexo                      tbl_sexo?                       @relation(fields: [id_sexo], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "SEXO_PSICOLOGOS")
+  tbl_sexo                      tbl_sexo                        @relation(fields: [id_sexo], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "SEXO_PSICOLOGOS")
 
   @@index([id_sexo], map: "SEXO_PSICOLOGOS")
 }
