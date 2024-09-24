@@ -10,9 +10,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.setInserirPreferencias = setInserirPreferencias;
+exports.getListarPreferencias = getListarPreferencias;
 const config_1 = require("../../../module/config");
 const client_preferences_validation_1 = require("../../infra/client-preferences-validation");
 const usuario_1 = require("../../model/DAO/cliente/usuario");
+const preferencia_1 = require("../../model/DAO/preferencia/preferencia");
 function setInserirPreferencias(userData, contentType) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -62,5 +64,17 @@ function setInserirPreferencias(userData, contentType) {
             console.error('Erro ao tentar inserir um novo usuário:', error);
             return config_1.ERROR_INTERNAL_SERVER;
         }
+    });
+}
+function getListarPreferencias() {
+    return __awaiter(this, void 0, void 0, function* () {
+        let preferenceData = yield (0, preferencia_1.listarPreferencias)();
+        if (preferenceData) {
+            return {
+                data: preferenceData,
+                status_code: 200
+            };
+        }
+        return config_1.ERROR_NOT_FOUND;
     });
 }

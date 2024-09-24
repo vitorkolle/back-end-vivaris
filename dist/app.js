@@ -126,17 +126,23 @@ route.post('/disponibilidade', (req, res) => __awaiter(void 0, void 0, void 0, f
     res.json(rsDisponilidade);
 }));
 route.post('/disponibilidade/psicologo/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    let id = req.params.id;
-    let idFormat = Number(id);
+    let id = Number(req.params.id);
     const availability = {
         disponibilidade_id: req.body.disponibilidade,
         status: req.body.status,
-        id_psicologo: idFormat
+        id_psicologo: id
     };
     let rsDisponilidade = yield (0, controller_disponibilidade_1.criarDisponibilidadePsicologo)(availability);
     console.log(rsDisponilidade);
     res.status(rsDisponilidade.status_code);
     res.json(rsDisponilidade);
+}));
+/****************************************************PREFERÊNCIAS****************************************************/
+route.get('/preferencias', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    let preferenceData = yield (0, controller_preferencia_1.getListarPreferencias)();
+    console.log(preferenceData);
+    res.status(preferenceData.status_code);
+    res.json(preferenceData);
 }));
 // Configurações do CORS
 const corsOptions = {

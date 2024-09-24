@@ -1,8 +1,9 @@
 import { UserPreferences } from "typescript";
-import { ERROR_ALREADY_EXISTS_PREFRENCE, ERROR_CONTENT_TYPE, ERROR_INTERNAL_SERVER, ERROR_INTERNAL_SERVER_DB, ERROR_NOT_CREATED, ERROR_NOT_FOUND_PREFERENCE, ERROR_REQUIRED_FIELDS, SUCCESS_CREATED_ITEM } from "../../../module/config";
+import { ERROR_ALREADY_EXISTS_PREFRENCE, ERROR_CONTENT_TYPE, ERROR_INTERNAL_SERVER, ERROR_INTERNAL_SERVER_DB, ERROR_NOT_CREATED, ERROR_NOT_FOUND, ERROR_NOT_FOUND_PREFERENCE, ERROR_REQUIRED_FIELDS, SUCCESS_CREATED_ITEM } from "../../../module/config";
 import { TUserPreferences } from "../../domain/entities/user-preferences";
 import { verificarPreferencias } from "../../infra/client-preferences-validation";
 import { criarPreferenciasUsuario } from "../../model/DAO/cliente/usuario";
+import { listarPreferencias } from "../../model/DAO/preferencia/preferencia";
 
 export async function setInserirPreferencias(userData : TUserPreferences, contentType: string | undefined) {
     try {
@@ -58,4 +59,17 @@ export async function setInserirPreferencias(userData : TUserPreferences, conten
         console.error('Erro ao tentar inserir um novo usuário:', error);
         return ERROR_INTERNAL_SERVER;
     }
+} 
+
+export async function getListarPreferencias() {
+    let preferenceData = await listarPreferencias()
+
+    if(preferenceData){
+        return{
+            data: preferenceData,
+            status_code: 200
+        }
+    }
+
+    return ERROR_NOT_FOUND
 }

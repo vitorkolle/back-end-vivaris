@@ -17,7 +17,7 @@ import cors from 'cors'
 
 //Import Controller 
 import { getBuscarSexo, getListarSexo, getLogarCliente, setInserirUsuario } from './src/controller/usuario/controller_usuario'
-import { setInserirPreferencias } from './src/controller/preferencia/controller_preferencia'
+import { getListarPreferencias, setInserirPreferencias } from './src/controller/preferencia/controller_preferencia'
 import { TProfessional } from './src/domain/entities/professional-entity'
 import { getLogarPsicologo, setInserirPsicologo } from './src/controller/usuario/controller_psicologo'
 import { criarDisponibilidadePsicologo, setInserirDisponibilidade } from './src/controller/disponibilidade/controller_disponibilidade'
@@ -170,13 +170,12 @@ route.post('/profissional/login', async (req, res) => {
 })
 
 route.post ('/disponibilidade/psicologo/:id', async (req, res) => {
-    let id = req.params.id
-    let idFormat = Number(id)
+    let id = Number(req.params.id)
 
     const availability: TProfessionalAvailability =  {
         disponibilidade_id: req.body.disponibilidade,
         status: req.body.status,
-        id_psicologo: idFormat
+        id_psicologo: id
     }
 
     let rsDisponilidade = await criarDisponibilidadePsicologo(availability)
@@ -186,6 +185,18 @@ route.post ('/disponibilidade/psicologo/:id', async (req, res) => {
     res.status(rsDisponilidade.status_code!!)
     res.json(rsDisponilidade)
 })
+
+/****************************************************PREFERÊNCIAS****************************************************/
+route.get('/preferencias', async (req, res) =>{
+    let preferenceData = await getListarPreferencias()
+
+    console.log(preferenceData)
+
+    res.status(preferenceData.status_code)
+    res.json(preferenceData)
+    
+})
+
 
 // Configurações do CORS
 const corsOptions = {
