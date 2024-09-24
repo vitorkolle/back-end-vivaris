@@ -15,7 +15,6 @@ exports.criarDisponibilidadeProfissional = criarDisponibilidadeProfissional;
 exports.buscarDisponibilidadePsicologo = buscarDisponibilidadePsicologo;
 exports.buscarDisponibilidade = buscarDisponibilidade;
 const client_1 = require("@prisma/client");
-const config_1 = require("../../../../module/config");
 const prisma = new client_1.PrismaClient();
 function criarDisponibilidade(disponibilidade) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -194,7 +193,11 @@ function buscarDisponibilidadePsicologo(professionalId, availabilityId) {
                     status_disponibilidade: true
                 }
             });
-            return disponibilidadePsicologo;
+            if (disponibilidadePsicologo) {
+                return disponibilidadePsicologo;
+            }
+            else
+                return false;
         }
         catch (error) {
             console.error("Erro ao encontrar disponibilidade de psicólogos:", error);
@@ -205,7 +208,7 @@ function buscarDisponibilidadePsicologo(professionalId, availabilityId) {
 function buscarDisponibilidade(id) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const user = yield prisma.tbl_disponibilidade.findUnique({
+            let availability = yield prisma.tbl_disponibilidade.findMany({
                 where: {
                     id: id
                 },
@@ -215,10 +218,10 @@ function buscarDisponibilidade(id) {
                     horario_fim: true
                 }
             });
-            if (user) {
-                return user;
+            if (availability.length < 1) {
+                return false;
             }
-            return Promise.resolve(config_1.ERROR_NOT_FOUND);
+            return availability;
         }
         catch (error) {
             console.error("Erro ao encontrar disponibilidade:", error);

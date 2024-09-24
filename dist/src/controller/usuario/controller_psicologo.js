@@ -121,7 +121,15 @@ function getBuscarPsicologo(id) {
             if (professionalData) {
                 return {
                     data: professionalData,
-                    status_code: 200
+                    status_code: 200,
+                    status: true
+                };
+            }
+            else {
+                return {
+                    data: config_1.ERROR_NOT_FOUND.message,
+                    status_code: config_1.ERROR_NOT_FOUND.status_code,
+                    status: config_1.ERROR_NOT_FOUND.status
                 };
             }
         }

@@ -71,31 +71,48 @@ function criarDisponibilidadePsicologo(availability) {
                 return config_1.ERROR_REQUIRED_FIELDS;
             }
             const validateProfessional = yield (0, controller_psicologo_1.getBuscarPsicologo)(availability.id_psicologo);
-            if (!validateProfessional) {
+            if (validateProfessional.status == false) {
                 return config_1.ERROR_NOT_FOUND_PROFESSIONAL;
             }
             const validateAvailbility = yield getBuscarDisponibilidade(availability.disponibilidade_id);
+            console.log(validateAvailbility);
             if (!validateAvailbility) {
                 return config_1.ERROR_NOT_FOUND_AVAILBILITY;
             }
             const searchProfessionalAvailbility = yield (0, disponibilidade_1.buscarDisponibilidadePsicologo)(availability.id_psicologo, availability.disponibilidade_id);
             let novaDisponibilidade;
-            for (let index = 0; index < searchProfessionalAvailbility.length; index++) {
-                const disponibilidade = searchProfessionalAvailbility[index];
-                if (disponibilidade.psicologo_id == availability.id_psicologo && disponibilidade.disponibilidade_id == availability.disponibilidade_id && disponibilidade.status_disponibilidade == 'Concluido' || disponibilidade.status_disponibilidade == 'Livre') {
+            if (searchProfessionalAvailbility === false) {
+                novaDisponibilidade = yield (0, disponibilidade_1.criarDisponibilidadeProfissional)(availability.id_psicologo, availability.disponibilidade_id, availability.status);
+                if (novaDisponibilidade) {
+                    return {
+                        data: novaDisponibilidade,
+                        status_code: config_1.SUCCESS_CREATED_ITEM.status_code,
+                        message: config_1.SUCCESS_CREATED_ITEM.message
+                    };
+                }
+                else {
+                    return config_1.ERROR_INTERNAL_SERVER_DB;
+                }
+            }
+            searchProfessionalAvailbility.forEach((searchAvailability) => __awaiter(this, void 0, void 0, function* () {
+                if (searchAvailability.psicologo_id == availability.id_psicologo && searchAvailability.disponibilidade_id == availability.disponibilidade_id && (searchAvailability.status_disponibilidade == 'Concluido' || searchAvailability.status_disponibilidade == 'Livre')) {
                     novaDisponibilidade = yield (0, disponibilidade_1.criarDisponibilidadeProfissional)(availability.id_psicologo, availability.disponibilidade_id, availability.status);
                 }
-                return config_1.ERROR_ALREADY_EXISTS_PREFRENCE;
-            }
+                else {
+                    return config_1.ERROR_ALREADY_EXISTS_PREFRENCE;
+                }
+            }));
             if (novaDisponibilidade) {
                 return {
-                    data: novaDisponibilidade,
-                    status_code: config_1.SUCCESS_CREATED_ITEM.status_code,
-                    message: config_1.SUCCESS_CREATED_ITEM.message
+                    data: {
+                        data: novaDisponibilidade,
+                        status_code: config_1.SUCCESS_CREATED_ITEM.status_code,
+                        message: config_1.SUCCESS_CREATED_ITEM.message
+                    }
                 };
             }
             else {
-                return config_1.ERROR_INTERNAL_SERVER_DB;
+                return config_1.ERROR_ALREADY_EXISTS_PROFESSIONAL_AVAILBILITY;
             }
         }
         catch (error) {
@@ -109,10 +126,10 @@ function getBuscarDisponibilidade(id) {
         if (id < 1) {
             return config_1.ERROR_REQUIRED_FIELDS;
         }
-        const availabilityData = yield (0, disponibilidade_1.buscarDisponibilidade)(id);
-        if (availabilityData) {
-            return availabilityData;
+        let availabilityData = yield (0, disponibilidade_1.buscarDisponibilidade)(id);
+        if (availabilityData === false) {
+            return config_1.ERROR_NOT_FOUND;
         }
-        return config_1.ERROR_NOT_FOUND;
+        return availabilityData;
     });
 }

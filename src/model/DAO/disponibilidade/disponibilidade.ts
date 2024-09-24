@@ -188,10 +188,11 @@ export async function buscarDisponibilidadePsicologo(professionalId: number, ava
       }
     })
 
-
-  
+    if(disponibilidadePsicologo){
       return disponibilidadePsicologo
-
+    }
+    else 
+    return false
 
   } catch (error) {
     console.error("Erro ao encontrar disponibilidade de psicólogos:", error);
@@ -201,7 +202,7 @@ export async function buscarDisponibilidadePsicologo(professionalId: number, ava
 
 export async function buscarDisponibilidade(id: number){
   try {
-    const user = await prisma.tbl_disponibilidade.findUnique({
+    let availability = await prisma.tbl_disponibilidade.findMany({
       where: {
         id: id
       },
@@ -212,10 +213,12 @@ export async function buscarDisponibilidade(id: number){
       }
     })
 
-    if(user){
-      return user
+    if(availability.length < 1){
+      return false
     }
-    return Promise.resolve(ERROR_NOT_FOUND)
+
+    return availability
+
   } catch (error) {
     console.error("Erro ao encontrar disponibilidade:", error);
     throw new Error("Não foi possível achar disponibilidades");

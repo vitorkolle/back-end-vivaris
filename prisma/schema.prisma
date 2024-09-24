@@ -14,7 +14,7 @@ model tbl_clientes {
   data_nascimento           DateTime                    @db.Date
   cpf                       String                      @unique(map: "cpf") @db.VarChar(11)
   senha                     String                      @db.VarChar(20)
-  foto_perfil               String?                     @db.VarChar(2000)
+  foto_perfil               String?                     @db.VarChar(300)
   telefone                  String                      @db.VarChar(11)
   link_instagram            String?                     @db.VarChar(56)
   id_sexo                   Int?
@@ -32,10 +32,9 @@ model tbl_sexo {
 }
 
 model tbl_preferencias {
-  id                        Int                         @id @default(autoincrement())
-  nome                      String                      @unique(map: "nome") @db.VarChar(15)
-  cor                       String                      @unique(map: "cor") @db.VarChar(7)
-  tbl_clientes_preferencias tbl_clientes_preferencias[]
+  id   Int    @id @default(autoincrement())
+  nome String @unique(map: "nome") @db.VarChar(15)
+  cor  String @unique(map: "cor") @db.VarChar(7)
 }
 
 model tbl_psicologos {
@@ -47,22 +46,20 @@ model tbl_psicologos {
   email                         String                          @unique(map: "email") @db.VarChar(256)
   senha                         String                          @db.VarChar(20)
   telefone                      String                          @db.VarChar(11)
-  foto_perfil                   String?                         @db.VarChar(2000)
-  descricao                     String?                         @db.VarChar(500)
+  foto_perfil                   String?                         @db.VarChar(300)
   link_instagram                String?                         @db.VarChar(56)
-  id_sexo                       Int?
+  id_sexo                       Int
   tbl_psicologo_disponibilidade tbl_psicologo_disponibilidade[]
-  tbl_sexo                      tbl_sexo?                       @relation(fields: [id_sexo], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "SEXO_PSICOLOGOS")
+  tbl_sexo                      tbl_sexo                        @relation(fields: [id_sexo], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "SEXO_PSICOLOGOS")
 
   @@index([id_sexo], map: "SEXO_PSICOLOGOS")
 }
 
 model tbl_clientes_preferencias {
-  id               Int               @id @default(autoincrement())
-  id_clientes      Int?
-  id_preferencias  Int?
-  tbl_clientes     tbl_clientes?     @relation(fields: [id_clientes], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "CLIENTES_CLIENTES_PREFERENCIAS")
-  tbl_preferencias tbl_preferencias? @relation(fields: [id_preferencias], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "PREFERENCIAS_CLIENTES_PREFERENCIAS")
+  id              Int           @id @default(autoincrement())
+  id_clientes     Int?
+  id_preferencias Int?
+  tbl_clientes    tbl_clientes? @relation(fields: [id_clientes], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "CLIENTES_CLIENTES_PREFERENCIAS")
 
   @@index([id_clientes], map: "CLIENTES_CLIENTES_PREFERENCIAS")
   @@index([id_preferencias], map: "PREFERENCIAS_CLIENTES_PREFERENCIAS")

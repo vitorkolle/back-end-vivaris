@@ -183,7 +183,7 @@ route.post ('/disponibilidade/psicologo/:id', async (req, res) => {
 
     console.log(rsDisponilidade);
 
-    res.status(rsDisponilidade.status_code)
+    res.status(rsDisponilidade.status_code!!)
     res.json(rsDisponilidade)
 })
 
