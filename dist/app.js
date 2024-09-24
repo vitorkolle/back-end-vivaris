@@ -144,6 +144,12 @@ route.get('/preferencias', (req, res) => __awaiter(void 0, void 0, void 0, funct
     res.status(preferenceData.status_code);
     res.json(preferenceData);
 }));
+route.get('/preferencias/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    let id = Number(req.params.id);
+    let preferenceData = yield (0, controller_preferencia_1.getBuscarPreferencia)(id);
+    res.status(preferenceData.status_code);
+    res.json(preferenceData);
+}));
 // Configurações do CORS
 const corsOptions = {
     origin: 'http://localhost:5173', // Permita o seu frontend

@@ -17,7 +17,7 @@ import cors from 'cors'
 
 //Import Controller 
 import { getBuscarSexo, getListarSexo, getLogarCliente, setInserirUsuario } from './src/controller/usuario/controller_usuario'
-import { getListarPreferencias, setInserirPreferencias } from './src/controller/preferencia/controller_preferencia'
+import { getBuscarPreferencia, getListarPreferencias, setInserirPreferencias } from './src/controller/preferencia/controller_preferencia'
 import { TProfessional } from './src/domain/entities/professional-entity'
 import { getLogarPsicologo, setInserirPsicologo } from './src/controller/usuario/controller_psicologo'
 import { criarDisponibilidadePsicologo, setInserirDisponibilidade } from './src/controller/disponibilidade/controller_disponibilidade'
@@ -195,6 +195,15 @@ route.get('/preferencias', async (req, res) =>{
     res.status(preferenceData.status_code)
     res.json(preferenceData)
     
+})
+
+route.get('/preferencias/:id', async (req, res) =>{
+    let id = Number(req.params.id)
+
+    let preferenceData = await getBuscarPreferencia(id)
+
+    res.status(preferenceData.status_code)
+    res.json(preferenceData)
 })
 
 

@@ -11,6 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.setInserirPreferencias = setInserirPreferencias;
 exports.getListarPreferencias = getListarPreferencias;
+exports.getBuscarPreferencia = getBuscarPreferencia;
 const config_1 = require("../../../module/config");
 const client_preferences_validation_1 = require("../../infra/client-preferences-validation");
 const usuario_1 = require("../../model/DAO/cliente/usuario");
@@ -72,6 +73,21 @@ function getListarPreferencias() {
         if (preferenceData) {
             return {
                 data: preferenceData,
+                status_code: 200
+            };
+        }
+        return config_1.ERROR_NOT_FOUND;
+    });
+}
+function getBuscarPreferencia(id) {
+    return __awaiter(this, void 0, void 0, function* () {
+        if (!id || typeof id !== 'number' || id < 1) {
+            return config_1.ERROR_REQUIRED_FIELDS;
+        }
+        let searchPreference = yield (0, preferencia_1.buscarPreferencia)(id);
+        if (searchPreference) {
+            return {
+                data: searchPreference,
                 status_code: 200
             };
         }

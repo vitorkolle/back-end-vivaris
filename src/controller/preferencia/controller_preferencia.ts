@@ -3,7 +3,7 @@ import { ERROR_ALREADY_EXISTS_PREFRENCE, ERROR_CONTENT_TYPE, ERROR_INTERNAL_SERV
 import { TUserPreferences } from "../../domain/entities/user-preferences";
 import { verificarPreferencias } from "../../infra/client-preferences-validation";
 import { criarPreferenciasUsuario } from "../../model/DAO/cliente/usuario";
-import { listarPreferencias } from "../../model/DAO/preferencia/preferencia";
+import { buscarPreferencia, listarPreferencias } from "../../model/DAO/preferencia/preferencia";
 
 export async function setInserirPreferencias(userData : TUserPreferences, contentType: string | undefined) {
     try {
@@ -67,6 +67,27 @@ export async function getListarPreferencias() {
     if(preferenceData){
         return{
             data: preferenceData,
+            status_code: 200
+        }
+    }
+
+    return ERROR_NOT_FOUND
+}
+
+export async function getBuscarPreferencia(id:number) {
+    if
+    (
+        !id || typeof id !== 'number' || id < 1    
+    )
+    {
+        return ERROR_REQUIRED_FIELDS
+    }
+
+    let searchPreference = await buscarPreferencia(id)
+
+    if(searchPreference){
+        return {
+            data: searchPreference,
             status_code: 200
         }
     }

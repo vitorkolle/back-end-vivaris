@@ -10,6 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.listarPreferencias = listarPreferencias;
+exports.buscarPreferencia = buscarPreferencia;
 const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
 function listarPreferencias() {
@@ -26,6 +27,27 @@ function listarPreferencias() {
         }
         catch (error) {
             console.error("Erro acessando todas as preferências", error);
+            throw error;
+        }
+    });
+}
+function buscarPreferencia(id) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const preference = yield prisma.tbl_preferencias.findUnique({
+                select: {
+                    id: true,
+                    cor: true,
+                    nome: true
+                },
+                where: {
+                    id: id
+                }
+            });
+            return preference;
+        }
+        catch (error) {
+            console.error("Erro buscando preferencia", error);
             throw error;
         }
     });

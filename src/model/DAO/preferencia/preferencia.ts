@@ -1,6 +1,5 @@
 import { PrismaClient } from "@prisma/client"
 import { ERROR_NOT_FOUND } from "../../../../module/config";
-import { TPreference } from "../../../domain/entities/preference-entity";
 const prisma = new PrismaClient()
 
 
@@ -19,3 +18,22 @@ export async function listarPreferencias() {
         throw error;
     }
 } 
+
+export async function buscarPreferencia(id:number) {
+    try {
+        const preference = await prisma.tbl_preferencias.findUnique({
+            select: {
+                id: true,
+                cor: true,
+                nome: true
+            },
+            where: {
+                id: id
+            }
+        })
+        return preference
+    } catch (error) {
+        console.error("Erro buscando preferencia", error);
+        throw error;
+    }
+}
