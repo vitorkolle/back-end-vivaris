@@ -72,6 +72,12 @@ route.post('/login/usuario', (req, res) => __awaiter(void 0, void 0, void 0, fun
     res.status(user.status_code);
     res.json(user);
 }));
+route.get('/usuario/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    let id = Number(req.params.id);
+    let userData = yield (0, controller_usuario_1.getBuscarCliente)(id);
+    res.status(userData.status_code);
+    res.json(userData);
+}));
 /****************************************************GÊNERO****************************************************/
 route.get('/sexo', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let allSex = yield (0, controller_usuario_1.getListarSexo)();

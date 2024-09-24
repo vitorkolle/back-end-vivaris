@@ -16,7 +16,7 @@ const route = Router()
 import cors from 'cors'
 
 //Import Controller 
-import { getBuscarSexo, getListarSexo, getLogarCliente, setInserirUsuario } from './src/controller/usuario/controller_usuario'
+import { getBuscarCliente, getBuscarSexo, getListarSexo, getLogarCliente, setInserirUsuario } from './src/controller/usuario/controller_usuario'
 import { getBuscarPreferencia, getListarPreferencias, setInserirPreferencias } from './src/controller/preferencia/controller_preferencia'
 import { TProfessional } from './src/domain/entities/professional-entity'
 import { getLogarPsicologo, setInserirPsicologo } from './src/controller/usuario/controller_psicologo'
@@ -90,6 +90,15 @@ route.post('/login/usuario', async (req, res) => {
     res.status(user.status_code)
     res.json(user)
 
+})
+
+route.get('/usuario/:id', async (req, res) => {
+    let id = Number(req.params.id)
+
+    let userData = await getBuscarCliente(id)
+
+    res.status(userData.status_code)
+    res.json(userData)
 })
 
 

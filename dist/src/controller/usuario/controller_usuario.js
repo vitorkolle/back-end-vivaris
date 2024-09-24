@@ -13,6 +13,7 @@ exports.setInserirUsuario = setInserirUsuario;
 exports.getListarSexo = getListarSexo;
 exports.getBuscarSexo = getBuscarSexo;
 exports.getLogarCliente = getLogarCliente;
+exports.getBuscarCliente = getBuscarCliente;
 const config_1 = require("../../../module/config");
 const usuario_1 = require("../../model/DAO/cliente/usuario");
 const sexo_1 = require("../../model/DAO/cliente/sexo");
@@ -138,6 +139,26 @@ function getLogarCliente(email, senha) {
         }
         else {
             return config_1.ERROR_NOT_FOUND;
+        }
+    });
+}
+function getBuscarCliente(id) {
+    return __awaiter(this, void 0, void 0, function* () {
+        if (!id || typeof id !== 'number' || id < 1) {
+            return config_1.ERROR_REQUIRED_FIELDS;
+        }
+        else {
+            let clientData = yield (0, usuario_1.buscarCliente)(id);
+            if (clientData) {
+                return {
+                    data: clientData,
+                    status_code: 200
+                };
+            }
+            return {
+                data: config_1.ERROR_NOT_FOUND.message,
+                status_code: 404
+            };
         }
     });
 }

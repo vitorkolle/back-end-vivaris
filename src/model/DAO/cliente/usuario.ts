@@ -218,3 +218,30 @@ export async function logarCliente(email: string, senha: string) {
     throw new Error("Não foi possível obter o usuário");
   }
 }
+
+export async function buscarCliente(id:number) {
+  try {
+    let clientData = await prisma.tbl_clientes.findUnique({
+      select:{
+        id: true,
+        nome: true,
+        email: true,
+        senha: true,
+        telefone: true,
+        cpf: true,
+        data_nascimento: true,
+        foto_perfil: true,
+        link_instagram: true,
+        id_sexo: true
+    },
+    where: {
+      id: id
+    }
+    })
+    return clientData
+
+  } catch (error) {
+    console.error("Erro ao obter o usuário", error);
+    throw new Error("Não foi possível obter o usuário");
+  }
+}
