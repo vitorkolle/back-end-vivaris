@@ -117,7 +117,7 @@ route.get('/usuario/sexo/:id', async (req, res) => {
 
 //post de psicólogos
 route.post('/psicologo', async (req, res) => {
-    const contentType = req.header('content-type')
+    const contentType = req.header('Content-Type')
 
     const professionalData: TProfessional = {
         nome: req.body.nome,
@@ -187,6 +187,16 @@ route.post ('/disponibilidade/psicologo/:id', async (req, res) => {
     res.json(rsDisponilidade)
 })
 
+// Configurações do CORS
+const corsOptions = {
+    origin: 'http://localhost:5173', // Permita o seu frontend
+    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Métodos permitidos
+    allowedHeaders: ['Content-Type', 'Authorization'], // Cabeçalhos permitidos
+    optionsSuccessStatus: 200
+  };
+  
+app.use(cors(corsOptions));
+
 //Ativação das rotas
 app.use('/v1/vivaris', route)
 
@@ -194,3 +204,5 @@ app.use('/v1/vivaris', route)
 app.listen('8080', () => {
     console.log("API funcionando na porta 8080");
 })
+
+

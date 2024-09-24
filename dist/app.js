@@ -88,7 +88,7 @@ route.get('/usuario/sexo/:id', (req, res) => __awaiter(void 0, void 0, void 0, f
 /****************************************************PSICÓLOGO****************************************************/
 //post de psicólogos
 route.post('/psicologo', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const contentType = req.header('content-type');
+    const contentType = req.header('Content-Type');
     const professionalData = {
         nome: req.body.nome,
         email: req.body.email,
@@ -138,6 +138,14 @@ route.post('/disponibilidade/psicologo/:id', (req, res) => __awaiter(void 0, voi
     res.status(rsDisponilidade.status_code);
     res.json(rsDisponilidade);
 }));
+// Configurações do CORS
+const corsOptions = {
+    origin: 'http://localhost:5173', // Permita o seu frontend
+    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Métodos permitidos
+    allowedHeaders: ['Content-Type', 'Authorization'], // Cabeçalhos permitidos
+    optionsSuccessStatus: 200
+};
+app.use((0, cors_1.default)(corsOptions));
 //Ativação das rotas
 app.use('/v1/vivaris', route);
 //Ativação na porta 8080
