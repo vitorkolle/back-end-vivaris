@@ -28,10 +28,9 @@ export async function setInserirPreferencias(userData : TUserPreferences, conten
 
                 for (let index = 0; index < userData.preferencias.length; index++) {
 
-                   
-
-                    const preferencia = userData.preferencias[index];
+                    const preferencia = Number(userData.preferencias[index]);                    
                     
+                    console.log('aqui o:',typeof userData.preferencias);
                     
 
                     const verificarPreferencia =  await verificarPreferencias.isValid(preferencia)
@@ -50,8 +49,6 @@ export async function setInserirPreferencias(userData : TUserPreferences, conten
                         return ERROR_NOT_FOUND_PREFERENCE
                     }
                 }
-
-               
 
                 if(newUserPreference){                    
                     return{

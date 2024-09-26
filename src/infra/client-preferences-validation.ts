@@ -18,7 +18,6 @@ export const verificarPreferencias: IVerificarPreferencias = {
                 id_clientes: id_cliente
             }, 
         });
-        console.log(preferences);
         
         return preferences === null
     }
