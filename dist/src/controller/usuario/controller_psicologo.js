@@ -36,15 +36,45 @@ function setInserirPsicologo(user, contentType) {
                     throw new Error("Invalid date format");
                 }
             }
+            function validarIdade(userDate) {
+                const birthDate = new Date(userDate);
+                const birthYear = birthDate.getFullYear();
+                const birthMonth = birthDate.getMonth();
+                const birthDay = birthDate.getDate();
+                const date = new Date();
+                const actualYear = date.getFullYear();
+                const actualMonth = date.getMonth();
+                const actualDay = date.getDate();
+                let age = actualYear - birthYear;
+                if (actualMonth < birthMonth || actualMonth == birthMonth && actualDay == birthDay) {
+                    age--;
+                }
+                return age < 0 ? 0 : age;
+            }
             // Validação dos campos obrigatórios
             if (!user.nome || typeof user.nome !== 'string' || user.nome.length > 50 || user.nome.match("\\d") ||
                 !user.cpf || user.cpf.length !== 11 || !(yield professional_data_validation_1.verificacaoProfissionais.verificarCpf(user.cpf)) ||
                 !user.cip || user.cip.length !== 9 || !(yield professional_data_validation_1.verificacaoProfissionais.verificarCip(user.cip)) ||
-                !user.data_nascimento || !validarData(user.data_nascimento.toString()) ||
+                !user.data_nascimento || !validarData(user.data_nascimento.toString()) || validarIdade(user.data_nascimento) < 18 ||
                 !user.email || typeof user.email !== 'string' || !(yield professional_data_validation_1.verificacaoProfissionais.verificarEmail(user.email)) || user.email.length > 256 ||
                 !user.senha || typeof user.senha !== 'string' || user.senha.length < 8 || user.senha.length > 20 ||
                 !user.telefone || user.telefone.length !== 11 || typeof user.telefone !== 'string' ||
                 !user.id_sexo || isNaN(Number(user.id_sexo))) {
+                if (!(yield professional_data_validation_1.verificacaoProfissionais.verificarEmail(user.email))) {
+                    return config_1.ERROR_ALREADY_EXISTS_ACCOUNT_EMAIL;
+                }
+                if (!(yield professional_data_validation_1.verificacaoProfissionais.verificarCpf(user.cpf))) {
+                    return config_1.ERROR_ALREADY_EXISTS_ACCOUNT_CPF;
+                }
+                if (!(yield professional_data_validation_1.verificacaoProfissionais.verificarCip(user.cip))) {
+                    return config_1.ERROR_ALREADY_EXISTS_ACCOUNT_CIP;
+                }
+                if (!validarData(user.data_nascimento.toString())) {
+                    return config_1.ERROR_DATE_NOT_VALID;
+                }
+                if (validarIdade(user.data_nascimento) < 18) {
+                    return config_1.ERROR_AGE_NOT_VALID;
+                }
                 return config_1.ERROR_REQUIRED_FIELDS;
             }
             else {

@@ -43,9 +43,9 @@ function setInserirUsuario(user, contentType) {
             // Validação dos campos obrigatórios
             if (!user.nome || typeof user.nome !== 'string' || user.nome.length > 50 || user.nome.match("\\d") ||
                 !user.cpf || user.cpf.length !== 11 || !(yield client_data_validation_1.verificacao.verificarCpf(user.cpf)) ||
-                !user.data_nascimento || !validarData(user.data_nascimento.toString()) ||
+                !user.data_nascimento || !validarData(user.data_nascimento.toString()) || transformarData(user.data_nascimento.toString()) ||
                 !user.email || typeof user.email !== 'string' || !(yield client_data_validation_1.verificacao.verificarEmail(user.email)) || user.email.length > 256 ||
-                !user.senha || typeof user.senha !== 'string' || user.senha.length < 8 || user.senha.length > 8 ||
+                !user.senha || typeof user.senha !== 'string' || user.senha.length < 8 || user.senha.length > 20 ||
                 !user.telefone || user.telefone.length !== 11 || typeof user.telefone !== 'string' ||
                 !user.id_sexo || isNaN(Number(user.id_sexo))) {
                 if (!(yield client_data_validation_1.verificacao.verificarEmail(user.email))) {
@@ -53,6 +53,9 @@ function setInserirUsuario(user, contentType) {
                 }
                 if (!(yield client_data_validation_1.verificacao.verificarCpf(user.cpf))) {
                     return config_1.ERROR_ALREADY_EXISTS_ACCOUNT_CPF;
+                }
+                if (!validarData(user.data_nascimento.toString()) || !transformarData(user.data_nascimento.toString())) {
+                    return config_1.ERROR_DATE_NOT_VALID;
                 }
                 return config_1.ERROR_REQUIRED_FIELDS;
             }
