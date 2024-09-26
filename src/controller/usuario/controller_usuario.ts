@@ -1,6 +1,10 @@
+<<<<<<< HEAD
 import { ERROR_ALREADY_EXISTS_ACCOUNT, ERROR_ALREADY_EXISTS_ACCOUNT_CPF, ERROR_ALREADY_EXISTS_ACCOUNT_EMAIL, ERROR_CONTENT_TYPE, ERROR_DATE_NOT_VALID, ERROR_INTERNAL_SERVER, ERROR_INTERNAL_SERVER_DB, ERROR_NOT_CREATED, ERROR_NOT_FOUND, ERROR_REQUIRED_FIELDS, SUCCESS_CREATED_ITEM } from "../../../module/config"
+=======
+import { ERROR_ALREADY_EXISTS_ACCOUNT, ERROR_ALREADY_EXISTS_ACCOUNT_CPF, ERROR_ALREADY_EXISTS_ACCOUNT_EMAIL, ERROR_CONTENT_TYPE, ERROR_INTERNAL_SERVER, ERROR_INTERNAL_SERVER_DB, ERROR_INVALID_DATE, ERROR_NOT_CREATED, ERROR_NOT_FOUND, ERROR_REQUIRED_FIELDS, SUCCESS_CREATED_ITEM } from "../../../module/config"
+>>>>>>> dedd331cbf047fa77453c633633747edae77227a
 import { TUser } from "../../domain/entities/user-entity"
-import { criarNovoCliente, logarCliente } from "../../model/DAO/cliente/usuario"
+import { buscarCliente, criarNovoCliente, logarCliente } from "../../model/DAO/cliente/usuario"
 import { getAllSexos, getSexoById } from "../../model/DAO/cliente/sexo";
 import { verificacao } from "../../infra/client-data-validation";
 
@@ -15,32 +19,42 @@ export async function setInserirUsuario(user: TUser, contentType: string | undef
         }
 
         function validarData(data: string): boolean {
-
-            if (data.length != 10) return false
-
-            return true
-
+      
+            if (data.length !== 10) return false;
+        
+            const partes = data.split("-");
+            const ano = parseInt(partes[0], 10);
+            const mes = parseInt(partes[1], 10);
+            const dia = parseInt(partes[2], 10);
+        
+     
+            if (mes < 1 || mes > 12) return false;
+        
+       
+            const dataTestada = new Date(ano, mes - 1, dia);
+            return dataTestada.getFullYear() === ano && dataTestada.getMonth() === mes - 1 && dataTestada.getDate() === dia;
         }
-
+        
         function transformarData(data: string): Date {
-            const dataFinal = new Date(data)
-
-            if (dataFinal) {
-                return dataFinal;
-            } else {
-                throw new Error("Invalid date format");
+            if (!validarData(data)) {
+                throw new Error("Formato de data inválido");
             }
-
-
+        
+            return new Date(data);
         }
-
-        // Validação dos campos obrigatórios
+        
         if (
             !user.nome || typeof user.nome !== 'string' || user.nome.length > 50 || user.nome.match("\\d") ||
             !user.cpf || user.cpf.length !== 11 || !await verificacao.verificarCpf(user.cpf) ||
+<<<<<<< HEAD
             !user.data_nascimento || !validarData(user.data_nascimento.toString()) || transformarData(user.data_nascimento.toString()) ||
             !user.email || typeof user.email !== 'string' || !await verificacao.verificarEmail(user.email) || user.email.length > 256 ||
             !user.senha || typeof user.senha !== 'string' || user.senha.length < 8 || user.senha.length > 20 ||
+=======
+            !user.data_nascimento || !validarData(user.data_nascimento.toString()) || 
+            !user.email || typeof user.email !== 'string' || !await verificacao.verificarEmail(user.email) || user.email.length > 256 ||
+            !user.senha || typeof user.senha !== 'string' || user.senha.length < 8 ||  user.senha.length > 20 ||
+>>>>>>> dedd331cbf047fa77453c633633747edae77227a
             !user.telefone || user.telefone.length !== 11 || typeof user.telefone !== 'string' ||
             !user.id_sexo || isNaN(Number(user.id_sexo))
         ) {
@@ -50,8 +64,13 @@ export async function setInserirUsuario(user: TUser, contentType: string | undef
             if(!await verificacao.verificarCpf(user.cpf)){
                 return ERROR_ALREADY_EXISTS_ACCOUNT_CPF
             }
+<<<<<<< HEAD
             if(!validarData(user.data_nascimento.toString()) || !transformarData(user.data_nascimento.toString())){
                 return ERROR_DATE_NOT_VALID
+=======
+            if(!validarData(user.data_nascimento.toString())){
+                return ERROR_INVALID_DATE
+>>>>>>> dedd331cbf047fa77453c633633747edae77227a
             }
 
             return ERROR_REQUIRED_FIELDS;
@@ -125,7 +144,7 @@ export async function getLogarCliente(email: string | undefined, senha: string |
         !email || typeof email != 'string' ||
         !senha || typeof senha != 'string'
     ){
-        return ERROR_REQUIRED_FIELDS
+        return ERROR_REQUIRED_FIELDS 
     }
 
     let clientData = await logarCliente(email, senha)
@@ -138,5 +157,28 @@ export async function getLogarCliente(email: string | undefined, senha: string |
     }
     else{
         return ERROR_NOT_FOUND
+    }
+}
+
+export async function getBuscarCliente(id:number) {
+    if
+    (
+        !id || typeof id !== 'number' || id < 1
+    ){
+        return ERROR_REQUIRED_FIELDS
+    }
+    else{
+        let clientData = await buscarCliente(id)
+
+        if(clientData){
+            return{
+                data: clientData,
+                status_code: 200
+            }
+        }
+        return{
+            data: ERROR_NOT_FOUND.message,
+            status_code: 404
+        }
     }
 }

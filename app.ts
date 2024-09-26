@@ -16,11 +16,13 @@ const route = Router()
 import cors from 'cors'
 
 //Import Controller 
-import { getBuscarSexo, getListarSexo, getLogarCliente, setInserirUsuario } from './src/controller/usuario/controller_usuario'
-import { setInserirPreferencias } from './src/controller/preferencia/controller_preferencia'
-import { getAllSexos } from './src/model/DAO/cliente/sexo'
+import { getBuscarCliente, getBuscarSexo, getListarSexo, getLogarCliente, setInserirUsuario } from './src/controller/usuario/controller_usuario'
+import { getBuscarPreferencia, getListarPreferencias, setInserirPreferencias } from './src/controller/preferencia/controller_preferencia'
 import { TProfessional } from './src/domain/entities/professional-entity'
-import { setInserirPsicologo } from './src/controller/usuario/controller_psicologo'
+import { getLogarPsicologo, setInserirPsicologo } from './src/controller/usuario/controller_psicologo'
+import { criarDisponibilidadePsicologo, getListarDisponibilidadesProfissional, setInserirDisponibilidade } from './src/controller/disponibilidade/controller_disponibilidade'
+import { TAvailability } from './src/domain/entities/availability-entity'
+import { TProfessionalAvailability } from './src/domain/entities/professional-availability'
 
 //Criação do app
 const app = express()
@@ -35,7 +37,7 @@ app.use((request, response, next) => {
     next()
 })
 
-/****************************************************USUARIO****************************************************/
+/****************************************************USUARIO-CLIENTE****************************************************/
 //post de clientes
 route.post('/cliente', async (req, res) => {
 
@@ -75,9 +77,56 @@ route.post('/cliente/preferencias', async (req, res) => {
 
 })
 
+//login de usuário
+route.post('/login/usuario', async (req, res) => {
+    let email = req.body.email
+    let senha = req.body.senha
+
+    let user = await getLogarCliente(email, senha)
+
+    console.log(user);
+    
+
+    res.status(user.status_code)
+    res.json(user)
+
+})
+
+route.get('/usuario/:id', async (req, res) => {
+    let id = Number(req.params.id)
+
+    let userData = await getBuscarCliente(id)
+
+    res.status(userData.status_code)
+    res.json(userData)
+})
+
+
+/****************************************************GÊNERO****************************************************/
+route.get('/sexo', async (req, res) => {
+    let allSex = await getListarSexo()
+
+    res.status(allSex.status_code)
+    res.json(allSex)
+
+})
+
+route.get('/usuario/sexo/:id', async (req, res) => {
+    let id = req.params.id
+    let idFormat = Number(id)
+
+    let buscarSexo = await getBuscarSexo(idFormat)
+
+    res.status(buscarSexo.status_code)
+    res.json(buscarSexo)
+})
+
+
+/****************************************************PSICÓLOGO****************************************************/
+
 //post de psicólogos
 route.post('/psicologo', async (req, res) => {
-    const contentType = req.header('content-type')
+    const contentType = req.header('Content-Type')
 
     const professionalData: TProfessional = {
         nome: req.body.nome,
@@ -98,47 +147,93 @@ route.post('/psicologo', async (req, res) => {
     res.json(newProfesional)
 })
 
-//login de usuário
-route.post('/login/usuario', async (req, res) => {
+route.post('/profissional/login', async (req, res) => {
     let email = req.body.email
     let senha = req.body.senha
 
-    let user = await getLogarCliente(String(email), String(senha))
+    let user = await getLogarPsicologo(email, senha)
 
     console.log(user);
-    
 
     res.status(user.status_code)
     res.json(user)
 
 })
 
+/****************************************************DISPONIBILIDADE****************************************************/
+ route.post ('/disponibilidade', async (req, res) => {
+    const contentType = req.header('content-type') 
 
+   const disponibilidade: TAvailability = {
+    dia_semana: req.body.dia_semana,
+    horario_inicio: req.body.horario_inicio,
+    horario_fim: req.body.horario_fim
+   }
 
-/****************************************************GÊNERO****************************************************/
-route.get('/cliente/sexo', async (req, res) => {
-    let allSex = await getListarSexo()
+   let rsDisponilidade = await setInserirDisponibilidade(disponibilidade, contentType)
 
-
-    res.status(allSex.status_code)
-    res.json(allSex)
-
+   console.log(rsDisponilidade);
+   
+   res.status(rsDisponilidade.status_code)
+   res.json(rsDisponilidade)
 })
 
-route.get('/cliente/sexo/:id', async (req, res) => {
-    let id = req.params.id
-    let idFormat = Number(id)
+route.post ('/disponibilidade/psicologo/:id', async (req, res) => {
+    let id = Number(req.params.id)
 
-    let buscarSexo = await getBuscarSexo(idFormat)
+    const availability: TProfessionalAvailability =  {
+        disponibilidade_id: req.body.disponibilidade,
+        status: req.body.status,
+        id_psicologo: id
+    }
 
-    res.status(buscarSexo.status_code)
-    res.json(buscarSexo)
+    let rsDisponilidade = await criarDisponibilidadePsicologo(availability)
+
+    console.log(rsDisponilidade);
+
+    res.status(rsDisponilidade.status_code!!)
+    res.json(rsDisponilidade)
+})
+
+route.get('/disponibilidade/psicologo/:id', async (req, res) =>{
+    let id = Number(req.params.id)
+
+    const professionalAvailbility = await getListarDisponibilidadesProfissional(id)
+
+    res.status(professionalAvailbility.status_code)
+    res.json(professionalAvailbility)
+})
+
+/****************************************************PREFERÊNCIAS****************************************************/
+route.get('/preferencias', async (req, res) =>{
+    let preferenceData = await getListarPreferencias()
+
+    console.log(preferenceData)
+
+    res.status(preferenceData.status_code)
+    res.json(preferenceData)
+    
+})
+
+route.get('/preferencias/:id', async (req, res) =>{
+    let id = Number(req.params.id)
+
+    let preferenceData = await getBuscarPreferencia(id)
+
+    res.status(preferenceData.status_code)
+    res.json(preferenceData)
 })
 
 
-
-
-
+// Configurações do CORS
+const corsOptions = {
+    origin: 'http://localhost:5173', // Permita o seu frontend
+    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Métodos permitidos
+    allowedHeaders: ['Content-Type', 'Authorization'], // Cabeçalhos permitidos
+    optionsSuccessStatus: 200
+  };
+  
+app.use(cors(corsOptions));
 
 //Ativação das rotas
 app.use('/v1/vivaris', route)
@@ -147,3 +242,5 @@ app.use('/v1/vivaris', route)
 app.listen('8080', () => {
     console.log("API funcionando na porta 8080");
 })
+
+

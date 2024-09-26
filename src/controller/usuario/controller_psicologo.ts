@@ -76,8 +76,8 @@ export async function setInserirPsicologo(user: TProfessional, contentType: stri
             if(!validarData(user.data_nascimento.toString())){
                 return ERROR_DATE_NOT_VALID
             }
-            if (validarIdade(user.data_nascimento) < 18 ) {
-                return ERROR_AGE_NOT_VALID   
+            if (validarIdade(user.data_nascimento) < 18) {
+                return ERROR_AGE_NOT_VALID
             }
 
             return ERROR_REQUIRED_FIELDS;

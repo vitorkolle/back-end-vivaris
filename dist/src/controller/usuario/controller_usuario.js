@@ -13,6 +13,7 @@ exports.setInserirUsuario = setInserirUsuario;
 exports.getListarSexo = getListarSexo;
 exports.getBuscarSexo = getBuscarSexo;
 exports.getLogarCliente = getLogarCliente;
+exports.getBuscarCliente = getBuscarCliente;
 const config_1 = require("../../../module/config");
 const usuario_1 = require("../../model/DAO/cliente/usuario");
 const sexo_1 = require("../../model/DAO/cliente/sexo");
@@ -27,20 +28,23 @@ function setInserirUsuario(user, contentType) {
                 return config_1.ERROR_NOT_CREATED;
             }
             function validarData(data) {
-                if (data.length != 10)
+                if (data.length !== 10)
                     return false;
-                return true;
+                const partes = data.split("-");
+                const ano = parseInt(partes[0], 10);
+                const mes = parseInt(partes[1], 10);
+                const dia = parseInt(partes[2], 10);
+                if (mes < 1 || mes > 12)
+                    return false;
+                const dataTestada = new Date(ano, mes - 1, dia);
+                return dataTestada.getFullYear() === ano && dataTestada.getMonth() === mes - 1 && dataTestada.getDate() === dia;
             }
             function transformarData(data) {
-                const dataFinal = new Date(data);
-                if (dataFinal) {
-                    return dataFinal;
+                if (!validarData(data)) {
+                    throw new Error("Formato de data inválido");
                 }
-                else {
-                    throw new Error("Invalid date format");
-                }
+                return new Date(data);
             }
-            // Validação dos campos obrigatórios
             if (!user.nome || typeof user.nome !== 'string' || user.nome.length > 50 || user.nome.match("\\d") ||
                 !user.cpf || user.cpf.length !== 11 || !(yield client_data_validation_1.verificacao.verificarCpf(user.cpf)) ||
                 !user.data_nascimento || !validarData(user.data_nascimento.toString()) || transformarData(user.data_nascimento.toString()) ||
@@ -54,8 +58,13 @@ function setInserirUsuario(user, contentType) {
                 if (!(yield client_data_validation_1.verificacao.verificarCpf(user.cpf))) {
                     return config_1.ERROR_ALREADY_EXISTS_ACCOUNT_CPF;
                 }
+<<<<<<< HEAD
                 if (!validarData(user.data_nascimento.toString()) || !transformarData(user.data_nascimento.toString())) {
                     return config_1.ERROR_DATE_NOT_VALID;
+=======
+                if (!validarData(user.data_nascimento.toString())) {
+                    return config_1.ERROR_INVALID_DATE;
+>>>>>>> dedd331cbf047fa77453c633633747edae77227a
                 }
                 return config_1.ERROR_REQUIRED_FIELDS;
             }
@@ -135,6 +144,26 @@ function getLogarCliente(email, senha) {
         }
         else {
             return config_1.ERROR_NOT_FOUND;
+        }
+    });
+}
+function getBuscarCliente(id) {
+    return __awaiter(this, void 0, void 0, function* () {
+        if (!id || typeof id !== 'number' || id < 1) {
+            return config_1.ERROR_REQUIRED_FIELDS;
+        }
+        else {
+            let clientData = yield (0, usuario_1.buscarCliente)(id);
+            if (clientData) {
+                return {
+                    data: clientData,
+                    status_code: 200
+                };
+            }
+            return {
+                data: config_1.ERROR_NOT_FOUND.message,
+                status_code: 404
+            };
         }
     });
 }
