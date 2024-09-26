@@ -60,7 +60,7 @@ export async function setInserirPsicologo(user: TProfessional, contentType: stri
                 age--
             }
 
-            return age < 0 ? 0 : age
+            return age < 0 ? 0 : age  
         }
 
         // Validação dos campos obrigatórios

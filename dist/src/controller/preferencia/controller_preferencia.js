@@ -34,10 +34,10 @@ function setInserirPreferencias(userData, contentType) {
                     let newUserPreference;
                     for (let index = 0; index < userData.preferencias.length; index++) {
                         const preferencia = userData.preferencias[index];
-                        const verificarPreferencia = !(yield client_preferences_validation_1.verificarPreferencias.isValid(preferencia));
-                        const preferenciaExistente = yield client_preferences_validation_1.verificarPreferencias.alreadyExists(preferencia);
-                        if (verificarPreferencia) {
-                            if (preferenciaExistente) {
+                        const verificarPreferencia = yield client_preferences_validation_1.verificarPreferencias.isValid(preferencia);
+                        const preferenciaExistente = yield client_preferences_validation_1.verificarPreferencias.alreadyExists(preferencia, userData.id_cliente);
+                        if (verificarPreferencia === false) {
+                            if (preferenciaExistente === true) {
                                 newUserPreference = yield (0, usuario_1.criarPreferenciasUsuario)(userData.id_cliente, preferencia);
                             }
                             else {
