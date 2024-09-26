@@ -1,7 +1,8 @@
-import { ERROR_AGE_NOT_VALID, ERROR_ALREADY_EXISTS_ACCOUNT_CIP, ERROR_ALREADY_EXISTS_ACCOUNT_CPF, ERROR_ALREADY_EXISTS_ACCOUNT_EMAIL, ERROR_CONTENT_TYPE, ERROR_DATE_NOT_VALID, ERROR_INTERNAL_SERVER, ERROR_INTERNAL_SERVER_DB, ERROR_NOT_CREATED, ERROR_NOT_FOUND, ERROR_REQUIRED_FIELDS, SUCCESS_CREATED_ITEM } from "../../../module/config"
+
+import { ERROR_AGE_NOT_VALID, ERROR_ALREADY_EXISTS_ACCOUNT_CIP, ERROR_ALREADY_EXISTS_ACCOUNT_CPF, ERROR_ALREADY_EXISTS_ACCOUNT_EMAIL, ERROR_CONTENT_TYPE, ERROR_DATE_NOT_VALID, ERROR_INTERNAL_SERVER, ERROR_INTERNAL_SERVER_DB, ERROR_NOT_CREATED, ERROR_NOT_FOUND, ERROR_REQUIRED_FIELDS, SUCCESS_CREATED_ITEM } from "../../../module/config";
 import { TProfessional } from "../../domain/entities/professional-entity";
 import { verificacaoProfissionais } from "../../infra/professional-data-validation";
-import { criarNovoPsicologo } from "../../model/DAO/psicologo/usuario";
+import { buscarPsicologo, criarNovoPsicologo, logarPsicologo } from "../../model/DAO/psicologo/usuario";
 
 export async function setInserirPsicologo(user: TProfessional, contentType: string | undefined) {
     try {
@@ -14,13 +15,22 @@ export async function setInserirPsicologo(user: TProfessional, contentType: stri
         }
         
         function validarData(data: string): boolean {
-
-            if (data.length != 10) return false
-
-            return true
-
+      
+            if (data.length !== 10) return false;
+        
+            const partes = data.split("-");
+            const ano = parseInt(partes[0], 10);
+            const mes = parseInt(partes[1], 10);
+            const dia = parseInt(partes[2], 10);
+        
+     
+            if (mes < 1 || mes > 12) return false;
+        
+       
+            const dataTestada = new Date(ano, mes - 1, dia);
+            return dataTestada.getFullYear() === ano && dataTestada.getMonth() === mes - 1 && dataTestada.getDate() === dia;
         }
-
+        
         function transformarData(data: string): Date {
             const dataFinal = new Date(data)
 
@@ -51,7 +61,7 @@ export async function setInserirPsicologo(user: TProfessional, contentType: stri
             }
 
             return age < 0 ? 0 : age
-        }        
+        }
 
         // Validação dos campos obrigatórios
         if (
@@ -62,7 +72,7 @@ export async function setInserirPsicologo(user: TProfessional, contentType: stri
             !user.email || typeof user.email !== 'string' || !await verificacaoProfissionais.verificarEmail(user.email) || user.email.length > 256 ||
             !user.senha || typeof user.senha !== 'string' || user.senha.length < 8 || user.senha.length > 20 ||
             !user.telefone || user.telefone.length !== 11 || typeof user.telefone !== 'string' ||
-            !user.id_sexo || isNaN(Number(user.id_sexo))
+            !user.id_sexo || isNaN(Number(user.id_sexo)) 
         ){
             if(!await verificacaoProfissionais.verificarEmail(user.email)){
                 return ERROR_ALREADY_EXISTS_ACCOUNT_EMAIL
@@ -110,7 +120,55 @@ export async function setInserirPsicologo(user: TProfessional, contentType: stri
         }
 
     } catch (error) {
-        console.error('Erro ao tentar inserir um novo usuário:', error);
+        console.error('Erro ao tentar inserir um novo psicólogo:', error);
         return ERROR_INTERNAL_SERVER;
     }
 }
+
+export async function getLogarPsicologo(email: string | null, senha: string | null) {
+    if(
+        !email || typeof email != 'string' || email.length > 256 ||
+        !senha || typeof senha != 'string' || senha.length < 8
+    ){
+        return ERROR_REQUIRED_FIELDS
+    }
+
+    let clientData = await logarPsicologo(email, senha)
+
+    if(clientData){
+        return {
+            data: clientData,
+            status_code: 200
+        }
+    }
+    else{
+        return ERROR_NOT_FOUND
+    }
+}
+
+export async function getBuscarPsicologo(id: number) {
+    if (
+        id < 1
+    ) {
+        return ERROR_REQUIRED_FIELDS
+    }
+    else{
+        let professionalData = await buscarPsicologo(id)
+
+        if(professionalData){
+            return {
+                data: professionalData,
+                status_code: 200,
+                status: true
+            }
+        }
+        else{
+            return{
+                data: ERROR_NOT_FOUND.message,
+                status_code: ERROR_NOT_FOUND.status_code,
+                status: ERROR_NOT_FOUND.status
+            }
+        }
+    }
+}
+

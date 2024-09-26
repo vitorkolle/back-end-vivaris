@@ -1,7 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 <<<<<<< HEAD
+<<<<<<< HEAD
 exports.ERROR_AGE_NOT_VALID = exports.ERROR_ALREADY_EXISTS_ACCOUNT_CIP = exports.ERROR_DATE_NOT_VALID = exports.ERROR_ALREADY_EXISTS_ACCOUNT = exports.ERROR_ALREADY_EXISTS_ACCOUNT_EMAIL = exports.ERROR_ALREADY_EXISTS_ACCOUNT_CPF = exports.ERROR_ALREADY_EXISTS_PREFRENCE = exports.ERROR_NOT_FOUND_PREFERENCE = exports.ERROR_NOT_CREATED = exports.SUCCESS_UPDATED_ITEM = exports.SUCCESS_DELETED_ITEM = exports.SUCCESS_CREATED_ITEM = exports.ERROR_INTERNAL_SERVER = exports.ERROR_CONTENT_TYPE = exports.ERROR_INTERNAL_SERVER_DB = exports.ERROR_NOT_FOUND = exports.ERROR_REQUIRED_FIELDS = exports.ERROR_INVALID_ID = void 0;
+=======
+exports.ERROR_ALREADY_EXISTS_PROFESSIONAL_AVAILBILITY = exports.ERROR_NOT_FOUND_AVAILBILITY = exports.ERROR_NOT_FOUND_PROFESSIONAL = exports.ERROR_INVALID_DATE = exports.ERROR_ALREADY_EXISTS_ACCOUNT = exports.ERROR_ALREADY_EXISTS_ACCOUNT_EMAIL = exports.ERROR_ALREADY_EXISTS_ACCOUNT_CPF = exports.ERROR_ALREADY_EXISTS_PREFRENCE = exports.ERROR_NOT_FOUND_PREFERENCE = exports.ERROR_NOT_CREATED = exports.SUCCESS_UPDATED_ITEM = exports.SUCCESS_DELETED_ITEM = exports.SUCCESS_CREATED_ITEM = exports.ERROR_INTERNAL_SERVER = exports.ERROR_CONTENT_TYPE = exports.ERROR_INTERNAL_SERVER_DB = exports.ERROR_NOT_FOUND = exports.ERROR_REQUIRED_FIELDS = exports.ERROR_INVALID_ID = void 0;
+>>>>>>> dedd331cbf047fa77453c633633747edae77227a
 =======
 exports.ERROR_ALREADY_EXISTS_PROFESSIONAL_AVAILBILITY = exports.ERROR_NOT_FOUND_AVAILBILITY = exports.ERROR_NOT_FOUND_PROFESSIONAL = exports.ERROR_INVALID_DATE = exports.ERROR_ALREADY_EXISTS_ACCOUNT = exports.ERROR_ALREADY_EXISTS_ACCOUNT_EMAIL = exports.ERROR_ALREADY_EXISTS_ACCOUNT_CPF = exports.ERROR_ALREADY_EXISTS_PREFRENCE = exports.ERROR_NOT_FOUND_PREFERENCE = exports.ERROR_NOT_CREATED = exports.SUCCESS_UPDATED_ITEM = exports.SUCCESS_DELETED_ITEM = exports.SUCCESS_CREATED_ITEM = exports.ERROR_INTERNAL_SERVER = exports.ERROR_CONTENT_TYPE = exports.ERROR_INTERNAL_SERVER_DB = exports.ERROR_NOT_FOUND = exports.ERROR_REQUIRED_FIELDS = exports.ERROR_INVALID_ID = void 0;
 >>>>>>> dedd331cbf047fa77453c633633747edae77227a
@@ -37,15 +41,21 @@ exports.ERROR_ALREADY_EXISTS_ACCOUNT_CIP = ERROR_ALREADY_EXISTS_ACCOUNT_CIP;
 const ERROR_ALREADY_EXISTS_ACCOUNT = { status: false, status_code: 400, message: 'Já existe uma conta cadastrada com os dados cadastrados, faça login ou use outros dados' };
 exports.ERROR_ALREADY_EXISTS_ACCOUNT = ERROR_ALREADY_EXISTS_ACCOUNT;
 <<<<<<< HEAD
+<<<<<<< HEAD
 const ERROR_DATE_NOT_VALID = { status: false, status_code: 400, message: 'A data informada não é válida!!' };
 exports.ERROR_DATE_NOT_VALID = ERROR_DATE_NOT_VALID;
 const ERROR_AGE_NOT_VALID = { status: false, status_code: 400, message: 'Essa ação não é permitida para menores de idade!!' };
 exports.ERROR_AGE_NOT_VALID = ERROR_AGE_NOT_VALID;
 =======
+=======
+>>>>>>> dedd331cbf047fa77453c633633747edae77227a
 const ERROR_ALREADY_EXISTS_PROFESSIONAL_AVAILBILITY = { status: false, status_code: 400, message: 'Essa disponibilidade já está ocupada' };
 exports.ERROR_ALREADY_EXISTS_PROFESSIONAL_AVAILBILITY = ERROR_ALREADY_EXISTS_PROFESSIONAL_AVAILBILITY;
 const ERROR_INVALID_DATE = { status: false, status_code: 400, message: 'A data encaminhada é inválida!!' };
 exports.ERROR_INVALID_DATE = ERROR_INVALID_DATE;
+<<<<<<< HEAD
+>>>>>>> dedd331cbf047fa77453c633633747edae77227a
+=======
 >>>>>>> dedd331cbf047fa77453c633633747edae77227a
 /****************** Mensagens de Sucesso *********/
 const SUCCESS_CREATED_ITEM = { status: true, status_code: 201, message: 'Item criado com sucesso!!' };

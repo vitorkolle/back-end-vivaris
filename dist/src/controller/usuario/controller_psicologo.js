@@ -39,6 +39,7 @@ function setInserirPsicologo(user, contentType) {
             function transformarData(data) {
                 if (!validarData(data)) {
                     throw new Error("Formato de data inválido");
+<<<<<<< HEAD
                 }
                 return new Date(data);
             }
@@ -61,6 +62,11 @@ function setInserirPsicologo(user, contentType) {
             // Validação dos campos obrigatórios
 =======
 >>>>>>> dedd331cbf047fa77453c633633747edae77227a
+=======
+                }
+                return new Date(data);
+            }
+>>>>>>> dedd331cbf047fa77453c633633747edae77227a
             if (!user.nome || typeof user.nome !== 'string' || user.nome.length > 50 || user.nome.match("\\d") ||
                 !user.cpf || user.cpf.length !== 11 || !(yield professional_data_validation_1.verificacaoProfissionais.verificarCpf(user.cpf)) ||
                 !user.cip || user.cip.length !== 9 || !(yield professional_data_validation_1.verificacaoProfissionais.verificarCip(user.cip)) ||
@@ -76,6 +82,7 @@ function setInserirPsicologo(user, contentType) {
                     return config_1.ERROR_ALREADY_EXISTS_ACCOUNT_CPF;
                 }
 <<<<<<< HEAD
+<<<<<<< HEAD
                 if (!(yield professional_data_validation_1.verificacaoProfissionais.verificarCip(user.cip))) {
                     return config_1.ERROR_ALREADY_EXISTS_ACCOUNT_CIP;
                 }
@@ -84,6 +91,10 @@ function setInserirPsicologo(user, contentType) {
                 }
                 if (validarIdade(user.data_nascimento) < 18) {
                     return config_1.ERROR_AGE_NOT_VALID;
+=======
+                if (!validarData(user.data_nascimento.toString())) {
+                    return config_1.ERROR_INVALID_DATE;
+>>>>>>> dedd331cbf047fa77453c633633747edae77227a
 =======
                 if (!validarData(user.data_nascimento.toString())) {
                     return config_1.ERROR_INVALID_DATE;

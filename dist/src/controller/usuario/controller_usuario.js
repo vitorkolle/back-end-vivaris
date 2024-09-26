@@ -59,8 +59,13 @@ function setInserirUsuario(user, contentType) {
                     return config_1.ERROR_ALREADY_EXISTS_ACCOUNT_CPF;
                 }
 <<<<<<< HEAD
+<<<<<<< HEAD
                 if (!validarData(user.data_nascimento.toString()) || !transformarData(user.data_nascimento.toString())) {
                     return config_1.ERROR_DATE_NOT_VALID;
+=======
+                if (!validarData(user.data_nascimento.toString())) {
+                    return config_1.ERROR_INVALID_DATE;
+>>>>>>> dedd331cbf047fa77453c633633747edae77227a
 =======
                 if (!validarData(user.data_nascimento.toString())) {
                     return config_1.ERROR_INVALID_DATE;
