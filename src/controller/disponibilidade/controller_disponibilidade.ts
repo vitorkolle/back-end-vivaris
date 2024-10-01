@@ -1,5 +1,5 @@
-import { buscarDisponibilidade, buscarDisponibilidadePsicologo, criarDisponibilidade, criarDisponibilidadeProfissional, listarDisponibilidadesPorProfissional } from "../../model/DAO/disponibilidade/disponibilidade";
-import { ERROR_ALREADY_EXISTS_PREFRENCE, ERROR_ALREADY_EXISTS_PROFESSIONAL_AVAILBILITY, ERROR_CONTENT_TYPE, ERROR_INTERNAL_SERVER, ERROR_INTERNAL_SERVER_DB, ERROR_NOT_CREATED, ERROR_NOT_FOUND, ERROR_NOT_FOUND_AVAILBILITY, ERROR_NOT_FOUND_PROFESSIONAL, ERROR_REQUIRED_FIELDS, SUCCESS_CREATED_ITEM } from "../../../module/config"
+import { buscarDisponibilidade, buscarDisponibilidadePsicologo, criarDisponibilidade, criarDisponibilidadeProfissional, deletarDisponibilidade, listarDisponibilidadesPorProfissional } from "../../model/DAO/disponibilidade/disponibilidade";
+import { ERROR_ALREADY_EXISTS_PREFRENCE, ERROR_ALREADY_EXISTS_PROFESSIONAL_AVAILBILITY, ERROR_CONTENT_TYPE, ERROR_INTERNAL_SERVER, ERROR_INTERNAL_SERVER_DB, ERROR_NOT_CREATED, ERROR_NOT_DELETED, ERROR_NOT_FOUND, ERROR_NOT_FOUND_AVAILBILITY, ERROR_NOT_FOUND_PROFESSIONAL, ERROR_REQUIRED_FIELDS, SUCCESS_CREATED_ITEM, SUCCESS_DELETED_ITEM } from "../../../module/config"
 import { DayOfWeek, TAvailability } from "../../domain/entities/availability-entity";
 import { verificacao } from "../../infra/availability-data-validation";
 import { TProfessionalAvailability } from "../../domain/entities/professional-availability";
@@ -161,5 +161,31 @@ export async function getListarDisponibilidadesProfissional(idProfessional:numbe
     } catch (error) {
         console.error('Erro ao tentar consultar as disponibilidades por psicólogo:', error);
         return ERROR_INTERNAL_SERVER;
+    }
+}
+
+export async function setDeletarDisponibilidade(diaSemana:string, idPsicologo:number) {
+    try {
+        if
+        (
+            typeof diaSemana !== 'string' || !verificacao.isDayOfWeek(diaSemana) ||
+            typeof idPsicologo !== 'number' || idPsicologo < 1
+        ){
+            return ERROR_REQUIRED_FIELDS
+        }
+
+        let deleteAvailbility = await deletarDisponibilidade(diaSemana, idPsicologo)
+
+        console.log(deleteAvailbility);
+        
+
+        if(deleteAvailbility === false){
+            return ERROR_NOT_DELETED
+        }
+
+        return SUCCESS_DELETED_ITEM
+    } catch (error) {
+        console.error('Erro ao tentar deletar as disponibilidades:', error);
+        return ERROR_INTERNAL_SERVER; 
     }
 }

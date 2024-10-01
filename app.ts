@@ -20,7 +20,7 @@ import { getBuscarCliente, getBuscarSexo, getListarSexo, getLogarCliente, setIns
 import { getBuscarPreferencia, getListarPreferencias, setInserirPreferencias } from './src/controller/preferencia/controller_preferencia'
 import { TProfessional } from './src/domain/entities/professional-entity'
 import { getLogarPsicologo, setInserirPsicologo } from './src/controller/usuario/controller_psicologo'
-import { criarDisponibilidadePsicologo, getListarDisponibilidadesProfissional, setInserirDisponibilidade } from './src/controller/disponibilidade/controller_disponibilidade'
+import { criarDisponibilidadePsicologo, getListarDisponibilidadesProfissional, setDeletarDisponibilidade, setInserirDisponibilidade } from './src/controller/disponibilidade/controller_disponibilidade'
 import { TAvailability } from './src/domain/entities/availability-entity'
 import { TProfessionalAvailability } from './src/domain/entities/professional-availability'
 
@@ -204,6 +204,19 @@ route.get('/disponibilidade/psicologo/:id', async (req, res) =>{
     res.json(professionalAvailbility)
 })
 
+
+route.delete('/disponibilidade/psicologo/:id', async (req, res) => {
+    let id = Number(req.params.id)
+    let diaSemana = String(req.body.dia_semana)
+
+    const availabilityData = await setDeletarDisponibilidade(diaSemana, id)
+
+    console.log(availabilityData);
+    
+
+    res.status(availabilityData.status_code)
+    res.json(availabilityData)
+})
 /****************************************************PREFERÊNCIAS****************************************************/
 route.get('/preferencias', async (req, res) =>{
     let preferenceData = await getListarPreferencias()

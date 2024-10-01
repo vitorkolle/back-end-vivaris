@@ -14,6 +14,7 @@ exports.listarDisponibilidadesPorProfissional = listarDisponibilidadesPorProfiss
 exports.criarDisponibilidadeProfissional = criarDisponibilidadeProfissional;
 exports.buscarDisponibilidadePsicologo = buscarDisponibilidadePsicologo;
 exports.buscarDisponibilidade = buscarDisponibilidade;
+exports.deletarDisponibilidade = deletarDisponibilidade;
 const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
 function criarDisponibilidade(disponibilidade) {
@@ -228,6 +229,22 @@ function buscarDisponibilidade(id) {
         catch (error) {
             console.error("Erro ao encontrar disponibilidade:", error);
             throw new Error("Não foi possível achar disponibilidades");
+        }
+    });
+}
+function deletarDisponibilidade(diaSemana, idPsicologo) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            let user = yield prisma.$queryRaw `CALL deleteDisp(${diaSemana}, ${idPsicologo})`;
+            console.log(user);
+            if (user === false) {
+                return false;
+            }
+            return true;
+        }
+        catch (error) {
+            console.error("Erro ao deletar disponibilidade:", error);
+            throw new Error("Não foi possível deletar a disponibilidade");
         }
     });
 }

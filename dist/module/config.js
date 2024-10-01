@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ERROR_ALREADY_EXISTS_PROFESSIONAL_AVAILBILITY = exports.ERROR_NOT_FOUND_AVAILBILITY = exports.ERROR_NOT_FOUND_PROFESSIONAL = exports.ERROR_AGE_NOT_VALID = exports.ERROR_ALREADY_EXISTS_ACCOUNT_CIP = exports.ERROR_DATE_NOT_VALID = exports.ERROR_ALREADY_EXISTS_ACCOUNT_EMAIL = exports.ERROR_ALREADY_EXISTS_ACCOUNT_CPF = exports.ERROR_ALREADY_EXISTS_PREFRENCE = exports.ERROR_NOT_FOUND_PREFERENCE = exports.ERROR_NOT_CREATED = exports.SUCCESS_UPDATED_ITEM = exports.SUCCESS_DELETED_ITEM = exports.SUCCESS_CREATED_ITEM = exports.ERROR_INTERNAL_SERVER = exports.ERROR_CONTENT_TYPE = exports.ERROR_INTERNAL_SERVER_DB = exports.ERROR_NOT_FOUND = exports.ERROR_REQUIRED_FIELDS = exports.ERROR_INVALID_ID = void 0;
+exports.ERROR_NOT_DELETED = exports.ERROR_ALREADY_EXISTS_PROFESSIONAL_AVAILBILITY = exports.ERROR_NOT_FOUND_AVAILBILITY = exports.ERROR_NOT_FOUND_PROFESSIONAL = exports.ERROR_AGE_NOT_VALID = exports.ERROR_ALREADY_EXISTS_ACCOUNT_CIP = exports.ERROR_DATE_NOT_VALID = exports.ERROR_ALREADY_EXISTS_ACCOUNT_EMAIL = exports.ERROR_ALREADY_EXISTS_ACCOUNT_CPF = exports.ERROR_ALREADY_EXISTS_PREFRENCE = exports.ERROR_NOT_FOUND_PREFERENCE = exports.ERROR_NOT_CREATED = exports.SUCCESS_UPDATED_ITEM = exports.SUCCESS_DELETED_ITEM = exports.SUCCESS_CREATED_ITEM = exports.ERROR_INTERNAL_SERVER = exports.ERROR_CONTENT_TYPE = exports.ERROR_INTERNAL_SERVER_DB = exports.ERROR_NOT_FOUND = exports.ERROR_REQUIRED_FIELDS = exports.ERROR_INVALID_ID = void 0;
 /*************** Mensagens de Erro ***************/
 const ERROR_INVALID_ID = { status: false, status_code: 400, message: 'O ID encaminhado na requisição não é válido!!' };
 exports.ERROR_INVALID_ID = ERROR_INVALID_ID;
@@ -36,6 +36,8 @@ const ERROR_AGE_NOT_VALID = { status: false, status_code: 400, message: 'Essa a�
 exports.ERROR_AGE_NOT_VALID = ERROR_AGE_NOT_VALID;
 const ERROR_ALREADY_EXISTS_PROFESSIONAL_AVAILBILITY = { status: false, status_code: 400, message: 'Essa disponibilidade já está ocupada' };
 exports.ERROR_ALREADY_EXISTS_PROFESSIONAL_AVAILBILITY = ERROR_ALREADY_EXISTS_PROFESSIONAL_AVAILBILITY;
+const ERROR_NOT_DELETED = { status: false, status_code: 400, message: 'Não foi possível deletar a disponibilidade' };
+exports.ERROR_NOT_DELETED = ERROR_NOT_DELETED;
 /****************** Mensagens de Sucesso *********/
 const SUCCESS_CREATED_ITEM = { status: true, status_code: 201, message: 'Item criado com sucesso!!' };
 exports.SUCCESS_CREATED_ITEM = SUCCESS_CREATED_ITEM;

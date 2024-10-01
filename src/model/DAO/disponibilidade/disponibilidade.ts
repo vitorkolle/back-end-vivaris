@@ -226,3 +226,21 @@ export async function buscarDisponibilidade(id: number){
     throw new Error("Não foi possível achar disponibilidades");
   }
 }
+
+export async function deletarDisponibilidade(diaSemana:string, idPsicologo: number) {
+  try {
+    let user = await prisma.$queryRaw`CALL deleteDisp(${diaSemana}, ${idPsicologo})`
+
+    console.log(user);
+    
+
+    if(String(user).length < 1){
+      return false
+    }
+
+    return true
+  } catch (error) {
+    console.error("Erro ao deletar disponibilidade:", error);
+    throw new Error("Não foi possível deletar a disponibilidade");
+  }
+}

@@ -80,11 +80,11 @@ model tbl_psicologo_disponibilidade {
   psicologo_id           Int
   disponibilidade_id     Int
   status_disponibilidade String              @db.VarChar(20)
-  tbl_psicologos         tbl_psicologos      @relation(fields: [psicologo_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "tbl_psicologo_disponibilidade_ibfk_1")
   tbl_disponibilidade    tbl_disponibilidade @relation(fields: [disponibilidade_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "tbl_psicologo_disponibilidade_ibfk_2")
+  tbl_psicologos         tbl_psicologos      @relation(fields: [psicologo_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "tbl_psicologo_disponibilidade_ibfk_1")
 
-  @@index([disponibilidade_id], map: "disponibilidade_id")
-  @@index([psicologo_id], map: "psicologo_id")
+  @@index([disponibilidade_id], map: "FK_DISPONIBILIDADE_PSICOLOGO_DISPONIBILIDADE")
+  @@index([psicologo_id], map: "FK_PSICOLOGO_PSICOLOGO_DISPONIBILIDADE")
 }
 
 enum tbl_disponibilidade_dia_semana {
