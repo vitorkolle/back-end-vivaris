@@ -227,7 +227,7 @@ route.get('/preferencias/:id', async (req, res) =>{
 
 // Configurações do CORS
 const corsOptions = {
-    origin: 'http://localhost:5173', // Permita o seu frontend
+    origin: 'http://127.0.0.1:5173', // Permita o seu frontend
     methods: ['GET', 'POST', 'PUT', 'DELETE'], // Métodos permitidos
     allowedHeaders: ['Content-Type', 'Authorization'], // Cabeçalhos permitidos
     optionsSuccessStatus: 200
@@ -242,5 +242,4 @@ app.use('/v1/vivaris', route)
 app.listen('8080', () => {
     console.log("API funcionando na porta 8080");
 })
-
 

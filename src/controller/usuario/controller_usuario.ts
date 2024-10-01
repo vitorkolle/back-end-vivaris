@@ -1,4 +1,4 @@
-import { ERROR_ALREADY_EXISTS_ACCOUNT, ERROR_ALREADY_EXISTS_ACCOUNT_CPF, ERROR_ALREADY_EXISTS_ACCOUNT_EMAIL, ERROR_CONTENT_TYPE, ERROR_INTERNAL_SERVER, ERROR_INTERNAL_SERVER_DB, ERROR_INVALID_DATE, ERROR_NOT_CREATED, ERROR_NOT_FOUND, ERROR_REQUIRED_FIELDS, SUCCESS_CREATED_ITEM } from "../../../module/config"
+import {ERROR_ALREADY_EXISTS_ACCOUNT_CPF, ERROR_ALREADY_EXISTS_ACCOUNT_EMAIL, ERROR_CONTENT_TYPE, ERROR_DATE_NOT_VALID, ERROR_INTERNAL_SERVER, ERROR_INTERNAL_SERVER_DB, ERROR_NOT_CREATED, ERROR_NOT_FOUND, ERROR_REQUIRED_FIELDS, SUCCESS_CREATED_ITEM } from "../../../module/config"
 import { TUser } from "../../domain/entities/user-entity"
 import { buscarCliente, criarNovoCliente, logarCliente } from "../../model/DAO/cliente/usuario"
 import { getAllSexos, getSexoById } from "../../model/DAO/cliente/sexo";
@@ -42,9 +42,9 @@ export async function setInserirUsuario(user: TUser, contentType: string | undef
         if (
             !user.nome || typeof user.nome !== 'string' || user.nome.length > 50 || user.nome.match("\\d") ||
             !user.cpf || user.cpf.length !== 11 || !await verificacao.verificarCpf(user.cpf) ||
-            !user.data_nascimento || !validarData(user.data_nascimento.toString()) || 
+            !user.data_nascimento || !validarData(user.data_nascimento.toString()) || !transformarData(user.data_nascimento.toString()) ||
             !user.email || typeof user.email !== 'string' || !await verificacao.verificarEmail(user.email) || user.email.length > 256 ||
-            !user.senha || typeof user.senha !== 'string' || user.senha.length < 8 ||  user.senha.length > 20 ||
+            !user.senha || typeof user.senha !== 'string' || user.senha.length < 8 || user.senha.length > 20 ||
             !user.telefone || user.telefone.length !== 11 || typeof user.telefone !== 'string' ||
             !user.id_sexo || isNaN(Number(user.id_sexo))
         ) {
@@ -54,13 +54,17 @@ export async function setInserirUsuario(user: TUser, contentType: string | undef
             if(!await verificacao.verificarCpf(user.cpf)){
                 return ERROR_ALREADY_EXISTS_ACCOUNT_CPF
             }
+            if(!validarData(user.data_nascimento.toString()) || !transformarData(user.data_nascimento.toString())){
+                return ERROR_DATE_NOT_VALID
+            }
             if(!validarData(user.data_nascimento.toString())){
-                return ERROR_INVALID_DATE
+                return ERROR_DATE_NOT_VALID
+
             }
 
             return ERROR_REQUIRED_FIELDS;
         }
-        else {
+        else {            
                 // Preparar os dados do usuário
                 const userData: TUser = {
                     nome: user.nome,

@@ -23,15 +23,22 @@ export async function setInserirPreferencias(userData : TUserPreferences, conten
                 return ERROR_REQUIRED_FIELDS
             }
             else{
-                let newUserPreference
+                let newUserPreference         
+   
+
                 for (let index = 0; index < userData.preferencias.length; index++) {
-                    const preferencia = userData.preferencias[index];
 
-                    const verificarPreferencia = !await verificarPreferencias.isValid(preferencia)
-                    const preferenciaExistente =  await verificarPreferencias.alreadyExists(preferencia)
+                    const preferencia = Number(userData.preferencias[index]);                    
+                    
+                    console.log('aqui o:',typeof userData.preferencias);
+                    
 
-                    if(verificarPreferencia){
-                        if(preferenciaExistente){
+                    const verificarPreferencia =  await verificarPreferencias.isValid(preferencia)
+                    const preferenciaExistente =  await verificarPreferencias.alreadyExists(preferencia, userData.id_cliente)
+                    
+                    
+                    if(verificarPreferencia === false){                        
+                        if(preferenciaExistente === true){                                                        
                             newUserPreference = await criarPreferenciasUsuario(userData.id_cliente, preferencia)
                         }
                         else{
@@ -43,7 +50,7 @@ export async function setInserirPreferencias(userData : TUserPreferences, conten
                     }
                 }
 
-                if(newUserPreference){
+                if(newUserPreference){                    
                     return{
                         data: newUserPreference,
                         status_code: 200,

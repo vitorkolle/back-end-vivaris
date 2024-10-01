@@ -19,9 +19,12 @@ exports.verificarPreferencias = {
         });
         return preference === null;
     }),
-    alreadyExists: (idCliente) => __awaiter(void 0, void 0, void 0, function* () {
-        const preferences = yield prisma.tbl_clientes.findMany({
-            where: { id: idCliente },
+    alreadyExists: (preferenceId, id_cliente) => __awaiter(void 0, void 0, void 0, function* () {
+        const preferences = yield prisma.tbl_clientes_preferencias.findFirst({
+            where: {
+                id_preferencias: preferenceId,
+                id_clientes: id_cliente
+            },
         });
         return preferences === null;
     })
