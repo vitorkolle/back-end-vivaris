@@ -28,14 +28,10 @@ export async function setInserirPreferencias(userData : TUserPreferences, conten
                 for (let index = 0; index < userData.preferencias.length; index++) {
 
                     const preferencia = Number(userData.preferencias[index]);                    
-                    
-                    console.log('aqui o:',typeof userData.preferencias);
-                    
 
                     const verificarPreferencia =  await verificarPreferencias.isValid(preferencia)
                     const preferenciaExistente =  await verificarPreferencias.alreadyExists(preferencia, userData.id_cliente)
-                    
-                    
+                                        
                     if(verificarPreferencia === false){                        
                         if(preferenciaExistente === true){                                                        
                             newUserPreference = await criarPreferenciasUsuario(userData.id_cliente, preferencia)

@@ -1,6 +1,3 @@
-
-//npx ts-node app.ts
-
 import { TUser } from './src/domain/entities/user-entity'
 import { TUserPreferences } from './src/domain/entities/user-preferences'
 

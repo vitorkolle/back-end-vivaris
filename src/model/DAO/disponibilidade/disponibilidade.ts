@@ -1,6 +1,5 @@
-import { PrismaClient } from "@prisma/client"
-import { TAvailability} from "../../../domain/entities/availability-entity"
-import { ERROR_NOT_FOUND } from "../../../../module/config";
+import { PrismaClient } from "@prisma/client";
+import { TAvailability } from "../../../domain/entities/availability-entity";
 const prisma = new PrismaClient()
 
 

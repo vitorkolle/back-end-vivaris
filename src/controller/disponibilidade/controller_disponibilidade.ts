@@ -21,10 +21,6 @@ export async function setInserirDisponibilidade(disponibilidade: TAvailability, 
         if (!disponibilidade) {
             return ERROR_NOT_CREATED
         }
-
-        console.log(disponibilidade)
-        
-        console.log(isValidHour(String(disponibilidade.horario_inicio)), isValidHour(String(disponibilidade.horario_fim)))
         
         // * Os horários precisam ser enviados no formato HH:MM:SS
         if (!disponibilidade.dia_semana || !isValidWeekDay(disponibilidade.dia_semana) ||

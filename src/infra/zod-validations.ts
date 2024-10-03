@@ -41,7 +41,7 @@ export function isValidPassword(password: string) : boolean{
 export function isValidWeekDay(date: string) : boolean{
 
     //? Verificar se o tipo 'date' do zod corresponde ao tipo de data que estamos utilizando
-    //*^  Possível uso quando a aplicação estiver na fase final
+    //* ^  Possível uso quando a aplicação estiver na fase final
     const dateSchema = z.string().min(5).max(7)
 
     const testDate = dateSchema.safeParse(date)
@@ -62,10 +62,7 @@ export function isValidWeekDay(date: string) : boolean{
 export function isValidHour(hour: string) : boolean{
     const hourSchema = z.string().time()
 
-    const validateHour = hourSchema.safeParse(hour)
-
-    console.log(validateHour.error);
-    
+    const validateHour = hourSchema.safeParse(hour)    
 
     return validateHour.success
 }
