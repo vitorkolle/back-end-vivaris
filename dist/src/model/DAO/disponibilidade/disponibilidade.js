@@ -237,7 +237,7 @@ function deletarDisponibilidade(diaSemana, idPsicologo) {
         try {
             let user = yield prisma.$queryRaw `CALL deleteDisp(${diaSemana}, ${idPsicologo})`;
             console.log(user);
-            if (user === false) {
+            if (String(user).length < 1) {
                 return false;
             }
             return true;

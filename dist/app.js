@@ -157,6 +157,12 @@ route.delete('/disponibilidade/psicologo/:id', (req, res) => __awaiter(void 0, v
     res.status(availabilityData.status_code);
     res.json(availabilityData);
 }));
+route.get('/disponibilidade/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    let id = Number(req.params.id);
+    const buscarDisponibilidade = yield (0, controller_disponibilidade_1.getBuscarDisponibilidade)(id);
+    res.status(buscarDisponibilidade.status_code);
+    res.json(buscarDisponibilidade);
+}));
 /****************************************************PREFERÊNCIAS****************************************************/
 route.get('/preferencias', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let preferenceData = yield (0, controller_preferencia_1.getListarPreferencias)();

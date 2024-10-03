@@ -19,6 +19,7 @@ const disponibilidade_1 = require("../../model/DAO/disponibilidade/disponibilida
 const config_1 = require("../../../module/config");
 const availability_data_validation_1 = require("../../infra/availability-data-validation");
 const controller_psicologo_1 = require("../usuario/controller_psicologo");
+const zod_validations_1 = require("../../infra/zod-validations");
 function transformarHorario(horario) {
     const hoje = new Date();
     const [horas, minutos, segundos] = horario.split(':').map(Number);
@@ -125,14 +126,26 @@ function criarDisponibilidadePsicologo(availability) {
 }
 function getBuscarDisponibilidade(id) {
     return __awaiter(this, void 0, void 0, function* () {
-        if (id < 1) {
-            return config_1.ERROR_REQUIRED_FIELDS;
+        try {
+            if (zod_validations_1.validId.safeParse(id).success === false) {
+                return config_1.ERROR_REQUIRED_FIELDS;
+            }
+            let availabilityData = yield (0, disponibilidade_1.buscarDisponibilidade)(id);
+            if (availabilityData === false) {
+                return {
+                    status_code: config_1.ERROR_NOT_FOUND.status_code,
+                    data: config_1.ERROR_NOT_FOUND
+                };
+            }
+            return {
+                status_code: 200,
+                data: availabilityData
+            };
         }
-        let availabilityData = yield (0, disponibilidade_1.buscarDisponibilidade)(id);
-        if (availabilityData === false) {
-            return config_1.ERROR_NOT_FOUND;
+        catch (error) {
+            console.error('Erro ao tentar buscar a disponibilidade:', error);
+            return config_1.ERROR_INTERNAL_SERVER;
         }
-        return availabilityData;
     });
 }
 function getListarDisponibilidadesProfissional(idProfessional) {
