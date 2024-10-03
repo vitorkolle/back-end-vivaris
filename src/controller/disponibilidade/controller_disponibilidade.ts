@@ -1,8 +1,7 @@
 import { ERROR_ALREADY_EXISTS_PREFRENCE, ERROR_ALREADY_EXISTS_PROFESSIONAL_AVAILBILITY, ERROR_CONTENT_TYPE, ERROR_INTERNAL_SERVER, ERROR_INTERNAL_SERVER_DB, ERROR_NOT_CREATED, ERROR_NOT_DELETED, ERROR_NOT_FOUND, ERROR_NOT_FOUND_AVAILBILITY, ERROR_NOT_FOUND_PROFESSIONAL, ERROR_REQUIRED_FIELDS, SUCCESS_CREATED_ITEM, SUCCESS_DELETED_ITEM } from "../../../module/config";
 import { TAvailability } from "../../domain/entities/availability-entity";
 import { TProfessionalAvailability } from "../../domain/entities/professional-availability";
-import { verificacao } from "../../infra/availability-data-validation";
-import { isValidWeekDay, isValidId } from "../../infra/zod-validations";
+import { isValidWeekDay, isValidId, isValidHour } from "../../infra/zod-validations";
 import { buscarDisponibilidade, buscarDisponibilidadePsicologo, criarDisponibilidade, criarDisponibilidadeProfissional, deletarDisponibilidade, listarDisponibilidadesPorProfissional } from "../../model/DAO/disponibilidade/disponibilidade";
 import { getBuscarPsicologo } from "../usuario/controller_psicologo";
 
@@ -19,13 +18,18 @@ export async function setInserirDisponibilidade(disponibilidade: TAvailability, 
         if (String(contentType).toLowerCase() !== 'application/json') {
             return ERROR_CONTENT_TYPE
         }
-
         if (!disponibilidade) {
             return ERROR_NOT_CREATED
         }
-        if (!disponibilidade.dia_semana || !isValidWeekDay(disponibilidade.dia_semana) || !verificacao.isDayOfWeek(disponibilidade.dia_semana) ||
-            !disponibilidade.horario_inicio || !verificacao.verificarHorario(disponibilidade.horario_inicio.toString()) ||
-            !disponibilidade.horario_fim || !verificacao.verificarHorario(disponibilidade.horario_fim.toString())
+
+        console.log(disponibilidade)
+        
+        console.log(isValidHour(String(disponibilidade.horario_inicio)), isValidHour(String(disponibilidade.horario_fim)))
+        
+        // * Os horários precisam ser enviados no formato HH:MM:SS
+        if (!disponibilidade.dia_semana || !isValidWeekDay(disponibilidade.dia_semana) ||
+            !disponibilidade.horario_inicio || !isValidHour(disponibilidade.horario_inicio.toString()) ||
+            !disponibilidade.horario_fim || !isValidHour(disponibilidade.horario_fim.toString())
         ) {
             return ERROR_REQUIRED_FIELDS
         } else {
@@ -179,8 +183,7 @@ export async function setDeletarDisponibilidade(diaSemana: string, idPsicologo: 
     try {
         if
             (
-            !isValidWeekDay(diaSemana) || !verificacao.isDayOfWeek(diaSemana) ||
-           !isValidId(idPsicologo)
+            !isValidWeekDay(diaSemana) || !isValidId(idPsicologo)
         ) {
             return ERROR_REQUIRED_FIELDS
         }

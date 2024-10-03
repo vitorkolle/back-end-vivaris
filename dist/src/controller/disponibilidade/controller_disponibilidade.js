@@ -15,11 +15,10 @@ exports.criarDisponibilidadePsicologo = criarDisponibilidadePsicologo;
 exports.getBuscarDisponibilidade = getBuscarDisponibilidade;
 exports.getListarDisponibilidadesProfissional = getListarDisponibilidadesProfissional;
 exports.setDeletarDisponibilidade = setDeletarDisponibilidade;
-const disponibilidade_1 = require("../../model/DAO/disponibilidade/disponibilidade");
 const config_1 = require("../../../module/config");
-const availability_data_validation_1 = require("../../infra/availability-data-validation");
-const controller_psicologo_1 = require("../usuario/controller_psicologo");
 const zod_validations_1 = require("../../infra/zod-validations");
+const disponibilidade_1 = require("../../model/DAO/disponibilidade/disponibilidade");
+const controller_psicologo_1 = require("../usuario/controller_psicologo");
 function transformarHorario(horario) {
     const hoje = new Date();
     const [horas, minutos, segundos] = horario.split(':').map(Number);
@@ -35,9 +34,10 @@ function setInserirDisponibilidade(disponibilidade, contentType) {
             if (!disponibilidade) {
                 return config_1.ERROR_NOT_CREATED;
             }
-            if (!disponibilidade.dia_semana || disponibilidade.dia_semana.length > 7 || disponibilidade.dia_semana.length < 5 || typeof disponibilidade.dia_semana !== 'string' || !availability_data_validation_1.verificacao.isDayOfWeek(disponibilidade.dia_semana) ||
-                !disponibilidade.horario_inicio || !availability_data_validation_1.verificacao.verificarHorario(disponibilidade.horario_inicio.toString()) ||
-                !disponibilidade.horario_fim || !availability_data_validation_1.verificacao.verificarHorario(disponibilidade.horario_fim.toString())) {
+            console.log((0, zod_validations_1.isValidHour)((disponibilidade.horario_inicio)), (0, zod_validations_1.isValidHour)((disponibilidade.horario_fim)));
+            if (!disponibilidade.dia_semana || !(0, zod_validations_1.isValidWeekDay)(disponibilidade.dia_semana) ||
+                !disponibilidade.horario_inicio || !(0, zod_validations_1.isValidHour)(disponibilidade.horario_inicio.toString()) ||
+                !disponibilidade.horario_fim || !(0, zod_validations_1.isValidHour)(disponibilidade.horario_fim.toString())) {
                 return config_1.ERROR_REQUIRED_FIELDS;
             }
             else {
@@ -68,9 +68,9 @@ function setInserirDisponibilidade(disponibilidade, contentType) {
 function criarDisponibilidadePsicologo(availability) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            if (!availability.disponibilidade_id || typeof availability.disponibilidade_id !== 'number' ||
+            if (!availability.disponibilidade_id || !(0, zod_validations_1.isValidId)(availability.disponibilidade_id) ||
                 !availability.status || typeof availability.status !== 'string' ||
-                !availability.id_psicologo || typeof availability.id_psicologo !== 'number') {
+                !availability.id_psicologo || !(0, zod_validations_1.isValidId)(availability.id_psicologo)) {
                 return config_1.ERROR_REQUIRED_FIELDS;
             }
             const validateProfessional = yield (0, controller_psicologo_1.getBuscarPsicologo)(availability.id_psicologo);
@@ -176,8 +176,7 @@ function getListarDisponibilidadesProfissional(idProfessional) {
 function setDeletarDisponibilidade(diaSemana, idPsicologo) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            if (typeof diaSemana !== 'string' || !availability_data_validation_1.verificacao.isDayOfWeek(diaSemana) ||
-                !(0, zod_validations_1.isValidId)(idPsicologo)) {
+            if (!(0, zod_validations_1.isValidWeekDay)(diaSemana) || !(0, zod_validations_1.isValidId)(idPsicologo)) {
                 return config_1.ERROR_REQUIRED_FIELDS;
             }
             let deleteAvailbility = yield (0, disponibilidade_1.deletarDisponibilidade)(diaSemana, idPsicologo);

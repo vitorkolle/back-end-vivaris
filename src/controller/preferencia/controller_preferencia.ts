@@ -17,7 +17,7 @@ export async function setInserirPreferencias(userData : TUserPreferences, conten
         else{
             if(
                 !userData.id_cliente || !isValidId(userData.id_cliente) ||
-                !userData.preferencias || userData.preferencias == null
+                !userData.preferencias || userData.preferencias.length < 1
             ){
                 return ERROR_REQUIRED_FIELDS
             }

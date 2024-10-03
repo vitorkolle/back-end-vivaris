@@ -17,7 +17,7 @@ export async function criarNovoPsicologo(userInput: TProfessional) {
         data_nascimento: userInput.data_nascimento,
         cip : userInput.cip,
         id_sexo: userInput.id_sexo
-      }, 
+      } 
     });
 
     return user

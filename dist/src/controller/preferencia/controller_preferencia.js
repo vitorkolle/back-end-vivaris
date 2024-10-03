@@ -28,7 +28,7 @@ function setInserirPreferencias(userData, contentType) {
             }
             else {
                 if (!userData.id_cliente || !(0, zod_validations_1.isValidId)(userData.id_cliente) ||
-                    !userData.preferencias || userData.preferencias == null) {
+                    !userData.preferencias || userData.preferencias.length < 1) {
                     return config_1.ERROR_REQUIRED_FIELDS;
                 }
                 else {

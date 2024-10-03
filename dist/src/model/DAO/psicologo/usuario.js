@@ -28,7 +28,7 @@ function criarNovoPsicologo(userInput) {
                     data_nascimento: userInput.data_nascimento,
                     cip: userInput.cip,
                     id_sexo: userInput.id_sexo
-                },
+                }
             });
             return user;
         }
