@@ -34,3 +34,14 @@ export function isValidPassword(password: string) : boolean{
 
     return testPassword.success
 }
+
+export function isValidWeekDay(date: string) : boolean{
+
+    //? Verificar se o tipo 'date' do zod corresponde ao tipo de data que estamos utilizando
+    //*^  Possível uso quando a aplicação estiver na fase final
+    const rightDate = z.string().min(5).max(7)
+
+    const testDate = rightDate.safeParse(date)
+
+    return testDate.success
+}
