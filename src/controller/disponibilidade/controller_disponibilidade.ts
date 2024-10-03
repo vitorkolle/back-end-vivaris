@@ -5,7 +5,7 @@ import { verificacao } from "../../infra/availability-data-validation";
 import { TProfessionalAvailability } from "../../domain/entities/professional-availability";
 import { getBuscarPsicologo } from "../usuario/controller_psicologo";
 import { z } from "zod";
-import { validId } from "../../infra/zod-validations";
+import { isValidId } from "../../infra/zod-validations";
 
 
 export function transformarHorario(horario: string): Date {
@@ -125,7 +125,7 @@ export async function criarDisponibilidadePsicologo(
 
 export async function getBuscarDisponibilidade(id: number) {
     try {
-        if (validId.safeParse(id).success === false) {
+        if (!isValidId(id)) {
             return ERROR_REQUIRED_FIELDS
         }
         let availabilityData = await buscarDisponibilidade(id)
@@ -152,7 +152,7 @@ export async function getListarDisponibilidadesProfissional(idProfessional: numb
     try {
         if
             (
-            validId.safeParse(idProfessional).success === false
+            !isValidId(idProfessional)
         ) {
             return ERROR_REQUIRED_FIELDS
         }
@@ -181,7 +181,7 @@ export async function setDeletarDisponibilidade(diaSemana: string, idPsicologo: 
         if
             (
             typeof diaSemana !== 'string' || !verificacao.isDayOfWeek(diaSemana) ||
-            validId.safeParse(idPsicologo).success === false
+           !isValidId(idPsicologo)
         ) {
             return ERROR_REQUIRED_FIELDS
         }

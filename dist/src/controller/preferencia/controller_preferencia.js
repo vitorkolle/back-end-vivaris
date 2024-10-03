@@ -16,6 +16,7 @@ const config_1 = require("../../../module/config");
 const client_preferences_validation_1 = require("../../infra/client-preferences-validation");
 const usuario_1 = require("../../model/DAO/cliente/usuario");
 const preferencia_1 = require("../../model/DAO/preferencia/preferencia");
+const zod_validations_1 = require("../../infra/zod-validations");
 function setInserirPreferencias(userData, contentType) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -26,7 +27,7 @@ function setInserirPreferencias(userData, contentType) {
                 return config_1.ERROR_NOT_CREATED;
             }
             else {
-                if (!userData.id_cliente || typeof userData.id_cliente != 'number' ||
+                if (!userData.id_cliente || !(0, zod_validations_1.isValidId)(userData.id_cliente) ||
                     !userData.preferencias || userData.preferencias == null) {
                     return config_1.ERROR_REQUIRED_FIELDS;
                 }
@@ -82,7 +83,7 @@ function getListarPreferencias() {
 }
 function getBuscarPreferencia(id) {
     return __awaiter(this, void 0, void 0, function* () {
-        if (!id || typeof id !== 'number' || id < 1) {
+        if (!(0, zod_validations_1.isValidId)(id)) {
             return config_1.ERROR_REQUIRED_FIELDS;
         }
         let searchPreference = yield (0, preferencia_1.buscarPreferencia)(id);

@@ -14,6 +14,7 @@ exports.getLogarPsicologo = getLogarPsicologo;
 exports.getBuscarPsicologo = getBuscarPsicologo;
 const config_1 = require("../../../module/config");
 const professional_data_validation_1 = require("../../infra/professional-data-validation");
+const zod_validations_1 = require("../../infra/zod-validations");
 const usuario_1 = require("../../model/DAO/psicologo/usuario");
 function setInserirPsicologo(user, contentType) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -61,14 +62,14 @@ function setInserirPsicologo(user, contentType) {
                 return age < 0 ? 0 : age;
             }
             // Validação dos campos obrigatórios
-            if (!user.nome || typeof user.nome !== 'string' || user.nome.length > 50 || user.nome.match("\\d") ||
+            if (!user.nome || !(0, zod_validations_1.isValidName)(user.nome) ||
                 !user.cpf || user.cpf.length !== 11 || !(yield professional_data_validation_1.verificacaoProfissionais.verificarCpf(user.cpf)) ||
                 !user.cip || user.cip.length !== 9 || !(yield professional_data_validation_1.verificacaoProfissionais.verificarCip(user.cip)) ||
                 !user.data_nascimento || !validarData(user.data_nascimento.toString()) || validarIdade(user.data_nascimento) < 18 ||
-                !user.email || typeof user.email !== 'string' || !(yield professional_data_validation_1.verificacaoProfissionais.verificarEmail(user.email)) || user.email.length > 256 ||
-                !user.senha || typeof user.senha !== 'string' || user.senha.length < 8 || user.senha.length > 20 ||
+                !user.email || !(0, zod_validations_1.isValidEmail)(user.email) ||
+                !user.senha || !(0, zod_validations_1.isValidPassword)(user.senha) ||
                 !user.telefone || user.telefone.length !== 11 || typeof user.telefone !== 'string' ||
-                !user.id_sexo || isNaN(Number(user.id_sexo))) {
+                !user.id_sexo || !(0, zod_validations_1.isValidId)(user.id_sexo)) {
                 if (!(yield professional_data_validation_1.verificacaoProfissionais.verificarEmail(user.email))) {
                     return config_1.ERROR_ALREADY_EXISTS_ACCOUNT_EMAIL;
                 }
@@ -120,8 +121,8 @@ function setInserirPsicologo(user, contentType) {
 }
 function getLogarPsicologo(email, senha) {
     return __awaiter(this, void 0, void 0, function* () {
-        if (!email || typeof email != 'string' || email.length > 256 ||
-            !senha || typeof senha != 'string' || senha.length < 8) {
+        if (!email || !(0, zod_validations_1.isValidEmail)(email) ||
+            !senha || !(0, zod_validations_1.isValidPassword)(senha)) {
             return config_1.ERROR_REQUIRED_FIELDS;
         }
         let clientData = yield (0, usuario_1.logarPsicologo)(email, senha);
@@ -138,7 +139,7 @@ function getLogarPsicologo(email, senha) {
 }
 function getBuscarPsicologo(id) {
     return __awaiter(this, void 0, void 0, function* () {
-        if (id < 1) {
+        if (!(0, zod_validations_1.isValidId)(id)) {
             return config_1.ERROR_REQUIRED_FIELDS;
         }
         else {
