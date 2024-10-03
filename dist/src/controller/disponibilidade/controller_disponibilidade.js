@@ -14,6 +14,7 @@ exports.setInserirDisponibilidade = setInserirDisponibilidade;
 exports.criarDisponibilidadePsicologo = criarDisponibilidadePsicologo;
 exports.getBuscarDisponibilidade = getBuscarDisponibilidade;
 exports.getListarDisponibilidadesProfissional = getListarDisponibilidadesProfissional;
+exports.setDeletarDisponibilidade = setDeletarDisponibilidade;
 const disponibilidade_1 = require("../../model/DAO/disponibilidade/disponibilidade");
 const config_1 = require("../../../module/config");
 const availability_data_validation_1 = require("../../infra/availability-data-validation");
@@ -155,6 +156,26 @@ function getListarDisponibilidadesProfissional(idProfessional) {
         }
         catch (error) {
             console.error('Erro ao tentar consultar as disponibilidades por psicólogo:', error);
+            return config_1.ERROR_INTERNAL_SERVER;
+        }
+    });
+}
+function setDeletarDisponibilidade(diaSemana, idPsicologo) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            if (typeof diaSemana !== 'string' || !availability_data_validation_1.verificacao.isDayOfWeek(diaSemana) ||
+                typeof idPsicologo !== 'number' || idPsicologo < 1) {
+                return config_1.ERROR_REQUIRED_FIELDS;
+            }
+            let deleteAvailbility = yield (0, disponibilidade_1.deletarDisponibilidade)(diaSemana, idPsicologo);
+            console.log(deleteAvailbility);
+            if (deleteAvailbility === false) {
+                return config_1.ERROR_NOT_DELETED;
+            }
+            return config_1.SUCCESS_DELETED_ITEM;
+        }
+        catch (error) {
+            console.error('Erro ao tentar deletar as disponibilidades:', error);
             return config_1.ERROR_INTERNAL_SERVER;
         }
     });
