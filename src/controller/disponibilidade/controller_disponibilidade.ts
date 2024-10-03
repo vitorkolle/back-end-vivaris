@@ -83,7 +83,7 @@ export async function criarDisponibilidadePsicologo(
         }
 
         const searchProfessionalAvailbility = await buscarDisponibilidadePsicologo(availability.id_psicologo, availability.disponibilidade_id)
-
+        
         let novaDisponibilidade
 
         if (searchProfessionalAvailbility === false) {
@@ -100,14 +100,16 @@ export async function criarDisponibilidadePsicologo(
             }
         }
 
-        searchProfessionalAvailbility.forEach(async (searchAvailability: { psicologo_id: number; disponibilidade_id: number; status_disponibilidade: string; }) => {
-            if (searchAvailability.psicologo_id == availability.id_psicologo && searchAvailability.disponibilidade_id == availability.disponibilidade_id && (searchAvailability.status_disponibilidade == 'Concluido' || searchAvailability.status_disponibilidade == 'Livre')) {
+        searchProfessionalAvailbility.forEach(async (searchAvailability) => {
+            if (searchAvailability.psicologo_id == availability.id_psicologo && searchAvailability.disponibilidade_id == availability.disponibilidade_id) {
                 novaDisponibilidade = await criarDisponibilidadeProfissional(availability.id_psicologo, availability.disponibilidade_id, availability.status)
+                console.log(novaDisponibilidade);
             }
             else {
                 return ERROR_ALREADY_EXISTS_PREFRENCE
             }
         });
+
 
         if (novaDisponibilidade) {
             return {

@@ -34,7 +34,9 @@ function setInserirDisponibilidade(disponibilidade, contentType) {
             if (!disponibilidade) {
                 return config_1.ERROR_NOT_CREATED;
             }
-            console.log((0, zod_validations_1.isValidHour)((disponibilidade.horario_inicio)), (0, zod_validations_1.isValidHour)((disponibilidade.horario_fim)));
+            console.log(disponibilidade);
+            console.log((0, zod_validations_1.isValidHour)(String(disponibilidade.horario_inicio)), (0, zod_validations_1.isValidHour)(String(disponibilidade.horario_fim)));
+            // * Os horários precisam ser enviados no formato HH:MM:SS
             if (!disponibilidade.dia_semana || !(0, zod_validations_1.isValidWeekDay)(disponibilidade.dia_semana) ||
                 !disponibilidade.horario_inicio || !(0, zod_validations_1.isValidHour)(disponibilidade.horario_inicio.toString()) ||
                 !disponibilidade.horario_fim || !(0, zod_validations_1.isValidHour)(disponibilidade.horario_fim.toString())) {
@@ -83,6 +85,7 @@ function criarDisponibilidadePsicologo(availability) {
                 return config_1.ERROR_NOT_FOUND_AVAILBILITY;
             }
             const searchProfessionalAvailbility = yield (0, disponibilidade_1.buscarDisponibilidadePsicologo)(availability.id_psicologo, availability.disponibilidade_id);
+            console.log(searchProfessionalAvailbility);
             let novaDisponibilidade;
             if (searchProfessionalAvailbility === false) {
                 novaDisponibilidade = yield (0, disponibilidade_1.criarDisponibilidadeProfissional)(availability.id_psicologo, availability.disponibilidade_id, availability.status);
@@ -98,8 +101,9 @@ function criarDisponibilidadePsicologo(availability) {
                 }
             }
             searchProfessionalAvailbility.forEach((searchAvailability) => __awaiter(this, void 0, void 0, function* () {
-                if (searchAvailability.psicologo_id == availability.id_psicologo && searchAvailability.disponibilidade_id == availability.disponibilidade_id && (searchAvailability.status_disponibilidade == 'Concluido' || searchAvailability.status_disponibilidade == 'Livre')) {
+                if (searchAvailability.psicologo_id == availability.id_psicologo && searchAvailability.disponibilidade_id == availability.disponibilidade_id) {
                     novaDisponibilidade = yield (0, disponibilidade_1.criarDisponibilidadeProfissional)(availability.id_psicologo, availability.disponibilidade_id, availability.status);
+                    console.log(novaDisponibilidade);
                 }
                 else {
                     return config_1.ERROR_ALREADY_EXISTS_PREFRENCE;

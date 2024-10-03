@@ -1,5 +1,6 @@
-import { PrismaClient } from "@prisma/client";
-import { TAvailability } from "../../../domain/entities/availability-entity";
+import { PrismaClient } from "@prisma/client"
+import { TAvailability} from "../../../domain/entities/availability-entity"
+import { ERROR_NOT_FOUND } from "../../../../module/config";
 const prisma = new PrismaClient()
 
 
@@ -189,7 +190,7 @@ export async function buscarDisponibilidadePsicologo(professionalId: number, ava
       }
     })
 
-    if(disponibilidadePsicologo){
+    if(disponibilidadePsicologo.length > 0){
       return disponibilidadePsicologo
     }
     else 
@@ -231,7 +232,8 @@ export async function deletarDisponibilidade(diaSemana:string, idPsicologo: numb
     let user = await prisma.$queryRaw`CALL deleteDisp(${diaSemana}, ${idPsicologo})`
 
     console.log(user);
-   
+    
+
     if(String(user).length < 1){
       return false
     }

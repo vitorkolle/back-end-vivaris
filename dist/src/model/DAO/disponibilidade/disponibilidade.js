@@ -196,7 +196,7 @@ function buscarDisponibilidadePsicologo(professionalId, availabilityId) {
                     status_disponibilidade: true
                 }
             });
-            if (disponibilidadePsicologo) {
+            if (disponibilidadePsicologo.length > 0) {
                 return disponibilidadePsicologo;
             }
             else
