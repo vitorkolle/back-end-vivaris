@@ -1,5 +1,4 @@
 "use strict";
-//npx ts-node app.ts
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -127,7 +126,7 @@ route.post('/disponibilidade', (req, res) => __awaiter(void 0, void 0, void 0, f
         horario_fim: req.body.horario_fim
     };
     let rsDisponilidade = yield (0, controller_disponibilidade_1.setInserirDisponibilidade)(disponibilidade, contentType);
-    console.log(rsDisponilidade);
+    console.log(disponibilidade);
     res.status(rsDisponilidade.status_code);
     res.json(rsDisponilidade);
 }));
@@ -178,7 +177,7 @@ route.get('/preferencias/:id', (req, res) => __awaiter(void 0, void 0, void 0, f
 }));
 // Configurações do CORS
 const corsOptions = {
-    origin: 'http://127.0.0.1:5173', // Permita o seu frontend
+    origin: 'http://localhost:5173', // Permita o seu frontend
     methods: ['GET', 'POST', 'PUT', 'DELETE'], // Métodos permitidos
     allowedHeaders: ['Content-Type', 'Authorization'], // Cabeçalhos permitidos
     optionsSuccessStatus: 200

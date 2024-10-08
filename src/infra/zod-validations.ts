@@ -23,9 +23,12 @@ export function isValidEmail(email:string) : boolean{
 }
 
 export function isValidName(name:string) : boolean{
-    const nameSchema = z.string().max(50).refine((name) => /\d/.test(name))
+    const nameSchema = z.string().max(50).refine((name) => /^[A-Za-zÀ-ÖØ-ÿ ]+$/.test(name))
 
     const testName = nameSchema.safeParse(name)
+
+    console.log(testName);
+    
 
     return testName.success
 }
@@ -50,11 +53,13 @@ export function isValidWeekDay(date: string) : boolean{
         return false
     }
 
-    const weekDaysArray = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'] as const;
+    const weekDaysArray = ['Domingo', 'Segunda', 'Terca', 'Quarta', 'Quinta', 'Sexta', 'Sabado'] as const;
 
     const weekDaySchema = z.enum(weekDaysArray)
 
     const finalDayTest = weekDaySchema.safeParse(date)
+
+    
 
     return finalDayTest.success
 }
@@ -62,7 +67,8 @@ export function isValidWeekDay(date: string) : boolean{
 export function isValidHour(hour: string) : boolean{
     const hourSchema = z.string().time()
 
-    const validateHour = hourSchema.safeParse(hour)    
+    const validateHour = hourSchema.safeParse(hour)  
+    
 
     return validateHour.success
 }

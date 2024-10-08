@@ -169,7 +169,7 @@ route.post('/profissional/login', async (req, res) => {
 
    let rsDisponilidade = await setInserirDisponibilidade(disponibilidade, contentType)
 
-   console.log(rsDisponilidade);
+   console.log(disponibilidade);
    
    res.status(rsDisponilidade.status_code)
    res.json(rsDisponilidade)
@@ -246,7 +246,7 @@ route.get('/preferencias/:id', async (req, res) =>{
 
 // Configurações do CORS
 const corsOptions = {
-    origin: 'http://127.0.0.1:5173', // Permita o seu frontend
+    origin: 'http://localhost:5173', // Permita o seu frontend
     methods: ['GET', 'POST', 'PUT', 'DELETE'], // Métodos permitidos
     allowedHeaders: ['Content-Type', 'Authorization'], // Cabeçalhos permitidos
     optionsSuccessStatus: 200

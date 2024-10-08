@@ -22,8 +22,9 @@ function isValidEmail(email) {
     return testEmail.success;
 }
 function isValidName(name) {
-    const nameSchema = zod_1.z.string().max(50).refine((name) => /\d/.test(name));
+    const nameSchema = zod_1.z.string().max(50).refine((name) => /^[A-Za-zÀ-ÖØ-ÿ ]+$/.test(name));
     const testName = nameSchema.safeParse(name);
+    console.log(testName);
     return testName.success;
 }
 function isValidPassword(password) {
@@ -33,13 +34,13 @@ function isValidPassword(password) {
 }
 function isValidWeekDay(date) {
     //? Verificar se o tipo 'date' do zod corresponde ao tipo de data que estamos utilizando
-    //*^  Possível uso quando a aplicação estiver na fase final
+    //* ^  Possível uso quando a aplicação estiver na fase final
     const dateSchema = zod_1.z.string().min(5).max(7);
     const testDate = dateSchema.safeParse(date);
     if (testDate.success === false) {
         return false;
     }
-    const weekDaysArray = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
+    const weekDaysArray = ['Domingo', 'Segunda', 'Terca', 'Quarta', 'Quinta', 'Sexta', 'Sabado'];
     const weekDaySchema = zod_1.z.enum(weekDaysArray);
     const finalDayTest = weekDaySchema.safeParse(date);
     return finalDayTest.success;
@@ -47,6 +48,5 @@ function isValidWeekDay(date) {
 function isValidHour(hour) {
     const hourSchema = zod_1.z.string().time();
     const validateHour = hourSchema.safeParse(hour);
-    console.log(validateHour.error);
     return validateHour.success;
 }
