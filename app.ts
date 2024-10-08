@@ -246,7 +246,7 @@ route.get('/preferencias/:id', async (req, res) =>{
 
 // Configurações do CORS
 const corsOptions = {
-    origin: 'http://localhost:5173', // Permita o seu frontend
+    origin: ['http://localhost:5173', 'http://127.0.0.1:5173'], // Permita o seu frontend
     methods: ['GET', 'POST', 'PUT', 'DELETE'], // Métodos permitidos
     allowedHeaders: ['Content-Type', 'Authorization'], // Cabeçalhos permitidos
     optionsSuccessStatus: 200
