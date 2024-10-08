@@ -47,8 +47,8 @@ export async function obterUsuarioComPreferencias(userId: number) {
 
     const preferencias = await prisma.tbl_clientes_preferencias.findMany({
       where: {
-        id_clientes: userId,
-      },
+        id_clientes: userId, 
+      }, 
       include: {
         tbl_preferencias: {
           select: {
