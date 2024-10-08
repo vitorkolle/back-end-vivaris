@@ -72,3 +72,12 @@ export function isValidHour(hour: string) : boolean{
 
     return validateHour.success
 }
+
+
+export function isValidNumberArray(numberArray : Array<number>) : boolean{
+    const numberArraySchema = z.array(z.number().int().positive()).min(1)
+
+    const testNumberArray = numberArraySchema.safeParse(numberArray)
+
+    return testNumberArray.success
+}

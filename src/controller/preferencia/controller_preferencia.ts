@@ -3,7 +3,7 @@ import { TUserPreferences } from "../../domain/entities/user-preferences";
 import { verificarPreferencias } from "../../infra/client-preferences-validation";
 import { criarPreferenciasUsuario } from "../../model/DAO/cliente/usuario";
 import { buscarPreferencia, listarPreferencias } from "../../model/DAO/preferencia/preferencia";
-import { isValidId } from "../../infra/zod-validations";
+import { isValidId, isValidNumberArray } from "../../infra/zod-validations";
 
 export async function setInserirPreferencias(userData : TUserPreferences, contentType: string | undefined) {
     try {
@@ -17,7 +17,7 @@ export async function setInserirPreferencias(userData : TUserPreferences, conten
         else{
             if(
                 !userData.id_cliente || !isValidId(userData.id_cliente) ||
-                !userData.preferencias || userData.preferencias.length < 1
+                !userData.preferencias || !isValidNumberArray(userData.preferencias)
             ){
                 return ERROR_REQUIRED_FIELDS
             }
