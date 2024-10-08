@@ -9,6 +9,7 @@ exports.isValidName = isValidName;
 exports.isValidPassword = isValidPassword;
 exports.isValidWeekDay = isValidWeekDay;
 exports.isValidHour = isValidHour;
+exports.isValidNumberArray = isValidNumberArray;
 const zod_1 = require("zod");
 function isValidId(id) {
     const idSchema = zod_1.z.number().int().positive();
@@ -49,4 +50,9 @@ function isValidHour(hour) {
     const hourSchema = zod_1.z.string().time();
     const validateHour = hourSchema.safeParse(hour);
     return validateHour.success;
+}
+function isValidNumberArray(numberArray) {
+    const numberArraySchema = zod_1.z.array(zod_1.z.number().int().positive()).min(1);
+    const testNumberArray = numberArraySchema.safeParse(numberArray);
+    return testNumberArray.success;
 }
