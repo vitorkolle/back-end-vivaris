@@ -218,6 +218,7 @@ export async function setAtualizarDisponibilidade(availabilityData:TAvailability
             return ERROR_NOT_FOUND
         }
 
+        // * Os horários precisam ser enviados no formato HH:MM:SS
         if(
             !availabilityData.dia_semana || !isValidWeekDay(availabilityData.dia_semana) ||
             !availabilityData.horario_inicio || !isValidHour(availabilityData.horario_inicio.toString()) ||

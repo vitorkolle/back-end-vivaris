@@ -207,6 +207,7 @@ function setAtualizarDisponibilidade(availabilityData, contentType, availability
             if (!existsAvailbility) {
                 return config_1.ERROR_NOT_FOUND;
             }
+            // * Os horários precisam ser enviados no formato HH:MM:SS
             if (!availabilityData.dia_semana || !(0, zod_validations_1.isValidWeekDay)(availabilityData.dia_semana) ||
                 !availabilityData.horario_inicio || !(0, zod_validations_1.isValidHour)(availabilityData.horario_inicio.toString()) ||
                 !availabilityData.horario_fim || !(0, zod_validations_1.isValidHour)(availabilityData.horario_fim.toString())) {

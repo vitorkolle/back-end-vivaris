@@ -47,7 +47,7 @@ function isValidWeekDay(date) {
     return finalDayTest.success;
 }
 function isValidHour(hour) {
-    const hourSchema = zod_1.z.string().time();
+    const hourSchema = zod_1.z.string().time().length(8);
     const validateHour = hourSchema.safeParse(hour);
     return validateHour.success;
 }

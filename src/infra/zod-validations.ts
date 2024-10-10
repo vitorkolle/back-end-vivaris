@@ -65,7 +65,7 @@ export function isValidWeekDay(date: string) : boolean{
 }
 
 export function isValidHour(hour: string) : boolean{
-    const hourSchema = z.string().time()
+    const hourSchema = z.string().time().length(8)
 
     const validateHour = hourSchema.safeParse(hour)  
     
