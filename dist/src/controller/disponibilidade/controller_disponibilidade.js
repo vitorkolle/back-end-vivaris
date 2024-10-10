@@ -15,6 +15,7 @@ exports.criarDisponibilidadePsicologo = criarDisponibilidadePsicologo;
 exports.getBuscarDisponibilidade = getBuscarDisponibilidade;
 exports.getListarDisponibilidadesProfissional = getListarDisponibilidadesProfissional;
 exports.setDeletarDisponibilidade = setDeletarDisponibilidade;
+exports.setAtualizarDisponibilidade = setAtualizarDisponibilidade;
 const config_1 = require("../../../module/config");
 const zod_validations_1 = require("../../infra/zod-validations");
 const disponibilidade_1 = require("../../model/DAO/disponibilidade/disponibilidade");
@@ -189,6 +190,47 @@ function setDeletarDisponibilidade(diaSemana, idPsicologo) {
         }
         catch (error) {
             console.error('Erro ao tentar deletar as disponibilidades:', error);
+            return config_1.ERROR_INTERNAL_SERVER;
+        }
+    });
+}
+function setAtualizarDisponibilidade(availabilityData, contentType, availabilityId) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            if (String(contentType).toLocaleLowerCase() !== 'application/json') {
+                return config_1.ERROR_CONTENT_TYPE;
+            }
+            if (!(0, zod_validations_1.isValidId)(availabilityId)) {
+                return config_1.ERROR_INVALID_ID;
+            }
+            const existsAvailbility = yield (0, disponibilidade_1.buscarDisponibilidade)(availabilityId);
+            if (!existsAvailbility) {
+                return config_1.ERROR_NOT_FOUND;
+            }
+            if (!availabilityData.dia_semana || !(0, zod_validations_1.isValidWeekDay)(availabilityData.dia_semana) ||
+                !availabilityData.horario_inicio || !(0, zod_validations_1.isValidHour)(availabilityData.horario_inicio.toString()) ||
+                !availabilityData.horario_fim || !(0, zod_validations_1.isValidHour)(availabilityData.horario_fim.toString())) {
+                return config_1.ERROR_REQUIRED_FIELDS;
+            }
+            const disponibilidadeInput = {
+                dia_semana: availabilityData.dia_semana,
+                horario_inicio: transformarHorario(availabilityData.horario_inicio.toString()),
+                horario_fim: transformarHorario(availabilityData.horario_fim.toString())
+            };
+            let updateAvaibility = yield (0, disponibilidade_1.atualizarDisponibilidade)(disponibilidadeInput, availabilityId);
+            if (!updateAvaibility) {
+                return {
+                    status_code: config_1.ERROR_INTERNAL_SERVER_DB.status_code,
+                    message: config_1.ERROR_INTERNAL_SERVER_DB.message
+                };
+            }
+            return {
+                status_code: 200,
+                data: updateAvaibility
+            };
+        }
+        catch (error) {
+            console.error('Erro ao tentar atualizar as disponibilidades:', error);
             return config_1.ERROR_INTERNAL_SERVER;
         }
     });

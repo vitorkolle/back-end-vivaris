@@ -162,6 +162,19 @@ route.get('/disponibilidade/:id', (req, res) => __awaiter(void 0, void 0, void 0
     res.status(buscarDisponibilidade.status_code);
     res.json(buscarDisponibilidade);
 }));
+route.put('/disponibilidade/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const id = Number(req.params.id);
+    const availabilityData = {
+        dia_semana: req.body.dia_semana,
+        horario_inicio: req.body.horario_inicio,
+        horario_fim: req.body.horario_fim
+    };
+    const contentType = req.header('content-type');
+    let updateAvaibility = yield (0, controller_disponibilidade_1.setAtualizarDisponibilidade)(availabilityData, contentType, id);
+    console.log(availabilityData, id);
+    res.status(updateAvaibility.status_code);
+    res.json(updateAvaibility);
+}));
 /****************************************************PREFERÊNCIAS****************************************************/
 route.get('/preferencias', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let preferenceData = yield (0, controller_preferencia_1.getListarPreferencias)();

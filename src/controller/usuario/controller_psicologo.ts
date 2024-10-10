@@ -68,7 +68,7 @@ export async function setInserirPsicologo(user: TProfessional, contentType: stri
             !user.nome || !isValidName(user.nome)  ||
             !user.cpf || user.cpf.length !== 11 || !await verificacaoProfissionais.verificarCpf(user.cpf) ||
             !user.cip || user.cip.length !== 9 || !await verificacaoProfissionais.verificarCip(user.cip) ||
-            !user.data_nascimento || !validarData(user.data_nascimento.toString()) || validarIdade(user.data_nascimento) < 18 ||
+            !user.data_nascimento || !validarData(user.data_nascimento.toString()) || validarIdade(user.data_nascimento) < 18 || 
             !user.email || !isValidEmail(user.email)  ||
             !user.senha || !isValidPassword(user.senha)  ||
             !user.telefone || user.telefone.length !== 11 || typeof user.telefone !== 'string' ||

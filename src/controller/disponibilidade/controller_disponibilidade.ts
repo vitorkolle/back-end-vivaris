@@ -1,8 +1,8 @@
-import { ERROR_ALREADY_EXISTS_PREFRENCE, ERROR_ALREADY_EXISTS_PROFESSIONAL_AVAILBILITY, ERROR_CONTENT_TYPE, ERROR_INTERNAL_SERVER, ERROR_INTERNAL_SERVER_DB, ERROR_NOT_CREATED, ERROR_NOT_DELETED, ERROR_NOT_FOUND, ERROR_NOT_FOUND_AVAILBILITY, ERROR_NOT_FOUND_PROFESSIONAL, ERROR_REQUIRED_FIELDS, SUCCESS_CREATED_ITEM, SUCCESS_DELETED_ITEM } from "../../../module/config";
+import { ERROR_ALREADY_EXISTS_PREFRENCE, ERROR_ALREADY_EXISTS_PROFESSIONAL_AVAILBILITY, ERROR_CONTENT_TYPE, ERROR_INTERNAL_SERVER, ERROR_INTERNAL_SERVER_DB, ERROR_INVALID_ID, ERROR_NOT_CREATED, ERROR_NOT_DELETED, ERROR_NOT_FOUND, ERROR_NOT_FOUND_AVAILBILITY, ERROR_NOT_FOUND_PROFESSIONAL, ERROR_REQUIRED_FIELDS, SUCCESS_CREATED_ITEM, SUCCESS_DELETED_ITEM } from "../../../module/config";
 import { TAvailability } from "../../domain/entities/availability-entity";
 import { TProfessionalAvailability } from "../../domain/entities/professional-availability";
 import { isValidWeekDay, isValidId, isValidHour } from "../../infra/zod-validations";
-import { buscarDisponibilidade, buscarDisponibilidadePsicologo, criarDisponibilidade, criarDisponibilidadeProfissional, deletarDisponibilidade, listarDisponibilidadesPorProfissional } from "../../model/DAO/disponibilidade/disponibilidade";
+import { atualizarDisponibilidade, buscarDisponibilidade, buscarDisponibilidadePsicologo, criarDisponibilidade, criarDisponibilidadeProfissional, deletarDisponibilidade, listarDisponibilidadesPorProfissional } from "../../model/DAO/disponibilidade/disponibilidade";
 import { getBuscarPsicologo } from "../usuario/controller_psicologo";
 
 
@@ -198,6 +198,56 @@ export async function setDeletarDisponibilidade(diaSemana: string, idPsicologo: 
         return SUCCESS_DELETED_ITEM
     } catch (error) {
         console.error('Erro ao tentar deletar as disponibilidades:', error);
+        return ERROR_INTERNAL_SERVER;
+    }
+}
+
+export async function setAtualizarDisponibilidade(availabilityData:TAvailability, contentType: string | undefined, availabilityId: number) {
+    try {
+        if(String(contentType).toLocaleLowerCase() !== 'application/json'){
+            return ERROR_CONTENT_TYPE
+        }
+
+        if(!isValidId(availabilityId)){
+            return ERROR_INVALID_ID
+        }
+
+        const existsAvailbility = await buscarDisponibilidade(availabilityId)
+
+        if(!existsAvailbility){
+            return ERROR_NOT_FOUND
+        }
+
+        if(
+            !availabilityData.dia_semana || !isValidWeekDay(availabilityData.dia_semana) ||
+            !availabilityData.horario_inicio || !isValidHour(availabilityData.horario_inicio.toString()) ||
+            !availabilityData.horario_fim || !isValidHour(availabilityData.horario_fim.toString())
+        ){
+            return ERROR_REQUIRED_FIELDS
+        }
+
+        const disponibilidadeInput: TAvailability = { 
+            dia_semana: availabilityData.dia_semana,
+            horario_inicio: transformarHorario(availabilityData.horario_inicio.toString()),
+            horario_fim: transformarHorario(availabilityData.horario_fim.toString())
+        }
+
+        let updateAvaibility = await atualizarDisponibilidade(disponibilidadeInput, availabilityId)
+
+        if(!updateAvaibility){
+            return {
+                status_code: ERROR_INTERNAL_SERVER_DB.status_code,
+                message: ERROR_INTERNAL_SERVER_DB.message
+            }
+        }
+
+        return {
+            status_code: 200,
+            data: updateAvaibility
+        } 
+
+    } catch (error) {
+        console.error('Erro ao tentar atualizar as disponibilidades:', error);
         return ERROR_INTERNAL_SERVER;
     }
 }

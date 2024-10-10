@@ -10,14 +10,14 @@ const route = Router()
 
 
 //Import pacotes cors 
-import cors from 'cors'
+import cors from 'cors' 
 
 //Import Controller 
 import { getBuscarCliente, getBuscarSexo, getListarSexo, getLogarCliente, setInserirUsuario } from './src/controller/usuario/controller_usuario'
 import { getBuscarPreferencia, getListarPreferencias, setInserirPreferencias } from './src/controller/preferencia/controller_preferencia'
 import { TProfessional } from './src/domain/entities/professional-entity'
 import { getLogarPsicologo, setInserirPsicologo } from './src/controller/usuario/controller_psicologo'
-import { criarDisponibilidadePsicologo, getBuscarDisponibilidade, getListarDisponibilidadesProfissional, setDeletarDisponibilidade, setInserirDisponibilidade } from './src/controller/disponibilidade/controller_disponibilidade'
+import { criarDisponibilidadePsicologo, getBuscarDisponibilidade, getListarDisponibilidadesProfissional, setAtualizarDisponibilidade, setDeletarDisponibilidade, setInserirDisponibilidade } from './src/controller/disponibilidade/controller_disponibilidade'
 import { TAvailability } from './src/domain/entities/availability-entity'
 import { TProfessionalAvailability } from './src/domain/entities/professional-availability'
 
@@ -223,6 +223,27 @@ route.get('/disponibilidade/:id', async (req, res) => {
     res.status(buscarDisponibilidade.status_code)
     res.json(buscarDisponibilidade)
 })
+
+route.put('/disponibilidade/:id', async (req, res) => {
+    const id = Number(req.params.id)
+
+    const availabilityData:TAvailability = {
+        dia_semana: req.body.dia_semana,
+        horario_inicio: req.body.horario_inicio,
+        horario_fim: req.body.horario_fim
+    }
+
+    const contentType = req.header('content-type')
+    
+    let updateAvaibility = await setAtualizarDisponibilidade(availabilityData, contentType, id)
+
+    console.log(availabilityData, id);
+    
+
+    res.status(updateAvaibility.status_code)
+    res.json(updateAvaibility)
+})
+
 /****************************************************PREFERÊNCIAS****************************************************/
 route.get('/preferencias', async (req, res) =>{
     let preferenceData = await getListarPreferencias()

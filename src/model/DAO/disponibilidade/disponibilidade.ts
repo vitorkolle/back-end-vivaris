@@ -1,5 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { TAvailability } from "../../../domain/entities/availability-entity";
+import { ERROR_CONTENT_TYPE, ERROR_INVALID_ID, ERROR_NOT_FOUND } from "../../../../module/config";
+import { isValidId } from "../../../infra/zod-validations";
 const prisma = new PrismaClient()
 
 
@@ -242,4 +244,29 @@ export async function deletarDisponibilidade(diaSemana:string, idPsicologo: numb
     console.error("Erro ao deletar disponibilidade:", error);
     throw new Error("Não foi possível deletar a disponibilidade");
   }
+}
+
+export async function atualizarDisponibilidade(availabilityData: TAvailability, availabilityId: number) {
+  try {
+    const updateAvaibility = await prisma.tbl_disponibilidade.update({
+      where: {
+        id: availabilityId
+      },
+      data:{
+        dia_semana: availabilityData.dia_semana,
+        horario_inicio: availabilityData.horario_inicio,
+        horario_fim: availabilityData.horario_fim
+      }
+    }) 
+
+    if(!updateAvaibility){
+      return false
+    }
+
+    return updateAvaibility
+    
+  } catch (error) {
+    console.error("Erro ao atualizar disponibilidade:", error);
+    throw new Error("Não foi possível atualizar a disponibilidade");
+  }  
 }
