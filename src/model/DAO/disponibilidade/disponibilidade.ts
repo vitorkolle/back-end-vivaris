@@ -2,6 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import { TAvailability } from "../../../domain/entities/availability-entity";
 import { ERROR_CONTENT_TYPE, ERROR_INVALID_ID, ERROR_NOT_FOUND } from "../../../../module/config";
 import { isValidId } from "../../../infra/zod-validations";
+import { TProfessionalAvailability } from "../../../domain/entities/professional-availability";
 const prisma = new PrismaClient()
 
 
@@ -264,9 +265,32 @@ export async function atualizarDisponibilidade(availabilityData: TAvailability, 
     }
 
     return updateAvaibility
-    
+
   } catch (error) {
     console.error("Erro ao atualizar disponibilidade:", error);
     throw new Error("Não foi possível atualizar a disponibilidade");
   }  
+}
+
+export async function atualizarDisponibilidadeProfissional(availabilityStatus: string, availabilityId: number) {
+  try {
+    const updateProfessionalAvailbility = await prisma.tbl_psicologo_disponibilidade.update({
+      where: {
+        id: availabilityId
+      },
+      data:{
+        status_disponibilidade: availabilityStatus
+      }
+    }) 
+
+    if(!updateProfessionalAvailbility){
+      return false
+    }
+
+    return updateProfessionalAvailbility
+    
+  } catch (error) {
+    console.error("Erro ao atualizar disponibilidade do profissional:", error);
+    throw new Error("Não foi possível atualizar a disponibilidade do profissional");
+  }
 }

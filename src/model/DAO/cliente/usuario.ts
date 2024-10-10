@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client"
 import { TUser } from "../../../domain/entities/user-entity";
-import { ERROR_NOT_FOUND } from "../../../../module/config";
+import { ERROR_NOT_FOUND, ERROR_NOT_FOUND_PREFERENCE } from "../../../../module/config";
 const prisma = new PrismaClient()
 
 export async function criarNovoCliente(userInput: TUser): Promise<TUser> {
@@ -157,7 +157,10 @@ export async function logarCliente(email: string, senha: string) {
       }
     })
     if (!usuario) {
-      return ERROR_NOT_FOUND      
+      return {
+        status: ERROR_NOT_FOUND.status_code,
+        message: ERROR_NOT_FOUND.message
+      }    
     }
 
     const preferencias_usuario = await prisma.tbl_clientes_preferencias.findMany({
@@ -172,7 +175,8 @@ export async function logarCliente(email: string, senha: string) {
 
     if(!preferencias_usuario){
       const response = {
-        usuario: usuario
+        usuario: usuario,
+        status: ERROR_NOT_FOUND_PREFERENCE.status_code
       }
 
       return response
@@ -199,7 +203,8 @@ export async function logarCliente(email: string, senha: string) {
 
     if(preferenciasArray.length < 1){
       const response = {
-        usuario: usuario
+        usuario: usuario,
+        status: ERROR_NOT_FOUND_PREFERENCE.status_code
       }
 
       return response
@@ -207,7 +212,8 @@ export async function logarCliente(email: string, senha: string) {
 
     const response = {
       usuario: usuario,
-      preferencias_usuario: preferenciasArray
+      preferencias_usuario: preferenciasArray,
+      status: 200
     }
 
     return response

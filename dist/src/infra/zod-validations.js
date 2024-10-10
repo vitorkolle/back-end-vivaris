@@ -10,6 +10,7 @@ exports.isValidPassword = isValidPassword;
 exports.isValidWeekDay = isValidWeekDay;
 exports.isValidHour = isValidHour;
 exports.isValidNumberArray = isValidNumberArray;
+exports.isValidAvailbilityStatus = isValidAvailbilityStatus;
 const zod_1 = require("zod");
 function isValidId(id) {
     const idSchema = zod_1.z.number().int().positive();
@@ -56,3 +57,8 @@ function isValidNumberArray(numberArray) {
     const testNumberArray = numberArraySchema.safeParse(numberArray);
     return testNumberArray.success;
 }
+function isValidAvailbilityStatus(availabilityStatus) {
+    const availabilityStatusSchema = zod_1.z.string().min(4).max(11);
+    const testStatus = availabilityStatus;
+}
+['livre', 'selecionado', 'pago', 'concluído'];

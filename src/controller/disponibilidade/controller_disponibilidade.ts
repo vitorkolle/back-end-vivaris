@@ -204,7 +204,7 @@ export async function setDeletarDisponibilidade(diaSemana: string, idPsicologo: 
 
 export async function setAtualizarDisponibilidade(availabilityData:TAvailability, contentType: string | undefined, availabilityId: number) {
     try {
-        if(String(contentType).toLocaleLowerCase() !== 'application/json'){
+        if(String(contentType).toLowerCase() !== 'application/json'){
             return ERROR_CONTENT_TYPE
         }
 
@@ -250,5 +250,29 @@ export async function setAtualizarDisponibilidade(availabilityData:TAvailability
     } catch (error) {
         console.error('Erro ao tentar atualizar as disponibilidades:', error);
         return ERROR_INTERNAL_SERVER;
+    }
+}
+
+export async function setAtualizarDisponibilidadeProfissional(availabilityId: number, availabilityStatus: string, contentType: string | undefined) {
+    try {
+        if(String(contentType).toLowerCase() !== 'application/json'){
+            return ERROR_CONTENT_TYPE
+        }
+
+        if(!isValidId(availabilityId)){
+            return ERROR_INVALID_ID
+        }
+
+        const existsAvailbility = await buscarDisponibilidade(availabilityId)
+
+        if(!existsAvailbility){
+            return ERROR_NOT_FOUND
+        }
+
+      //  if(
+
+        //)
+    } catch (error) {
+        
     }
 }

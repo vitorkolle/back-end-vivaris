@@ -81,3 +81,11 @@ export function isValidNumberArray(numberArray : Array<number>) : boolean{
 
     return testNumberArray.success
 }
+
+
+export function isValidAvailbilityStatus(availabilityStatus : string) /** : boolean */ {
+    const availabilityStatusSchema = z.string().min(4).max(11)
+
+    const testStatus = availabilityStatus
+}
+['livre', 'selecionado', 'pago', 'concluído']

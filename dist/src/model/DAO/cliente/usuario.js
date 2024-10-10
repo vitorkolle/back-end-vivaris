@@ -168,7 +168,10 @@ function logarCliente(email, senha) {
                 }
             });
             if (!usuario) {
-                return config_1.ERROR_NOT_FOUND;
+                return {
+                    status: config_1.ERROR_NOT_FOUND.status_code,
+                    message: config_1.ERROR_NOT_FOUND.message
+                };
             }
             const preferencias_usuario = yield prisma.tbl_clientes_preferencias.findMany({
                 where: {
@@ -181,7 +184,8 @@ function logarCliente(email, senha) {
             });
             if (!preferencias_usuario) {
                 const response = {
-                    usuario: usuario
+                    usuario: usuario,
+                    status: config_1.ERROR_NOT_FOUND_PREFERENCE.status_code
                 };
                 return response;
             }
@@ -202,13 +206,15 @@ function logarCliente(email, senha) {
             }
             if (preferenciasArray.length < 1) {
                 const response = {
-                    usuario: usuario
+                    usuario: usuario,
+                    status: config_1.ERROR_NOT_FOUND_PREFERENCE.status_code
                 };
                 return response;
             }
             const response = {
                 usuario: usuario,
-                preferencias_usuario: preferenciasArray
+                preferencias_usuario: preferenciasArray,
+                status: 200
             };
             return response;
         }

@@ -16,6 +16,7 @@ exports.getBuscarDisponibilidade = getBuscarDisponibilidade;
 exports.getListarDisponibilidadesProfissional = getListarDisponibilidadesProfissional;
 exports.setDeletarDisponibilidade = setDeletarDisponibilidade;
 exports.setAtualizarDisponibilidade = setAtualizarDisponibilidade;
+exports.setAtualizarDisponibilidadeProfissional = setAtualizarDisponibilidadeProfissional;
 const config_1 = require("../../../module/config");
 const zod_validations_1 = require("../../infra/zod-validations");
 const disponibilidade_1 = require("../../model/DAO/disponibilidade/disponibilidade");
@@ -197,7 +198,7 @@ function setDeletarDisponibilidade(diaSemana, idPsicologo) {
 function setAtualizarDisponibilidade(availabilityData, contentType, availabilityId) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            if (String(contentType).toLocaleLowerCase() !== 'application/json') {
+            if (String(contentType).toLowerCase() !== 'application/json') {
                 return config_1.ERROR_CONTENT_TYPE;
             }
             if (!(0, zod_validations_1.isValidId)(availabilityId)) {
@@ -233,6 +234,26 @@ function setAtualizarDisponibilidade(availabilityData, contentType, availability
         catch (error) {
             console.error('Erro ao tentar atualizar as disponibilidades:', error);
             return config_1.ERROR_INTERNAL_SERVER;
+        }
+    });
+}
+function setAtualizarDisponibilidadeProfissional(availabilityId, availabilityStatus, contentType) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            if (String(contentType).toLowerCase() !== 'application/json') {
+                return config_1.ERROR_CONTENT_TYPE;
+            }
+            if (!(0, zod_validations_1.isValidId)(availabilityId)) {
+                return config_1.ERROR_INVALID_ID;
+            }
+            const existsAvailbility = yield (0, disponibilidade_1.buscarDisponibilidade)(availabilityId);
+            if (!existsAvailbility) {
+                return config_1.ERROR_NOT_FOUND;
+            }
+            //  if(
+            //)
+        }
+        catch (error) {
         }
     });
 }

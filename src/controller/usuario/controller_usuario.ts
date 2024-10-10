@@ -147,7 +147,7 @@ export async function getLogarCliente(email: string | undefined, senha: string |
     if(clientData){
         return {
             data: clientData,
-            status_code: 200
+            status_code: clientData.status
         }
     }
     else{

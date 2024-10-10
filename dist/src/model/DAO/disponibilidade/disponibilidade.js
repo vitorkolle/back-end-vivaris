@@ -16,6 +16,7 @@ exports.buscarDisponibilidadePsicologo = buscarDisponibilidadePsicologo;
 exports.buscarDisponibilidade = buscarDisponibilidade;
 exports.deletarDisponibilidade = deletarDisponibilidade;
 exports.atualizarDisponibilidade = atualizarDisponibilidade;
+exports.atualizarDisponibilidadeProfissional = atualizarDisponibilidadeProfissional;
 const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
 function criarDisponibilidade(disponibilidade) {
@@ -270,6 +271,28 @@ function atualizarDisponibilidade(availabilityData, availabilityId) {
         catch (error) {
             console.error("Erro ao atualizar disponibilidade:", error);
             throw new Error("Não foi possível atualizar a disponibilidade");
+        }
+    });
+}
+function atualizarDisponibilidadeProfissional(availabilityStatus, availabilityId) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const updateProfessionalAvailbility = yield prisma.tbl_psicologo_disponibilidade.update({
+                where: {
+                    id: availabilityId
+                },
+                data: {
+                    status_disponibilidade: availabilityStatus
+                }
+            });
+            if (!updateProfessionalAvailbility) {
+                return false;
+            }
+            return updateProfessionalAvailbility;
+        }
+        catch (error) {
+            console.error("Erro ao atualizar disponibilidade do profissional:", error);
+            throw new Error("Não foi possível atualizar a disponibilidade do profissional");
         }
     });
 }
