@@ -15,6 +15,7 @@ const zod_1 = require("zod");
 function isValidId(id) {
     const idSchema = zod_1.z.number().int().positive();
     const testId = idSchema.safeParse(id);
+    console.log(testId, id);
     return testId.success;
 }
 function isValidEmail(email) {

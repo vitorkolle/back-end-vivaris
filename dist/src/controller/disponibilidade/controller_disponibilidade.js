@@ -84,7 +84,7 @@ function criarDisponibilidadePsicologo(availability) {
             if (!validateAvailbility) {
                 return config_1.ERROR_NOT_FOUND_AVAILBILITY;
             }
-            const searchProfessionalAvailbility = yield (0, disponibilidade_1.buscarDisponibilidadePsicologo)(availability.id_psicologo, availability.disponibilidade_id);
+            const searchProfessionalAvailbility = yield (0, disponibilidade_1.buscarDisponibilidadePsicologo)(availability);
             let novaDisponibilidade;
             if (searchProfessionalAvailbility === false) {
                 novaDisponibilidade = yield (0, disponibilidade_1.criarDisponibilidadeProfissional)(availability.id_psicologo, availability.disponibilidade_id, availability.status);
@@ -237,24 +237,30 @@ function setAtualizarDisponibilidade(availabilityData, contentType, availability
         }
     });
 }
-function setAtualizarDisponibilidadeProfissional(availabilityId, availabilityStatus, contentType) {
+function setAtualizarDisponibilidadeProfissional(availabilityData, contentType) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             if (String(contentType).toLowerCase() !== 'application/json') {
                 return config_1.ERROR_CONTENT_TYPE;
             }
-            if (!(0, zod_validations_1.isValidId)(availabilityId)) {
+            console.log(availabilityData);
+            if (!(0, zod_validations_1.isValidId)(availabilityData.disponibilidade_id)) {
                 return config_1.ERROR_INVALID_ID;
             }
-            const existsAvailbility = yield (0, disponibilidade_1.buscarDisponibilidade)(availabilityId);
+            const existsAvailbility = yield (0, disponibilidade_1.buscarDisponibilidade)(availabilityData.disponibilidade_id);
             if (!existsAvailbility) {
                 return config_1.ERROR_NOT_FOUND;
             }
-            if (!availabilityStatus || !(0, zod_validations_1.isValidAvailbilityStatus)(availabilityStatus)) {
+            if (!availabilityData.status || !(0, zod_validations_1.isValidAvailbilityStatus)(availabilityData.status) ||
+                !availabilityData.id_psicologo || !(0, zod_validations_1.isValidId)(availabilityData.id_psicologo) ||
+                !availabilityData.disponibilidade_id || !(0, zod_validations_1.isValidId)(availabilityData.disponibilidade_id)) {
                 return config_1.ERROR_REQUIRED_FIELDS;
             }
-            console.log(availabilityId, availabilityStatus);
-            let updateProfessionalAvailbility = yield (0, disponibilidade_1.atualizarDisponibilidadeProfissional)(availabilityStatus, availabilityId);
+            const existsProfessionalAvailbility = yield (0, disponibilidade_1.buscarDisponibilidadePsicologo)(availabilityData);
+            if (!existsProfessionalAvailbility) {
+                return config_1.ERROR_NOT_FOUND;
+            }
+            let updateProfessionalAvailbility = yield (0, disponibilidade_1.atualizarDisponibilidadeProfissional)(availabilityData);
             if (!updateProfessionalAvailbility) {
                 return {
                     status_code: config_1.ERROR_INTERNAL_SERVER_DB.status_code,

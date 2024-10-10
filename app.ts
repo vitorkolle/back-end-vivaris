@@ -2,24 +2,23 @@ import { TUser } from './src/domain/entities/user-entity'
 import { TUserPreferences } from './src/domain/entities/user-preferences'
 
 //Import pacotes express
-import express, { query } from 'express'
-import { Router } from 'express'
+import express, { Router } from 'express' 
 
 //Criação das configurações das rotas para endpoint 
 const route = Router()
 
 
 //Import pacotes cors 
-import cors from 'cors' 
+import cors from 'cors'
 
 //Import Controller 
-import { getBuscarCliente, getBuscarSexo, getListarSexo, getLogarCliente, setInserirUsuario } from './src/controller/usuario/controller_usuario'
-import { getBuscarPreferencia, getListarPreferencias, setInserirPreferencias } from './src/controller/preferencia/controller_preferencia'
-import { TProfessional } from './src/domain/entities/professional-entity'
-import { getLogarPsicologo, setInserirPsicologo } from './src/controller/usuario/controller_psicologo'
 import { criarDisponibilidadePsicologo, getBuscarDisponibilidade, getListarDisponibilidadesProfissional, setAtualizarDisponibilidade, setAtualizarDisponibilidadeProfissional, setDeletarDisponibilidade, setInserirDisponibilidade } from './src/controller/disponibilidade/controller_disponibilidade'
+import { getBuscarPreferencia, getListarPreferencias, setInserirPreferencias } from './src/controller/preferencia/controller_preferencia'
+import { getLogarPsicologo, setInserirPsicologo } from './src/controller/usuario/controller_psicologo'
+import { getBuscarCliente, getBuscarSexo, getListarSexo, getLogarCliente, setInserirUsuario } from './src/controller/usuario/controller_usuario'
 import { TAvailability } from './src/domain/entities/availability-entity'
 import { TProfessionalAvailability } from './src/domain/entities/professional-availability'
+import { TProfessional } from './src/domain/entities/professional-entity'
 
 //Criação do app
 const app = express()
@@ -245,15 +244,17 @@ route.put('/disponibilidade/:id', async (req, res) => {
     res.json(updateAvaibility)
 })
 
-route.put('/psicologo/disponibilidade/:id', async (req, res) => {
-    const id = Number(req.params.id)
+route.put('/psicologo/disponibilidade', async (req, res) => {
+    
+    const availabilityData:TProfessionalAvailability = {
+        id_psicologo: req.body.id_psicologo,
+        disponibilidade_id: req.body.disponibilidade_id,
+        status: req.body.status
+    }
 
     let contentType = req.header('content-type')
-
-    let status = req.body.status
-
     
-    let updateProfessionalAvailbility = await setAtualizarDisponibilidadeProfissional(id, status, contentType)
+    let updateProfessionalAvailbility = await setAtualizarDisponibilidadeProfissional(availabilityData, contentType)
 
     res.status(updateProfessionalAvailbility.status_code)
     res.json(updateProfessionalAvailbility)

@@ -16,7 +16,7 @@ export async function criarDisponibilidade(disponibilidade: TAvailability) {
           },
         });
 
-        let newAvailability
+        let newAvailability 
 
         if (!disponibilidadeExistente) {
             newAvailability = await prisma.tbl_disponibilidade.create({
@@ -178,12 +178,12 @@ export async function criarDisponibilidadeProfissional(profissionalId: number, d
   }
 }
 
-export async function buscarDisponibilidadePsicologo(professionalId: number, availabilityId: number){
+export async function buscarDisponibilidadePsicologo(availabilityData: TProfessionalAvailability){
   try {
     const disponibilidadePsicologo = await prisma.tbl_psicologo_disponibilidade.findMany({
       where: {
-        psicologo_id: professionalId,
-        disponibilidade_id: availabilityId
+        psicologo_id: availabilityData.id_psicologo,
+        disponibilidade_id: availabilityData.disponibilidade_id
       },
       select:{
         psicologo_id: true,
@@ -272,14 +272,14 @@ export async function atualizarDisponibilidade(availabilityData: TAvailability, 
   }  
 }
 
-export async function atualizarDisponibilidadeProfissional(availabilityStatus: string, availabilityId: number) {
+export async function atualizarDisponibilidadeProfissional(availabilityData: TProfessionalAvailability) {
   try {
     const updateProfessionalAvailbility = await prisma.tbl_psicologo_disponibilidade.update({
       where: {
-        id: availabilityId
+        id: availabilityData.disponibilidade_id
       },
       data:{
-        status_disponibilidade: availabilityStatus
+        status_disponibilidade: availabilityData.status
       }
     }) 
 
@@ -310,8 +310,14 @@ export async function buscarDisponibilidadePsicologoById(availabilityId:number) 
 
     if(!searchProfessionalAvailbility){
       return{
-        
+        status_code: 404,
+        message: 'Disponibilidade não encontrada'
       }
+    }
+
+    return{
+      data: searchProfessionalAvailbility,
+      status_code: 200
     }
   } catch (error) {
     

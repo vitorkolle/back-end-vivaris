@@ -78,7 +78,7 @@ export async function criarDisponibilidadePsicologo(
             return ERROR_NOT_FOUND_AVAILBILITY
         }
 
-        const searchProfessionalAvailbility = await buscarDisponibilidadePsicologo(availability.id_psicologo, availability.disponibilidade_id)
+        const searchProfessionalAvailbility = await buscarDisponibilidadePsicologo(availability)
         
         let novaDisponibilidade
 
@@ -96,7 +96,7 @@ export async function criarDisponibilidadePsicologo(
             }
         }
 
-        searchProfessionalAvailbility.forEach(async (searchAvailability) => {
+        searchProfessionalAvailbility.forEach(async (searchAvailability) => { 
             if (searchAvailability.psicologo_id == availability.id_psicologo && searchAvailability.disponibilidade_id == availability.disponibilidade_id) {
                 novaDisponibilidade = await criarDisponibilidadeProfissional(availability.id_psicologo, availability.disponibilidade_id, availability.status)
                 console.log(novaDisponibilidade);
@@ -253,29 +253,40 @@ export async function setAtualizarDisponibilidade(availabilityData:TAvailability
     }
 }
 
-export async function setAtualizarDisponibilidadeProfissional(availabilityId: number, availabilityStatus: string, contentType: string | undefined) {
+export async function setAtualizarDisponibilidadeProfissional(availabilityData: TProfessionalAvailability, contentType: string | undefined) {
     try {
         if(String(contentType).toLowerCase() !== 'application/json'){
             return ERROR_CONTENT_TYPE
         }
 
-        if(!isValidId(availabilityId)){
+        console.log(availabilityData);
+        
+        
+        if(!isValidId(availabilityData.disponibilidade_id)){
             return ERROR_INVALID_ID
         }
 
-        const existsAvailbility = await buscarDisponibilidade(availabilityId)
+        const existsAvailbility = await buscarDisponibilidade(availabilityData.disponibilidade_id)
 
         if(!existsAvailbility){
             return ERROR_NOT_FOUND
         }
 
         if(
-            !availabilityStatus || !isValidAvailbilityStatus(availabilityStatus)
+            !availabilityData.status || !isValidAvailbilityStatus(availabilityData.status) ||
+            !availabilityData.id_psicologo || !isValidId(availabilityData.id_psicologo) ||
+            !availabilityData.disponibilidade_id || !isValidId(availabilityData.disponibilidade_id)
         ){
             return ERROR_REQUIRED_FIELDS
         }        
 
-        let updateProfessionalAvailbility = await atualizarDisponibilidadeProfissional(availabilityStatus, availabilityId)
+        const existsProfessionalAvailbility = await buscarDisponibilidadePsicologo(availabilityData)
+
+        if(!existsProfessionalAvailbility){
+            return ERROR_NOT_FOUND
+        }
+
+        let updateProfessionalAvailbility = await atualizarDisponibilidadeProfissional(availabilityData)
 
         if(!updateProfessionalAvailbility){
             return {

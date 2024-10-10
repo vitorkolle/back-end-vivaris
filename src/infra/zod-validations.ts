@@ -5,9 +5,12 @@
 import { z } from "zod";
 
 export function isValidId(id:number) : boolean {
+    
     const idSchema = z.number().int().positive()
 
     const testId = idSchema.safeParse(id)
+
+    console.log(testId, id);
 
     return testId.success
 }
