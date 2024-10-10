@@ -77,7 +77,7 @@ route.post('/cliente/preferencias', async (req, res) => {
 //login de usuário
 route.post('/login/usuario', async (req, res) => {
     let email = req.body.email
-    let senha = req.body.senha
+    let senha = req.body.senha    
 
     let user = await getLogarCliente(email, senha)
 
@@ -88,6 +88,7 @@ route.post('/login/usuario', async (req, res) => {
     res.json(user)
 
 })
+
 
 route.get('/usuario/:id', async (req, res) => {
     let id = Number(req.params.id)

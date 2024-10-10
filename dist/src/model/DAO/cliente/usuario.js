@@ -185,7 +185,8 @@ function logarCliente(email, senha) {
             if (!preferencias_usuario) {
                 const response = {
                     usuario: usuario,
-                    status: config_1.ERROR_NOT_FOUND_PREFERENCE.status_code
+                    status: 200,
+                    message: config_1.ERROR_NOT_FOUND_PREFERENCE.message
                 };
                 return response;
             }
@@ -207,7 +208,8 @@ function logarCliente(email, senha) {
             if (preferenciasArray.length < 1) {
                 const response = {
                     usuario: usuario,
-                    status: config_1.ERROR_NOT_FOUND_PREFERENCE.status_code
+                    status: 200,
+                    message: config_1.ERROR_NOT_FOUND_PREFERENCE.message
                 };
                 return response;
             }

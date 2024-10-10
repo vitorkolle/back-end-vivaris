@@ -83,9 +83,19 @@ export function isValidNumberArray(numberArray : Array<number>) : boolean{
 }
 
 
-export function isValidAvailbilityStatus(availabilityStatus : string) /** : boolean */ {
+export function isValidAvailbilityStatus(availabilityStatus : string)  {
     const availabilityStatusSchema = z.string().min(4).max(11)
 
-    const testStatus = availabilityStatus
+    const testStatus = availabilityStatusSchema.safeParse(availabilityStatus)
+
+    if(!testStatus.success){
+        return false
+    }
+
+    const availabilityStatusArray = ['Livre', 'Selecionado', 'Pago', 'Concluido']
+
+   // const availabilityStatusArraySchema
+
+
 }
 ['livre', 'selecionado', 'pago', 'concluído']

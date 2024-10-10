@@ -176,7 +176,8 @@ export async function logarCliente(email: string, senha: string) {
     if(!preferencias_usuario){
       const response = {
         usuario: usuario,
-        status: ERROR_NOT_FOUND_PREFERENCE.status_code
+        status: 200,
+        message: ERROR_NOT_FOUND_PREFERENCE.message
       }
 
       return response
@@ -204,7 +205,8 @@ export async function logarCliente(email: string, senha: string) {
     if(preferenciasArray.length < 1){
       const response = {
         usuario: usuario,
-        status: ERROR_NOT_FOUND_PREFERENCE.status_code
+        status: 200,
+        message: ERROR_NOT_FOUND_PREFERENCE.message
       }
 
       return response

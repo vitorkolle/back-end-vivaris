@@ -59,6 +59,11 @@ function isValidNumberArray(numberArray) {
 }
 function isValidAvailbilityStatus(availabilityStatus) {
     const availabilityStatusSchema = zod_1.z.string().min(4).max(11);
-    const testStatus = availabilityStatus;
+    const testStatus = availabilityStatusSchema.safeParse(availabilityStatus);
+    if (!testStatus.success) {
+        return false;
+    }
+    const availabilityStatusArray = ['Livre', 'Selecionado', 'Pago', 'Concluido'];
+    // const availabilityStatusArraySchema
 }
 ['livre', 'selecionado', 'pago', 'concluído'];

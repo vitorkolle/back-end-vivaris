@@ -137,9 +137,10 @@ function getLogarCliente(email, senha) {
             return config_1.ERROR_REQUIRED_FIELDS;
         }
         let clientData = yield (0, usuario_1.logarCliente)(email, senha);
-        if (clientData) {
+        console.log(clientData);
+        if (clientData.status == 200) {
             return {
-                data: clientData,
+                cliente: clientData,
                 status_code: clientData.status
             };
         }
