@@ -15,7 +15,7 @@ import cors from 'cors'
 import { criarDisponibilidadePsicologo, getBuscarDisponibilidade, getListarDisponibilidadesProfissional, setAtualizarDisponibilidade, setAtualizarDisponibilidadeProfissional, setDeletarDisponibilidade, setInserirDisponibilidade } from './src/controller/disponibilidade/controller_disponibilidade'
 import { getBuscarPreferencia, getListarPreferencias, setInserirPreferencias } from './src/controller/preferencia/controller_preferencia'
 import { getLogarPsicologo, setInserirPsicologo } from './src/controller/usuario/controller_psicologo'
-import { getBuscarCliente, getBuscarSexo, getListarSexo, getLogarCliente, setInserirUsuario } from './src/controller/usuario/controller_usuario'
+import { getBuscarCliente, getBuscarClientePreferencias, getBuscarSexo, getListarSexo, getLogarCliente, setInserirUsuario } from './src/controller/usuario/controller_usuario'
 import { TAvailability } from './src/domain/entities/availability-entity'
 import { TProfessionalAvailability } from './src/domain/entities/professional-availability'
 import { TProfessional } from './src/domain/entities/professional-entity'
@@ -93,6 +93,15 @@ route.get('/usuario/:id', async (req, res) => {
     let id = Number(req.params.id)
 
     let userData = await getBuscarCliente(id)
+
+    res.status(userData.status_code)
+    res.json(userData)
+})
+
+route.get('/usuario/preferencias/:id', async (req, res) => {
+    let id = Number(req.params.id)
+
+    let userData = await getBuscarClientePreferencias(id)
 
     res.status(userData.status_code)
     res.json(userData)

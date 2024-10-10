@@ -1,6 +1,6 @@
 import {ERROR_ALREADY_EXISTS_ACCOUNT_CPF, ERROR_ALREADY_EXISTS_ACCOUNT_EMAIL, ERROR_CONTENT_TYPE, ERROR_DATE_NOT_VALID, ERROR_INTERNAL_SERVER, ERROR_INTERNAL_SERVER_DB, ERROR_NOT_CREATED, ERROR_NOT_FOUND, ERROR_REQUIRED_FIELDS, SUCCESS_CREATED_ITEM } from "../../../module/config"
 import { TUser } from "../../domain/entities/user-entity"
-import { buscarCliente, criarNovoCliente, logarCliente } from "../../model/DAO/cliente/usuario"
+import { buscarCliente, criarNovoCliente, logarCliente, obterUsuarioComPreferencias } from "../../model/DAO/cliente/usuario"
 import { getAllSexos, getSexoById } from "../../model/DAO/cliente/sexo";
 import { verificacao } from "../../infra/client-data-validation";
 import { isValidEmail, isValidId, isValidName, isValidPassword } from "../../infra/zod-validations";
@@ -178,5 +178,27 @@ export async function getBuscarCliente(id:number) {
             data: ERROR_NOT_FOUND.message,
             status_code: 404
         }
+    }
+} 
+
+export async function getBuscarClientePreferencias(id:number) {
+    if(
+        !isValidId(id)
+    ){
+        return ERROR_REQUIRED_FIELDS
+    }
+
+    let clientData = await obterUsuarioComPreferencias(id)
+
+    if(!clientData){
+        return{
+            data: ERROR_NOT_FOUND.message,
+            status_code: 404
+        }
+    }
+
+    return{
+        data: clientData,
+        status_code: 200
     }
 }

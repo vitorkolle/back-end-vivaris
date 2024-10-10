@@ -14,6 +14,7 @@ exports.getListarSexo = getListarSexo;
 exports.getBuscarSexo = getBuscarSexo;
 exports.getLogarCliente = getLogarCliente;
 exports.getBuscarCliente = getBuscarCliente;
+exports.getBuscarClientePreferencias = getBuscarClientePreferencias;
 const config_1 = require("../../../module/config");
 const usuario_1 = require("../../model/DAO/cliente/usuario");
 const sexo_1 = require("../../model/DAO/cliente/sexo");
@@ -167,5 +168,23 @@ function getBuscarCliente(id) {
                 status_code: 404
             };
         }
+    });
+}
+function getBuscarClientePreferencias(id) {
+    return __awaiter(this, void 0, void 0, function* () {
+        if (!(0, zod_validations_1.isValidId)(id)) {
+            return config_1.ERROR_REQUIRED_FIELDS;
+        }
+        let clientData = yield (0, usuario_1.obterUsuarioComPreferencias)(id);
+        if (!clientData) {
+            return {
+                data: config_1.ERROR_NOT_FOUND.message,
+                status_code: 404
+            };
+        }
+        return {
+            data: clientData,
+            status_code: 200
+        };
     });
 }
