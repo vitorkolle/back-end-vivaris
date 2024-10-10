@@ -250,10 +250,25 @@ function setAtualizarDisponibilidadeProfissional(availabilityId, availabilitySta
             if (!existsAvailbility) {
                 return config_1.ERROR_NOT_FOUND;
             }
-            //  if(
-            //)
+            if (!availabilityStatus || !(0, zod_validations_1.isValidAvailbilityStatus)(availabilityStatus)) {
+                return config_1.ERROR_REQUIRED_FIELDS;
+            }
+            console.log(availabilityId, availabilityStatus);
+            let updateProfessionalAvailbility = yield (0, disponibilidade_1.atualizarDisponibilidadeProfissional)(availabilityStatus, availabilityId);
+            if (!updateProfessionalAvailbility) {
+                return {
+                    status_code: config_1.ERROR_INTERNAL_SERVER_DB.status_code,
+                    message: config_1.ERROR_INTERNAL_SERVER_DB.message
+                };
+            }
+            return {
+                data: updateProfessionalAvailbility,
+                status_code: 200
+            };
         }
         catch (error) {
+            console.error('Erro ao tentar atualizar as disponibilidades do profissional:', error);
+            return config_1.ERROR_INTERNAL_SERVER;
         }
     });
 }

@@ -175,6 +175,14 @@ route.put('/disponibilidade/:id', (req, res) => __awaiter(void 0, void 0, void 0
     res.status(updateAvaibility.status_code);
     res.json(updateAvaibility);
 }));
+route.put('/psicologo/disponibilidade/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const id = Number(req.params.id);
+    let contentType = req.header('content-type');
+    let status = req.body.status;
+    let updateProfessionalAvailbility = yield (0, controller_disponibilidade_1.setAtualizarDisponibilidadeProfissional)(id, status, contentType);
+    res.status(updateProfessionalAvailbility.status_code);
+    res.json(updateProfessionalAvailbility);
+}));
 /****************************************************PREFERÊNCIAS****************************************************/
 route.get('/preferencias', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let preferenceData = yield (0, controller_preferencia_1.getListarPreferencias)();

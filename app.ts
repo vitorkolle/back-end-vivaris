@@ -17,7 +17,7 @@ import { getBuscarCliente, getBuscarSexo, getListarSexo, getLogarCliente, setIns
 import { getBuscarPreferencia, getListarPreferencias, setInserirPreferencias } from './src/controller/preferencia/controller_preferencia'
 import { TProfessional } from './src/domain/entities/professional-entity'
 import { getLogarPsicologo, setInserirPsicologo } from './src/controller/usuario/controller_psicologo'
-import { criarDisponibilidadePsicologo, getBuscarDisponibilidade, getListarDisponibilidadesProfissional, setAtualizarDisponibilidade, setDeletarDisponibilidade, setInserirDisponibilidade } from './src/controller/disponibilidade/controller_disponibilidade'
+import { criarDisponibilidadePsicologo, getBuscarDisponibilidade, getListarDisponibilidadesProfissional, setAtualizarDisponibilidade, setAtualizarDisponibilidadeProfissional, setDeletarDisponibilidade, setInserirDisponibilidade } from './src/controller/disponibilidade/controller_disponibilidade'
 import { TAvailability } from './src/domain/entities/availability-entity'
 import { TProfessionalAvailability } from './src/domain/entities/professional-availability'
 
@@ -77,7 +77,7 @@ route.post('/cliente/preferencias', async (req, res) => {
 //login de usuário
 route.post('/login/usuario', async (req, res) => {
     let email = req.body.email
-    let senha = req.body.senha    
+    let senha = req.body.senha     
 
     let user = await getLogarCliente(email, senha)
 
@@ -243,6 +243,20 @@ route.put('/disponibilidade/:id', async (req, res) => {
 
     res.status(updateAvaibility.status_code)
     res.json(updateAvaibility)
+})
+
+route.put('/psicologo/disponibilidade/:id', async (req, res) => {
+    const id = Number(req.params.id)
+
+    let contentType = req.header('content-type')
+
+    let status = req.body.status
+
+    
+    let updateProfessionalAvailbility = await setAtualizarDisponibilidadeProfissional(id, status, contentType)
+
+    res.status(updateProfessionalAvailbility.status_code)
+    res.json(updateProfessionalAvailbility)
 })
 
 /****************************************************PREFERÊNCIAS****************************************************/

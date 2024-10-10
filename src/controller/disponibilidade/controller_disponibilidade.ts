@@ -1,8 +1,8 @@
 import { ERROR_ALREADY_EXISTS_PREFRENCE, ERROR_ALREADY_EXISTS_PROFESSIONAL_AVAILBILITY, ERROR_CONTENT_TYPE, ERROR_INTERNAL_SERVER, ERROR_INTERNAL_SERVER_DB, ERROR_INVALID_ID, ERROR_NOT_CREATED, ERROR_NOT_DELETED, ERROR_NOT_FOUND, ERROR_NOT_FOUND_AVAILBILITY, ERROR_NOT_FOUND_PROFESSIONAL, ERROR_REQUIRED_FIELDS, SUCCESS_CREATED_ITEM, SUCCESS_DELETED_ITEM } from "../../../module/config";
 import { TAvailability } from "../../domain/entities/availability-entity";
 import { TProfessionalAvailability } from "../../domain/entities/professional-availability";
-import { isValidWeekDay, isValidId, isValidHour } from "../../infra/zod-validations";
-import { atualizarDisponibilidade, buscarDisponibilidade, buscarDisponibilidadePsicologo, criarDisponibilidade, criarDisponibilidadeProfissional, deletarDisponibilidade, listarDisponibilidadesPorProfissional } from "../../model/DAO/disponibilidade/disponibilidade";
+import { isValidWeekDay, isValidId, isValidHour, isValidAvailbilityStatus } from "../../infra/zod-validations";
+import { atualizarDisponibilidade, atualizarDisponibilidadeProfissional, buscarDisponibilidade, buscarDisponibilidadePsicologo, criarDisponibilidade, criarDisponibilidadeProfissional, deletarDisponibilidade, listarDisponibilidadesPorProfissional } from "../../model/DAO/disponibilidade/disponibilidade";
 import { getBuscarPsicologo } from "../usuario/controller_psicologo";
 
 
@@ -181,7 +181,7 @@ export async function setDeletarDisponibilidade(diaSemana: string, idPsicologo: 
     try {
         if
             (
-            !isValidWeekDay(diaSemana) || !isValidId(idPsicologo)
+            !isValidWeekDay(diaSemana) || !isValidId(idPsicologo) 
         ) {
             return ERROR_REQUIRED_FIELDS
         }
@@ -269,10 +269,29 @@ export async function setAtualizarDisponibilidadeProfissional(availabilityId: nu
             return ERROR_NOT_FOUND
         }
 
-      //  if(
+        if(
+            !availabilityStatus || !isValidAvailbilityStatus(availabilityStatus)
+        ){
+            return ERROR_REQUIRED_FIELDS
+        }        
 
-        //)
+        let updateProfessionalAvailbility = await atualizarDisponibilidadeProfissional(availabilityStatus, availabilityId)
+
+        if(!updateProfessionalAvailbility){
+            return {
+                status_code: ERROR_INTERNAL_SERVER_DB.status_code,
+                message: ERROR_INTERNAL_SERVER_DB.message
+            }
+        }
+
+        return {
+            data: updateProfessionalAvailbility,
+            status_code: 200
+        }
+
+
     } catch (error) {
-        
+        console.error('Erro ao tentar atualizar as disponibilidades do profissional:', error);
+        return ERROR_INTERNAL_SERVER;
     }
 }

@@ -294,3 +294,26 @@ export async function atualizarDisponibilidadeProfissional(availabilityStatus: s
     throw new Error("Não foi possível atualizar a disponibilidade do profissional");
   }
 }
+
+export async function buscarDisponibilidadePsicologoById(availabilityId:number) {
+  try {
+    const searchProfessionalAvailbility = await prisma.tbl_psicologo_disponibilidade.findUnique({
+      where:{
+        id: availabilityId
+      },
+      select: {
+        disponibilidade_id: true,
+        psicologo_id: true,
+        status_disponibilidade: true
+      }
+    })
+
+    if(!searchProfessionalAvailbility){
+      return{
+        
+      }
+    }
+  } catch (error) {
+    
+  }
+}

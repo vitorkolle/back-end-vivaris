@@ -64,6 +64,7 @@ function isValidAvailbilityStatus(availabilityStatus) {
         return false;
     }
     const availabilityStatusArray = ['Livre', 'Selecionado', 'Pago', 'Concluido'];
-    // const availabilityStatusArraySchema
+    const availabilityStatusArraySchema = zod_1.z.enum(availabilityStatusArray);
+    const finalStatusTest = availabilityStatusArraySchema.safeParse(availabilityStatus);
+    return finalStatusTest.success;
 }
-['livre', 'selecionado', 'pago', 'concluído'];
