@@ -83,8 +83,8 @@ model tbl_psicologo_disponibilidade {
   tbl_disponibilidade    tbl_disponibilidade @relation(fields: [disponibilidade_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "tbl_psicologo_disponibilidade_ibfk_2")
   tbl_psicologos         tbl_psicologos      @relation(fields: [psicologo_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "tbl_psicologo_disponibilidade_ibfk_1")
 
-  @@index([disponibilidade_id], map: "FK_DISPONIBILIDADE_PSICOLOGO_DISPONIBILIDADE")
-  @@index([psicologo_id], map: "FK_PSICOLOGO_PSICOLOGO_DISPONIBILIDADE")
+  @@index([disponibilidade_id], map: "DISPONIBILIDADE_PSICOLOGO_DISPONIBILIDADE")
+  @@index([psicologo_id], map: "PSICOLOGO_PSICOLOGO_DISPONIBILIDADE")
 }
 
 enum tbl_disponibilidade_dia_semana {

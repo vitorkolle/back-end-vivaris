@@ -22,6 +22,7 @@ function isValidEmail(email) {
     // TODO: Quando a aplicação estiver na fase final, trocar o .max(256) por .email()
     const emailSchema = zod_1.z.string().max(256);
     const testEmail = emailSchema.safeParse(email);
+    console.log(testEmail);
     return testEmail.success;
 }
 function isValidName(name) {
@@ -33,6 +34,7 @@ function isValidName(name) {
 function isValidPassword(password) {
     const passwordSchema = zod_1.z.string().min(8).max(20);
     const testPassword = passwordSchema.safeParse(password);
+    console.log(testPassword);
     return testPassword.success;
 }
 function isValidWeekDay(date) {

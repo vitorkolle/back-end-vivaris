@@ -22,6 +22,9 @@ export function isValidEmail(email:string) : boolean{
   
   const testEmail = emailSchema.safeParse(email)
 
+  console.log(testEmail);
+  
+
   return testEmail.success
 }
 
@@ -40,6 +43,9 @@ export function isValidPassword(password: string) : boolean{
     const passwordSchema = z.string().min(8).max(20)
 
     const testPassword = passwordSchema.safeParse(password)
+
+    console.log(testPassword);
+    
 
     return testPassword.success
 }
