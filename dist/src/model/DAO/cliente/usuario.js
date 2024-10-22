@@ -167,6 +167,7 @@ function logarCliente(email, senha) {
                     foto_perfil: true
                 }
             });
+            console.log(usuario);
             if (!usuario) {
                 return {
                     status: config_1.ERROR_NOT_FOUND.status_code,
