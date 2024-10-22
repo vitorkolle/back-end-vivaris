@@ -132,8 +132,8 @@ route.post('/psicologo', (req, res) => __awaiter(void 0, void 0, void 0, functio
         data_nascimento: req.body.data_nascimento,
         id_sexo: req.body.id_sexo
     };
-    console.log(professionalData);
     const newProfesional = yield (0, controller_psicologo_1.setInserirPsicologo)(professionalData, contentType);
+    console.log(newProfesional);
     res.status(newProfesional.status_code);
     res.json(newProfesional);
 }));

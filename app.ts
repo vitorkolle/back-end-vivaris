@@ -145,9 +145,9 @@ route.post('/psicologo', async (req, res) => {
         id_sexo: req.body.id_sexo
     }
 
-    console.log(professionalData);
-
     const newProfesional = await setInserirPsicologo(professionalData, contentType)
+
+    console.log(newProfesional);
 
     res.status(newProfesional.status_code)
     res.json(newProfesional)

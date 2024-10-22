@@ -95,16 +95,18 @@ export async function criarDisponibilidadePsicologo(
                 return ERROR_INTERNAL_SERVER_DB;
             }
         }
-
-        searchProfessionalAvailbility.forEach(async (searchAvailability) => { 
-            if (searchAvailability.psicologo_id == availability.id_psicologo && searchAvailability.disponibilidade_id == availability.disponibilidade_id) {
-                novaDisponibilidade = await criarDisponibilidadeProfissional(availability.id_psicologo, availability.disponibilidade_id, availability.status)
-                console.log(novaDisponibilidade);
-            }
-            else {
-                return ERROR_ALREADY_EXISTS_PREFRENCE
-            }
-        });
+        else{
+            searchProfessionalAvailbility.forEach(async (searchAvailability) => { 
+                if (searchAvailability.psicologo_id == availability.id_psicologo && searchAvailability.disponibilidade_id == availability.disponibilidade_id) {
+                    novaDisponibilidade = await criarDisponibilidadeProfissional(availability.id_psicologo, availability.disponibilidade_id, availability.status)
+                    console.log(novaDisponibilidade);
+                }
+                else {
+                    return ERROR_ALREADY_EXISTS_PREFRENCE
+                }
+            });
+        }
+  
 
 
         if (novaDisponibilidade) {

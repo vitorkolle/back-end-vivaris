@@ -99,15 +99,17 @@ function criarDisponibilidadePsicologo(availability) {
                     return config_1.ERROR_INTERNAL_SERVER_DB;
                 }
             }
-            searchProfessionalAvailbility.forEach((searchAvailability) => __awaiter(this, void 0, void 0, function* () {
-                if (searchAvailability.psicologo_id == availability.id_psicologo && searchAvailability.disponibilidade_id == availability.disponibilidade_id) {
-                    novaDisponibilidade = yield (0, disponibilidade_1.criarDisponibilidadeProfissional)(availability.id_psicologo, availability.disponibilidade_id, availability.status);
-                    console.log(novaDisponibilidade);
-                }
-                else {
-                    return config_1.ERROR_ALREADY_EXISTS_PREFRENCE;
-                }
-            }));
+            else {
+                searchProfessionalAvailbility.forEach((searchAvailability) => __awaiter(this, void 0, void 0, function* () {
+                    if (searchAvailability.psicologo_id == availability.id_psicologo && searchAvailability.disponibilidade_id == availability.disponibilidade_id) {
+                        novaDisponibilidade = yield (0, disponibilidade_1.criarDisponibilidadeProfissional)(availability.id_psicologo, availability.disponibilidade_id, availability.status);
+                        console.log(novaDisponibilidade);
+                    }
+                    else {
+                        return config_1.ERROR_ALREADY_EXISTS_PREFRENCE;
+                    }
+                }));
+            }
             if (novaDisponibilidade) {
                 return {
                     data: {
