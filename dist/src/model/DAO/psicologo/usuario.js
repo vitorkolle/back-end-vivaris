@@ -81,13 +81,21 @@ function buscarPsicologo(id) {
                 where: {
                     id: id
                 },
-                select: {
-                    nome: true,
-                    data_nascimento: true,
-                    cip: true,
-                    cpf: true,
-                    telefone: true
-                }
+                include: {
+                    tbl_psicologo_disponibilidade: {
+                        select: {
+                            psicologo_id: true,
+                            tbl_disponibilidade: {
+                                select: {
+                                    dia_semana: true,
+                                    horario_inicio: true,
+                                    horario_fim: true,
+                                    id: true
+                                }
+                            }
+                        },
+                    },
+                },
             });
             if (professional) {
                 return professional;

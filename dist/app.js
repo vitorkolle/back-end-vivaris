@@ -145,6 +145,12 @@ route.post('/profissional/login', (req, res) => __awaiter(void 0, void 0, void 0
     res.status(user.status_code);
     res.json(user);
 }));
+route.get('/profissional/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const id = Number(req.params.id);
+    const getUser = yield (0, controller_psicologo_1.getBuscarPsicologo)(id);
+    res.status(getUser.status_code);
+    res.json(getUser);
+}));
 /****************************************************DISPONIBILIDADE****************************************************/
 route.post('/disponibilidade', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const contentType = req.header('content-type');

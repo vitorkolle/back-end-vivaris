@@ -12,7 +12,7 @@ export async function criarNovoPsicologo(userInput: TProfessional) {
         nome: userInput.nome,
         email: userInput.email,
         senha: userInput.senha,
-        telefone: userInput.telefone,
+        telefone: userInput.telefone, 
         cpf: userInput.cpf,
         data_nascimento: userInput.data_nascimento,
         cip : userInput.cip,
@@ -70,14 +70,22 @@ export async function buscarPsicologo(id:number) {
       where: {
         id: id
       },
-      select: {
-        nome: true,
-        data_nascimento: true,
-        cip: true,
-        cpf: true,
-        telefone: true
-      }
-    })
+      include: {
+        tbl_psicologo_disponibilidade: {
+          select: {
+            psicologo_id: true,
+            tbl_disponibilidade: {
+              select: {
+                dia_semana: true,
+                horario_inicio: true,
+                horario_fim: true,
+                id: true
+              }
+            }
+        },
+      },
+    },
+  })
 
     if(professional){
       return professional

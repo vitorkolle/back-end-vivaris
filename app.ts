@@ -14,11 +14,12 @@ import cors from 'cors'
 //Import Controller 
 import { criarDisponibilidadePsicologo, getBuscarDisponibilidade, getListarDisponibilidadesProfissional, setAtualizarDisponibilidade, setAtualizarDisponibilidadeProfissional, setDeletarDisponibilidade, setInserirDisponibilidade } from './src/controller/disponibilidade/controller_disponibilidade'
 import { getBuscarPreferencia, getListarPreferencias, setInserirPreferencias } from './src/controller/preferencia/controller_preferencia'
-import { getLogarPsicologo, setInserirPsicologo } from './src/controller/usuario/controller_psicologo'
+import { getBuscarPsicologo, getLogarPsicologo, setInserirPsicologo } from './src/controller/usuario/controller_psicologo'
 import { getBuscarCliente, getBuscarClientePreferencias, getBuscarSexo, getListarSexo, getLogarCliente, setInserirUsuario } from './src/controller/usuario/controller_usuario'
 import { TAvailability } from './src/domain/entities/availability-entity'
 import { TProfessionalAvailability } from './src/domain/entities/professional-availability'
 import { TProfessional } from './src/domain/entities/professional-entity'
+import { json } from 'body-parser'
 
 //Criação do app
 const app = express()
@@ -164,6 +165,15 @@ route.post('/profissional/login', async (req, res) => {
     res.status(user.status_code)
     res.json(user)
 
+})
+
+route.get('/profissional/:id', async (req, res) => {
+    const id = Number(req.params.id)
+
+    const getUser = await getBuscarPsicologo(id)
+
+    res.status(getUser.status_code)
+    res.json(getUser)
 })
 
 /****************************************************DISPONIBILIDADE****************************************************/
