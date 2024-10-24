@@ -1,8 +1,8 @@
-import { buscarDisponibilidade, buscarDisponibilidadePsicologo, criarDisponibilidade, criarDisponibilidadeProfissional, deletarDisponibilidade, listarDisponibilidadesPorProfissional } from "../../model/DAO/disponibilidade/disponibilidade";
-import { ERROR_ALREADY_EXISTS_PREFRENCE, ERROR_ALREADY_EXISTS_PROFESSIONAL_AVAILBILITY, ERROR_CONTENT_TYPE, ERROR_INTERNAL_SERVER, ERROR_INTERNAL_SERVER_DB, ERROR_NOT_CREATED, ERROR_NOT_DELETED, ERROR_NOT_FOUND, ERROR_NOT_FOUND_AVAILBILITY, ERROR_NOT_FOUND_PROFESSIONAL, ERROR_REQUIRED_FIELDS, SUCCESS_CREATED_ITEM, SUCCESS_DELETED_ITEM } from "../../../module/config"
-import { DayOfWeek, TAvailability } from "../../domain/entities/availability-entity";
-import { verificacao } from "../../infra/availability-data-validation";
+import { ERROR_ALREADY_EXISTS_PREFRENCE, ERROR_ALREADY_EXISTS_PROFESSIONAL_AVAILBILITY, ERROR_CONTENT_TYPE, ERROR_INTERNAL_SERVER, ERROR_INTERNAL_SERVER_DB, ERROR_INVALID_ID, ERROR_NOT_CREATED, ERROR_NOT_DELETED, ERROR_NOT_FOUND, ERROR_NOT_FOUND_AVAILBILITY, ERROR_NOT_FOUND_PROFESSIONAL, ERROR_REQUIRED_FIELDS, SUCCESS_CREATED_ITEM, SUCCESS_DELETED_ITEM } from "../../../module/config";
+import { TAvailability } from "../../domain/entities/availability-entity";
 import { TProfessionalAvailability } from "../../domain/entities/professional-availability";
+import { isValidWeekDay, isValidId, isValidHour, isValidAvailbilityStatus } from "../../infra/zod-validations";
+import { atualizarDisponibilidade, atualizarDisponibilidadeProfissional, buscarDisponibilidade, buscarDisponibilidadePsicologo, criarDisponibilidade, criarDisponibilidadeProfissional, deletarDisponibilidade, listarDisponibilidadesPorProfissional } from "../../model/DAO/disponibilidade/disponibilidade";
 import { getBuscarPsicologo } from "../usuario/controller_psicologo";
 
 
@@ -18,18 +18,19 @@ export async function setInserirDisponibilidade(disponibilidade: TAvailability, 
         if (String(contentType).toLowerCase() !== 'application/json') {
             return ERROR_CONTENT_TYPE
         }
-
         if (!disponibilidade) {
             return ERROR_NOT_CREATED
         }
-        if (!disponibilidade.dia_semana || disponibilidade.dia_semana.length > 7 || disponibilidade.dia_semana.length < 5 || typeof disponibilidade.dia_semana !== 'string' || !verificacao.isDayOfWeek(disponibilidade.dia_semana) ||
-            !disponibilidade.horario_inicio || !verificacao.verificarHorario(disponibilidade.horario_inicio.toString()) ||
-            !disponibilidade.horario_fim || !verificacao.verificarHorario(disponibilidade.horario_fim.toString())
+        
+        // * Os horários precisam ser enviados no formato HH:MM:SS
+        if (!disponibilidade.dia_semana || !isValidWeekDay(disponibilidade.dia_semana) ||
+            !disponibilidade.horario_inicio || !isValidHour(disponibilidade.horario_inicio.toString()) ||
+            !disponibilidade.horario_fim || !isValidHour(disponibilidade.horario_fim.toString())
         ) {
             return ERROR_REQUIRED_FIELDS
         } else {
 
-            const disponibilidadeInput: TAvailability = {
+            const disponibilidadeInput: TAvailability = { 
                 dia_semana: disponibilidade.dia_semana,
                 horario_inicio: transformarHorario(disponibilidade.horario_inicio.toString()),
                 horario_fim: transformarHorario(disponibilidade.horario_fim.toString())
@@ -58,9 +59,9 @@ export async function criarDisponibilidadePsicologo(
 ) {
     try {
         if (
-            !availability.disponibilidade_id || typeof availability.disponibilidade_id !== 'number' ||
+            !availability.disponibilidade_id || !isValidId(availability.disponibilidade_id) ||
             !availability.status || typeof availability.status !== 'string' ||
-            !availability.id_psicologo || typeof availability.id_psicologo !== 'number'
+            !availability.id_psicologo || !isValidId(availability.id_psicologo)
         ) {
             return ERROR_REQUIRED_FIELDS;
         }
@@ -72,17 +73,17 @@ export async function criarDisponibilidadePsicologo(
 
         const validateAvailbility = await getBuscarDisponibilidade(availability.disponibilidade_id)
         console.log(validateAvailbility);
-                
+
         if (!validateAvailbility) {
             return ERROR_NOT_FOUND_AVAILBILITY
         }
 
-        const searchProfessionalAvailbility = await buscarDisponibilidadePsicologo(availability.id_psicologo, availability.disponibilidade_id)
-
+        const searchProfessionalAvailbility = await buscarDisponibilidadePsicologo(availability)
+        
         let novaDisponibilidade
 
-        if(searchProfessionalAvailbility === false){
-            novaDisponibilidade = await criarDisponibilidadeProfissional(availability.id_psicologo, availability.disponibilidade_id, availability.status)  
+        if (searchProfessionalAvailbility === false) {
+            novaDisponibilidade = await criarDisponibilidadeProfissional(availability.id_psicologo, availability.disponibilidade_id, availability.status)
 
             if (novaDisponibilidade) {
                 return {
@@ -94,22 +95,26 @@ export async function criarDisponibilidadePsicologo(
                 return ERROR_INTERNAL_SERVER_DB;
             }
         }
+        else{
+            searchProfessionalAvailbility.forEach(async (searchAvailability) => { 
+                if (searchAvailability.psicologo_id == availability.id_psicologo && searchAvailability.disponibilidade_id == availability.disponibilidade_id) {
+                    novaDisponibilidade = await criarDisponibilidadeProfissional(availability.id_psicologo, availability.disponibilidade_id, availability.status)
+                    console.log(novaDisponibilidade);
+                }
+                else {
+                    return ERROR_ALREADY_EXISTS_PREFRENCE
+                }
+            });
+        }
+  
 
-        searchProfessionalAvailbility.forEach (async searchAvailability => {
-            if (searchAvailability.psicologo_id == availability.id_psicologo && searchAvailability.disponibilidade_id == availability.disponibilidade_id && (searchAvailability.status_disponibilidade == 'Concluido' || searchAvailability.status_disponibilidade == 'Livre')) {
-                novaDisponibilidade = await criarDisponibilidadeProfissional(availability.id_psicologo, availability.disponibilidade_id, availability.status)                
-            }
-            else {
-                return ERROR_ALREADY_EXISTS_PREFRENCE
-            } 
-        });
 
         if (novaDisponibilidade) {
             return {
-                data:{
-                data: novaDisponibilidade,
-                status_code: SUCCESS_CREATED_ITEM.status_code,
-                message: SUCCESS_CREATED_ITEM.message
+                data: {
+                    data: novaDisponibilidade,
+                    status_code: SUCCESS_CREATED_ITEM.status_code,
+                    message: SUCCESS_CREATED_ITEM.message
                 }
             };
         } else {
@@ -122,70 +127,184 @@ export async function criarDisponibilidadePsicologo(
 }
 
 export async function getBuscarDisponibilidade(id: number) {
-    if (id < 1) {
-        return ERROR_REQUIRED_FIELDS
-    }
-
-    let availabilityData = await buscarDisponibilidade(id)
-
-    if (availabilityData === false) {
-        return ERROR_NOT_FOUND
-    }
-
-    return availabilityData
-}
-
-export async function getListarDisponibilidadesProfissional(idProfessional:number) {
     try {
-        if
-        (
-            !idProfessional || typeof idProfessional !== 'number' || idProfessional < 1
-        )
-        {
+        if (!isValidId(id)) {
             return ERROR_REQUIRED_FIELDS
         }
-    
+        let availabilityData = await buscarDisponibilidade(id)
+
+        if (availabilityData === false) {
+            return {
+                status_code: ERROR_NOT_FOUND.status_code,
+                data: ERROR_NOT_FOUND
+            }
+        }
+
+        return {
+            status_code: 200,
+            data: availabilityData
+        }
+
+    } catch (error) {
+        console.error('Erro ao tentar buscar a disponibilidade:', error);
+        return ERROR_INTERNAL_SERVER;
+    }
+}
+
+export async function getListarDisponibilidadesProfissional(idProfessional: number) {
+    try {
+        if
+            (
+            !isValidId(idProfessional)
+        ) {
+            return ERROR_REQUIRED_FIELDS
+        }
+
         let availabilityProfessionalData = await listarDisponibilidadesPorProfissional(idProfessional)
-    
-        if(availabilityProfessionalData.id !== false){
-            return{
+
+        if (availabilityProfessionalData.id !== false) {
+            return {
                 data: availabilityProfessionalData,
                 status_code: 200
             }
         }
         else
-        return{
-            data: ERROR_NOT_FOUND.message,
-            status_code: 404
-        }    
+            return {
+                data: ERROR_NOT_FOUND.message,
+                status_code: 404
+            }
     } catch (error) {
         console.error('Erro ao tentar consultar as disponibilidades por psicólogo:', error);
         return ERROR_INTERNAL_SERVER;
     }
 }
 
-export async function setDeletarDisponibilidade(diaSemana:string, idPsicologo:number) {
+export async function setDeletarDisponibilidade(diaSemana: string, idPsicologo: number) {
     try {
         if
-        (
-            typeof diaSemana !== 'string' || !verificacao.isDayOfWeek(diaSemana) ||
-            typeof idPsicologo !== 'number' || idPsicologo < 1
-        ){
+            (
+            !isValidWeekDay(diaSemana) || !isValidId(idPsicologo) 
+        ) {
             return ERROR_REQUIRED_FIELDS
         }
 
         let deleteAvailbility = await deletarDisponibilidade(diaSemana, idPsicologo)
 
         console.log(deleteAvailbility);
-        
 
-        if(deleteAvailbility === false){
+
+        if (deleteAvailbility === false) {
             return ERROR_NOT_DELETED
         }
 
         return SUCCESS_DELETED_ITEM
     } catch (error) {
         console.error('Erro ao tentar deletar as disponibilidades:', error);
-        return ERROR_INTERNAL_SERVER; 
+        return ERROR_INTERNAL_SERVER;
+    }
+}
+
+export async function setAtualizarDisponibilidade(availabilityData:TAvailability, contentType: string | undefined, availabilityId: number) {
+    try {
+        if(String(contentType).toLowerCase() !== 'application/json'){
+            return ERROR_CONTENT_TYPE
+        }
+
+        if(!isValidId(availabilityId)){
+            return ERROR_INVALID_ID
+        }
+
+        const existsAvailbility = await buscarDisponibilidade(availabilityId)
+
+        if(!existsAvailbility){
+            return ERROR_NOT_FOUND
+        }
+
+        // * Os horários precisam ser enviados no formato HH:MM:SS
+        if(
+            !availabilityData.dia_semana || !isValidWeekDay(availabilityData.dia_semana) ||
+            !availabilityData.horario_inicio || !isValidHour(availabilityData.horario_inicio.toString()) ||
+            !availabilityData.horario_fim || !isValidHour(availabilityData.horario_fim.toString())
+        ){
+            return ERROR_REQUIRED_FIELDS
+        }
+
+        const disponibilidadeInput: TAvailability = { 
+            dia_semana: availabilityData.dia_semana,
+            horario_inicio: transformarHorario(availabilityData.horario_inicio.toString()),
+            horario_fim: transformarHorario(availabilityData.horario_fim.toString())
+        }
+
+        let updateAvaibility = await atualizarDisponibilidade(disponibilidadeInput, availabilityId)
+
+        if(!updateAvaibility){
+            return {
+                status_code: ERROR_INTERNAL_SERVER_DB.status_code,
+                message: ERROR_INTERNAL_SERVER_DB.message
+            }
+        }
+
+        return {
+            status_code: 200,
+            data: updateAvaibility
+        } 
+
+    } catch (error) {
+        console.error('Erro ao tentar atualizar as disponibilidades:', error);
+        return ERROR_INTERNAL_SERVER;
+    }
+}
+
+export async function setAtualizarDisponibilidadeProfissional(availabilityData: TProfessionalAvailability, contentType: string | undefined) {
+    try {
+        if(String(contentType).toLowerCase() !== 'application/json'){
+            return ERROR_CONTENT_TYPE
+        }
+
+        console.log(availabilityData);
+        
+        
+        if(!isValidId(availabilityData.disponibilidade_id)){
+            return ERROR_INVALID_ID
+        }
+
+        const existsAvailbility = await buscarDisponibilidade(availabilityData.disponibilidade_id)
+
+        if(!existsAvailbility){
+            return ERROR_NOT_FOUND
+        }
+
+        if(
+            !availabilityData.status || !isValidAvailbilityStatus(availabilityData.status) ||
+            !availabilityData.id_psicologo || !isValidId(availabilityData.id_psicologo) ||
+            !availabilityData.disponibilidade_id || !isValidId(availabilityData.disponibilidade_id)
+        ){
+            return ERROR_REQUIRED_FIELDS
+        }        
+
+        const existsProfessionalAvailbility = await buscarDisponibilidadePsicologo(availabilityData)
+
+        if(!existsProfessionalAvailbility){
+            return ERROR_NOT_FOUND
+        }
+
+        let updateProfessionalAvailbility = await atualizarDisponibilidadeProfissional(availabilityData)
+
+        if(!updateProfessionalAvailbility){
+            return {
+                status_code: ERROR_INTERNAL_SERVER_DB.status_code,
+                message: ERROR_INTERNAL_SERVER_DB.message
+            }
+        }
+
+        return {
+            data: updateProfessionalAvailbility,
+            status_code: 200
+        }
+
+
+    } catch (error) {
+        console.error('Erro ao tentar atualizar as disponibilidades do profissional:', error);
+        return ERROR_INTERNAL_SERVER;
     }
 }

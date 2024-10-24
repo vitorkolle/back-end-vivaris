@@ -1,9 +1,9 @@
-import { UserPreferences } from "typescript";
 import { ERROR_ALREADY_EXISTS_PREFRENCE, ERROR_CONTENT_TYPE, ERROR_INTERNAL_SERVER, ERROR_INTERNAL_SERVER_DB, ERROR_NOT_CREATED, ERROR_NOT_FOUND, ERROR_NOT_FOUND_PREFERENCE, ERROR_REQUIRED_FIELDS, SUCCESS_CREATED_ITEM } from "../../../module/config";
 import { TUserPreferences } from "../../domain/entities/user-preferences";
 import { verificarPreferencias } from "../../infra/client-preferences-validation";
 import { criarPreferenciasUsuario } from "../../model/DAO/cliente/usuario";
 import { buscarPreferencia, listarPreferencias } from "../../model/DAO/preferencia/preferencia";
+import { isValidId, isValidNumberArray } from "../../infra/zod-validations";
 
 export async function setInserirPreferencias(userData : TUserPreferences, contentType: string | undefined) {
     try {
@@ -16,9 +16,8 @@ export async function setInserirPreferencias(userData : TUserPreferences, conten
         }
         else{
             if(
-                !userData.id_cliente|| typeof userData.id_cliente != 'number' ||
-                !userData.preferencias || userData.preferencias == null
-
+                !userData.id_cliente || !isValidId(userData.id_cliente) ||
+                !userData.preferencias || !isValidNumberArray(userData.preferencias)
             ){
                 return ERROR_REQUIRED_FIELDS
             }
@@ -29,14 +28,10 @@ export async function setInserirPreferencias(userData : TUserPreferences, conten
                 for (let index = 0; index < userData.preferencias.length; index++) {
 
                     const preferencia = Number(userData.preferencias[index]);                    
-                    
-                    console.log('aqui o:',typeof userData.preferencias);
-                    
 
                     const verificarPreferencia =  await verificarPreferencias.isValid(preferencia)
                     const preferenciaExistente =  await verificarPreferencias.alreadyExists(preferencia, userData.id_cliente)
-                    
-                    
+                                        
                     if(verificarPreferencia === false){                        
                         if(preferenciaExistente === true){                                                        
                             newUserPreference = await criarPreferenciasUsuario(userData.id_cliente, preferencia)
@@ -84,7 +79,7 @@ export async function getListarPreferencias() {
 export async function getBuscarPreferencia(id:number) {
     if
     (
-        !id || typeof id !== 'number' || id < 1    
+       !isValidId(id)
     )
     {
         return ERROR_REQUIRED_FIELDS

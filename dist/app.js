@@ -1,5 +1,27 @@
 "use strict";
-//npx ts-node app.ts
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -14,17 +36,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 //Import pacotes express
-const express_1 = __importDefault(require("express"));
-const express_2 = require("express");
+const express_1 = __importStar(require("express"));
 //Criação das configurações das rotas para endpoint 
-const route = (0, express_2.Router)();
+const route = (0, express_1.Router)();
 //Import pacotes cors 
 const cors_1 = __importDefault(require("cors"));
 //Import Controller 
-const controller_usuario_1 = require("./src/controller/usuario/controller_usuario");
+const controller_disponibilidade_1 = require("./src/controller/disponibilidade/controller_disponibilidade");
 const controller_preferencia_1 = require("./src/controller/preferencia/controller_preferencia");
 const controller_psicologo_1 = require("./src/controller/usuario/controller_psicologo");
-const controller_disponibilidade_1 = require("./src/controller/disponibilidade/controller_disponibilidade");
+const controller_usuario_1 = require("./src/controller/usuario/controller_usuario");
 //Criação do app
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
@@ -78,6 +99,12 @@ route.get('/usuario/:id', (req, res) => __awaiter(void 0, void 0, void 0, functi
     res.status(userData.status_code);
     res.json(userData);
 }));
+route.get('/usuario/preferencias/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    let id = Number(req.params.id);
+    let userData = yield (0, controller_usuario_1.getBuscarClientePreferencias)(id);
+    res.status(userData.status_code);
+    res.json(userData);
+}));
 /****************************************************GÊNERO****************************************************/
 route.get('/sexo', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let allSex = yield (0, controller_usuario_1.getListarSexo)();
@@ -105,8 +132,8 @@ route.post('/psicologo', (req, res) => __awaiter(void 0, void 0, void 0, functio
         data_nascimento: req.body.data_nascimento,
         id_sexo: req.body.id_sexo
     };
-    console.log(professionalData);
     const newProfesional = yield (0, controller_psicologo_1.setInserirPsicologo)(professionalData, contentType);
+    console.log(newProfesional);
     res.status(newProfesional.status_code);
     res.json(newProfesional);
 }));
@@ -118,6 +145,12 @@ route.post('/profissional/login', (req, res) => __awaiter(void 0, void 0, void 0
     res.status(user.status_code);
     res.json(user);
 }));
+route.get('/profissional/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const id = Number(req.params.id);
+    const getUser = yield (0, controller_psicologo_1.getBuscarPsicologo)(id);
+    res.status(getUser.status_code);
+    res.json(getUser);
+}));
 /****************************************************DISPONIBILIDADE****************************************************/
 route.post('/disponibilidade', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const contentType = req.header('content-type');
@@ -127,7 +160,7 @@ route.post('/disponibilidade', (req, res) => __awaiter(void 0, void 0, void 0, f
         horario_fim: req.body.horario_fim
     };
     let rsDisponilidade = yield (0, controller_disponibilidade_1.setInserirDisponibilidade)(disponibilidade, contentType);
-    console.log(rsDisponilidade);
+    console.log(disponibilidade);
     res.status(rsDisponilidade.status_code);
     res.json(rsDisponilidade);
 }));
@@ -157,6 +190,36 @@ route.delete('/disponibilidade/psicologo/:id', (req, res) => __awaiter(void 0, v
     res.status(availabilityData.status_code);
     res.json(availabilityData);
 }));
+route.get('/disponibilidade/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    let id = Number(req.params.id);
+    const buscarDisponibilidade = yield (0, controller_disponibilidade_1.getBuscarDisponibilidade)(id);
+    res.status(buscarDisponibilidade.status_code);
+    res.json(buscarDisponibilidade);
+}));
+route.put('/disponibilidade/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const id = Number(req.params.id);
+    const availabilityData = {
+        dia_semana: req.body.dia_semana,
+        horario_inicio: req.body.horario_inicio,
+        horario_fim: req.body.horario_fim
+    };
+    const contentType = req.header('content-type');
+    let updateAvaibility = yield (0, controller_disponibilidade_1.setAtualizarDisponibilidade)(availabilityData, contentType, id);
+    console.log(availabilityData, id);
+    res.status(updateAvaibility.status_code);
+    res.json(updateAvaibility);
+}));
+route.put('/psicologo/disponibilidade', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const availabilityData = {
+        id_psicologo: req.body.id_psicologo,
+        disponibilidade_id: req.body.disponibilidade_id,
+        status: req.body.status
+    };
+    let contentType = req.header('content-type');
+    let updateProfessionalAvailbility = yield (0, controller_disponibilidade_1.setAtualizarDisponibilidadeProfissional)(availabilityData, contentType);
+    res.status(updateProfessionalAvailbility.status_code);
+    res.json(updateProfessionalAvailbility);
+}));
 /****************************************************PREFERÊNCIAS****************************************************/
 route.get('/preferencias', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let preferenceData = yield (0, controller_preferencia_1.getListarPreferencias)();
@@ -172,7 +235,7 @@ route.get('/preferencias/:id', (req, res) => __awaiter(void 0, void 0, void 0, f
 }));
 // Configurações do CORS
 const corsOptions = {
-    origin: 'http://127.0.0.1:5173', // Permita o seu frontend
+    origin: ['http://localhost:5173', 'http://127.0.0.1:5173'], // Permita o seu frontend
     methods: ['GET', 'POST', 'PUT', 'DELETE'], // Métodos permitidos
     allowedHeaders: ['Content-Type', 'Authorization'], // Cabeçalhos permitidos
     optionsSuccessStatus: 200

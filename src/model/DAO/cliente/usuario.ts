@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client"
 import { TUser } from "../../../domain/entities/user-entity";
-import { ERROR_NOT_FOUND } from "../../../../module/config";
+import { ERROR_NOT_FOUND, ERROR_NOT_FOUND_PREFERENCE } from "../../../../module/config";
 const prisma = new PrismaClient()
 
 export async function criarNovoCliente(userInput: TUser): Promise<TUser> {
@@ -45,20 +45,20 @@ export async function obterUsuarioComPreferencias(userId: number) {
       throw new Error('Usuário não encontrado.');
     }
 
-    const preferencias = await prisma.tbl_clientes_preferencias.findMany({
-      where: {
-        id_clientes: userId,
-      },
-      include: {
+     const preferencias = await prisma.tbl_clientes_preferencias.findMany({
+       where: {
+         id_clientes: userId, 
+       }, 
+       include: {
         tbl_preferencias: {
-          select: {
-            id: true,
-            nome: true,
-            cor: true
+           select: {
+             id: true,
+             nome: true,
+             cor: true
           },
-        },
-      },
-    });
+         },
+       },
+     });
 
     const response = {
       id: usuario.id,
@@ -66,8 +66,8 @@ export async function obterUsuarioComPreferencias(userId: number) {
       email: usuario.email,
       telefone: usuario.telefone,
       preferencias: preferencias.map((pref: any | string) => ({
-        id: pref.tbl_preferencias?.id,
-        nome: pref.tbl_preferencias?.nome,
+         id: pref.tbl_preferencias?.id,
+         nome: pref.tbl_preferencias?.nome,
         hexcolor: pref.tbl_preferencias?.cor
       })),
     };
@@ -112,7 +112,7 @@ export async function criarPreferenciasUsuario(userId: number, preference: numbe
       },
       include: {
         tbl_preferencias: {
-          select: {
+          select: { 
             id: true,
             nome: true,
             cor: true
@@ -156,8 +156,14 @@ export async function logarCliente(email: string, senha: string) {
         foto_perfil: true
       }
     })
+
+    console.log(usuario);
+    
     if (!usuario) {
-      return ERROR_NOT_FOUND      
+      return {
+        status: ERROR_NOT_FOUND.status_code,
+        message: ERROR_NOT_FOUND.message
+      }    
     }
 
     const preferencias_usuario = await prisma.tbl_clientes_preferencias.findMany({
@@ -172,7 +178,9 @@ export async function logarCliente(email: string, senha: string) {
 
     if(!preferencias_usuario){
       const response = {
-        usuario: usuario
+        usuario: usuario,
+        status: 200,
+        message: ERROR_NOT_FOUND_PREFERENCE.message
       }
 
       return response
@@ -199,7 +207,9 @@ export async function logarCliente(email: string, senha: string) {
 
     if(preferenciasArray.length < 1){
       const response = {
-        usuario: usuario
+        usuario: usuario,
+        status: 200,
+        message: ERROR_NOT_FOUND_PREFERENCE.message
       }
 
       return response
@@ -207,7 +217,8 @@ export async function logarCliente(email: string, senha: string) {
 
     const response = {
       usuario: usuario,
-      preferencias_usuario: preferenciasArray
+      preferencias_usuario: preferenciasArray,
+      status: 200
     }
 
     return response

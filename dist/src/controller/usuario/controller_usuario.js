@@ -14,10 +14,12 @@ exports.getListarSexo = getListarSexo;
 exports.getBuscarSexo = getBuscarSexo;
 exports.getLogarCliente = getLogarCliente;
 exports.getBuscarCliente = getBuscarCliente;
+exports.getBuscarClientePreferencias = getBuscarClientePreferencias;
 const config_1 = require("../../../module/config");
 const usuario_1 = require("../../model/DAO/cliente/usuario");
 const sexo_1 = require("../../model/DAO/cliente/sexo");
 const client_data_validation_1 = require("../../infra/client-data-validation");
+const zod_validations_1 = require("../../infra/zod-validations");
 function setInserirUsuario(user, contentType) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -45,13 +47,13 @@ function setInserirUsuario(user, contentType) {
                 }
                 return new Date(data);
             }
-            if (!user.nome || typeof user.nome !== 'string' || user.nome.length > 50 || user.nome.match("\\d") ||
+            if (!user.nome || !(0, zod_validations_1.isValidName)(user.nome) ||
                 !user.cpf || user.cpf.length !== 11 || !(yield client_data_validation_1.verificacao.verificarCpf(user.cpf)) ||
                 !user.data_nascimento || !validarData(user.data_nascimento.toString()) || !transformarData(user.data_nascimento.toString()) ||
-                !user.email || typeof user.email !== 'string' || !(yield client_data_validation_1.verificacao.verificarEmail(user.email)) || user.email.length > 256 ||
-                !user.senha || typeof user.senha !== 'string' || user.senha.length < 8 || user.senha.length > 20 ||
+                !user.email || !(0, zod_validations_1.isValidEmail)(user.email) || !(yield client_data_validation_1.verificacao.verificarEmail(user.email)) ||
+                !user.senha || !(0, zod_validations_1.isValidPassword)(user.senha) ||
                 !user.telefone || user.telefone.length !== 11 || typeof user.telefone !== 'string' ||
-                !user.id_sexo || isNaN(Number(user.id_sexo))) {
+                !user.id_sexo || !(0, zod_validations_1.isValidId)(user.id_sexo)) {
                 if (!(yield client_data_validation_1.verificacao.verificarEmail(user.email))) {
                     return config_1.ERROR_ALREADY_EXISTS_ACCOUNT_EMAIL;
                 }
@@ -114,8 +116,10 @@ function getListarSexo() {
 }
 function getBuscarSexo(id) {
     return __awaiter(this, void 0, void 0, function* () {
-        let sexId = id;
-        let sexData = yield (0, sexo_1.getSexoById)(sexId);
+        if (!(0, zod_validations_1.isValidId)(id)) {
+            return config_1.ERROR_REQUIRED_FIELDS;
+        }
+        let sexData = yield (0, sexo_1.getSexoById)(id);
         if (sexData) {
             return {
                 data: sexData,
@@ -129,15 +133,16 @@ function getBuscarSexo(id) {
 }
 function getLogarCliente(email, senha) {
     return __awaiter(this, void 0, void 0, function* () {
-        if (!email || typeof email != 'string' ||
-            !senha || typeof senha != 'string') {
+        if (!email || !(0, zod_validations_1.isValidEmail)(email) ||
+            !senha || !(0, zod_validations_1.isValidPassword)(senha)) {
             return config_1.ERROR_REQUIRED_FIELDS;
         }
         let clientData = yield (0, usuario_1.logarCliente)(email, senha);
-        if (clientData) {
+        console.log(clientData);
+        if (clientData.status == 200) {
             return {
-                data: clientData,
-                status_code: 200
+                cliente: clientData,
+                status_code: clientData.status
             };
         }
         else {
@@ -147,7 +152,7 @@ function getLogarCliente(email, senha) {
 }
 function getBuscarCliente(id) {
     return __awaiter(this, void 0, void 0, function* () {
-        if (!id || typeof id !== 'number' || id < 1) {
+        if (!(0, zod_validations_1.isValidId)(id)) {
             return config_1.ERROR_REQUIRED_FIELDS;
         }
         else {
@@ -163,5 +168,23 @@ function getBuscarCliente(id) {
                 status_code: 404
             };
         }
+    });
+}
+function getBuscarClientePreferencias(id) {
+    return __awaiter(this, void 0, void 0, function* () {
+        if (!(0, zod_validations_1.isValidId)(id)) {
+            return config_1.ERROR_REQUIRED_FIELDS;
+        }
+        let clientData = yield (0, usuario_1.obterUsuarioComPreferencias)(id);
+        if (!clientData) {
+            return {
+                data: config_1.ERROR_NOT_FOUND.message,
+                status_code: 404
+            };
+        }
+        return {
+            data: clientData,
+            status_code: 200
+        };
     });
 }

@@ -1,5 +1,5 @@
 import { IVerificarDadosPessoais } from "../application/client-identification"
-import { PrismaClient } from "@prisma/client"
+import {PrismaClient} from "@prisma/client"
 const prisma = new PrismaClient()
 
 export const verificacao: IVerificarDadosPessoais = {

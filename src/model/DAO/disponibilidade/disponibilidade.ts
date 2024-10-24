@@ -1,6 +1,8 @@
-import { PrismaClient } from "@prisma/client"
-import { TAvailability} from "../../../domain/entities/availability-entity"
-import { ERROR_NOT_FOUND } from "../../../../module/config";
+import { PrismaClient } from "@prisma/client";
+import { TAvailability } from "../../../domain/entities/availability-entity";
+import { ERROR_CONTENT_TYPE, ERROR_INVALID_ID, ERROR_NOT_FOUND } from "../../../../module/config";
+import { isValidId } from "../../../infra/zod-validations";
+import { TProfessionalAvailability } from "../../../domain/entities/professional-availability";
 const prisma = new PrismaClient()
 
 
@@ -14,7 +16,7 @@ export async function criarDisponibilidade(disponibilidade: TAvailability) {
           },
         });
 
-        let newAvailability
+        let newAvailability 
 
         if (!disponibilidadeExistente) {
             newAvailability = await prisma.tbl_disponibilidade.create({
@@ -176,12 +178,12 @@ export async function criarDisponibilidadeProfissional(profissionalId: number, d
   }
 }
 
-export async function buscarDisponibilidadePsicologo(professionalId: number, availabilityId: number){
+export async function buscarDisponibilidadePsicologo(availabilityData: TProfessionalAvailability){
   try {
     const disponibilidadePsicologo = await prisma.tbl_psicologo_disponibilidade.findMany({
       where: {
-        psicologo_id: professionalId,
-        disponibilidade_id: availabilityId
+        psicologo_id: availabilityData.id_psicologo,
+        disponibilidade_id: availabilityData.disponibilidade_id
       },
       select:{
         psicologo_id: true,
@@ -190,7 +192,7 @@ export async function buscarDisponibilidadePsicologo(professionalId: number, ava
       }
     })
 
-    if(disponibilidadePsicologo){
+    if(disponibilidadePsicologo.length > 0){
       return disponibilidadePsicologo
     }
     else 
@@ -242,5 +244,82 @@ export async function deletarDisponibilidade(diaSemana:string, idPsicologo: numb
   } catch (error) {
     console.error("Erro ao deletar disponibilidade:", error);
     throw new Error("Não foi possível deletar a disponibilidade");
+  }
+}
+
+export async function atualizarDisponibilidade(availabilityData: TAvailability, availabilityId: number) {
+  try {
+    const updateAvaibility = await prisma.tbl_disponibilidade.update({
+      where: {
+        id: availabilityId
+      },
+      data:{
+        dia_semana: availabilityData.dia_semana,
+        horario_inicio: availabilityData.horario_inicio,
+        horario_fim: availabilityData.horario_fim
+      }
+    }) 
+
+    if(!updateAvaibility){
+      return false
+    }
+
+    return updateAvaibility
+
+  } catch (error) {
+    console.error("Erro ao atualizar disponibilidade:", error);
+    throw new Error("Não foi possível atualizar a disponibilidade");
+  }  
+}
+
+export async function atualizarDisponibilidadeProfissional(availabilityData: TProfessionalAvailability) {
+  try {
+    const updateProfessionalAvailbility = await prisma.tbl_psicologo_disponibilidade.update({
+      where: {
+        id: availabilityData.disponibilidade_id
+      },
+      data:{
+        status_disponibilidade: availabilityData.status
+      }
+    }) 
+
+    if(!updateProfessionalAvailbility){
+      return false
+    }
+
+    return updateProfessionalAvailbility
+    
+  } catch (error) {
+    console.error("Erro ao atualizar disponibilidade do profissional:", error);
+    throw new Error("Não foi possível atualizar a disponibilidade do profissional");
+  }
+}
+
+export async function buscarDisponibilidadePsicologoById(availabilityId:number) {
+  try {
+    const searchProfessionalAvailbility = await prisma.tbl_psicologo_disponibilidade.findUnique({
+      where:{
+        id: availabilityId
+      },
+      select: {
+        disponibilidade_id: true,
+        psicologo_id: true,
+        status_disponibilidade: true
+      }
+    })
+
+    if(!searchProfessionalAvailbility){
+      return{
+        status_code: 404,
+        message: 'Disponibilidade não encontrada'
+      }
+    }
+
+    return{
+      data: searchProfessionalAvailbility,
+      status_code: 200
+    }
+  } catch (error) {
+    
   }
 }

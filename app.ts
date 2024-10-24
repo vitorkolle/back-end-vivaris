@@ -1,12 +1,8 @@
-
-//npx ts-node app.ts
-
 import { TUser } from './src/domain/entities/user-entity'
 import { TUserPreferences } from './src/domain/entities/user-preferences'
 
 //Import pacotes express
-import express, { query } from 'express'
-import { Router } from 'express'
+import express, { Router } from 'express' 
 
 //Criação das configurações das rotas para endpoint 
 const route = Router()
@@ -16,13 +12,14 @@ const route = Router()
 import cors from 'cors'
 
 //Import Controller 
-import { getBuscarCliente, getBuscarSexo, getListarSexo, getLogarCliente, setInserirUsuario } from './src/controller/usuario/controller_usuario'
+import { criarDisponibilidadePsicologo, getBuscarDisponibilidade, getListarDisponibilidadesProfissional, setAtualizarDisponibilidade, setAtualizarDisponibilidadeProfissional, setDeletarDisponibilidade, setInserirDisponibilidade } from './src/controller/disponibilidade/controller_disponibilidade'
 import { getBuscarPreferencia, getListarPreferencias, setInserirPreferencias } from './src/controller/preferencia/controller_preferencia'
-import { TProfessional } from './src/domain/entities/professional-entity'
-import { getLogarPsicologo, setInserirPsicologo } from './src/controller/usuario/controller_psicologo'
-import { criarDisponibilidadePsicologo, getListarDisponibilidadesProfissional, setDeletarDisponibilidade, setInserirDisponibilidade } from './src/controller/disponibilidade/controller_disponibilidade'
+import { getBuscarPsicologo, getLogarPsicologo, setInserirPsicologo } from './src/controller/usuario/controller_psicologo'
+import { getBuscarCliente, getBuscarClientePreferencias, getBuscarSexo, getListarSexo, getLogarCliente, setInserirUsuario } from './src/controller/usuario/controller_usuario'
 import { TAvailability } from './src/domain/entities/availability-entity'
 import { TProfessionalAvailability } from './src/domain/entities/professional-availability'
+import { TProfessional } from './src/domain/entities/professional-entity'
+import { json } from 'body-parser'
 
 //Criação do app
 const app = express()
@@ -80,7 +77,7 @@ route.post('/cliente/preferencias', async (req, res) => {
 //login de usuário
 route.post('/login/usuario', async (req, res) => {
     let email = req.body.email
-    let senha = req.body.senha
+    let senha = req.body.senha     
 
     let user = await getLogarCliente(email, senha)
 
@@ -92,10 +89,20 @@ route.post('/login/usuario', async (req, res) => {
 
 })
 
+
 route.get('/usuario/:id', async (req, res) => {
     let id = Number(req.params.id)
 
     let userData = await getBuscarCliente(id)
+
+    res.status(userData.status_code)
+    res.json(userData)
+})
+
+route.get('/usuario/preferencias/:id', async (req, res) => {
+    let id = Number(req.params.id)
+
+    let userData = await getBuscarClientePreferencias(id)
 
     res.status(userData.status_code)
     res.json(userData)
@@ -139,9 +146,9 @@ route.post('/psicologo', async (req, res) => {
         id_sexo: req.body.id_sexo
     }
 
-    console.log(professionalData);
-
     const newProfesional = await setInserirPsicologo(professionalData, contentType)
+
+    console.log(newProfesional);
 
     res.status(newProfesional.status_code)
     res.json(newProfesional)
@@ -160,6 +167,15 @@ route.post('/profissional/login', async (req, res) => {
 
 })
 
+route.get('/profissional/:id', async (req, res) => {
+    const id = Number(req.params.id)
+
+    const getUser = await getBuscarPsicologo(id)
+
+    res.status(getUser.status_code)
+    res.json(getUser)
+})
+
 /****************************************************DISPONIBILIDADE****************************************************/
  route.post ('/disponibilidade', async (req, res) => {
     const contentType = req.header('content-type') 
@@ -172,7 +188,7 @@ route.post('/profissional/login', async (req, res) => {
 
    let rsDisponilidade = await setInserirDisponibilidade(disponibilidade, contentType)
 
-   console.log(rsDisponilidade);
+   console.log(disponibilidade);
    
    res.status(rsDisponilidade.status_code)
    res.json(rsDisponilidade)
@@ -217,6 +233,52 @@ route.delete('/disponibilidade/psicologo/:id', async (req, res) => {
     res.status(availabilityData.status_code)
     res.json(availabilityData)
 })
+
+route.get('/disponibilidade/:id', async (req, res) => {
+    let id = Number(req.params.id)
+
+    const buscarDisponibilidade = await getBuscarDisponibilidade(id)
+
+    res.status(buscarDisponibilidade.status_code)
+    res.json(buscarDisponibilidade)
+})
+
+route.put('/disponibilidade/:id', async (req, res) => {
+    const id = Number(req.params.id)
+
+    const availabilityData:TAvailability = {
+        dia_semana: req.body.dia_semana,
+        horario_inicio: req.body.horario_inicio,
+        horario_fim: req.body.horario_fim
+    }
+
+    const contentType = req.header('content-type')
+    
+    let updateAvaibility = await setAtualizarDisponibilidade(availabilityData, contentType, id)
+
+    console.log(availabilityData, id);
+    
+
+    res.status(updateAvaibility.status_code)
+    res.json(updateAvaibility)
+})
+
+route.put('/psicologo/disponibilidade', async (req, res) => {
+    
+    const availabilityData:TProfessionalAvailability = {
+        id_psicologo: req.body.id_psicologo,
+        disponibilidade_id: req.body.disponibilidade_id,
+        status: req.body.status
+    }
+
+    let contentType = req.header('content-type')
+    
+    let updateProfessionalAvailbility = await setAtualizarDisponibilidadeProfissional(availabilityData, contentType)
+
+    res.status(updateProfessionalAvailbility.status_code)
+    res.json(updateProfessionalAvailbility)
+})
+
 /****************************************************PREFERÊNCIAS****************************************************/
 route.get('/preferencias', async (req, res) =>{
     let preferenceData = await getListarPreferencias()
@@ -240,7 +302,7 @@ route.get('/preferencias/:id', async (req, res) =>{
 
 // Configurações do CORS
 const corsOptions = {
-    origin: 'http://127.0.0.1:5173', // Permita o seu frontend
+    origin: ['http://localhost:5173', 'http://127.0.0.1:5173'], // Permita o seu frontend
     methods: ['GET', 'POST', 'PUT', 'DELETE'], // Métodos permitidos
     allowedHeaders: ['Content-Type', 'Authorization'], // Cabeçalhos permitidos
     optionsSuccessStatus: 200
