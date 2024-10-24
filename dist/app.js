@@ -248,6 +248,12 @@ route.post('/cartao', (req, res) => __awaiter(void 0, void 0, void 0, function* 
     res.status(newCard.status_code);
     res.json(newCard);
 }));
+route.get('/cartao/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    let id = Number(req.params.id);
+    let card = yield (0, controller_cartao_1.getBuscarCartao)(id);
+    res.status(card.status_code);
+    res.json(card);
+}));
 // Configurações do CORS
 const corsOptions = {
     origin: ['http://localhost:5173', 'http://127.0.0.1:5173'], // Permita o seu frontend

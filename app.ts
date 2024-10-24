@@ -21,7 +21,7 @@ import { TProfessionalAvailability } from './src/domain/entities/professional-av
 import { TProfessional } from './src/domain/entities/professional-entity'
 import { json } from 'body-parser'
 import { TCard } from './src/domain/entities/card-entity'
-import { setCadastrarCartao } from './src/controller/cartao/controller_cartao'
+import { getBuscarCartao, setCadastrarCartao } from './src/controller/cartao/controller_cartao'
 
 //Criação do app
 const app = express()
@@ -317,6 +317,15 @@ route.post('/cartao', async (req, res) => {
 
     res.status(newCard.status_code)
     res.json(newCard)
+})
+
+route.get('/cartao/:id', async (req, res) => {
+    let id = Number(req.params.id)
+
+    let card = await getBuscarCartao(id)
+
+    res.status(card.status_code)
+    res.json(card)
 })
 
 // Configurações do CORS

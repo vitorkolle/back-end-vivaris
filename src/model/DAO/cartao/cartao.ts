@@ -22,3 +22,18 @@ export async function cadastrarCartao(cardData: TCard) {
     }
 
 }
+
+export async function buscarCartao(cardId:number) {
+    try {
+        const card = await prisma.tbl_cartoes.findUnique({
+            where: {
+                id: cardId
+            }
+        })
+
+        return card
+    } catch (error) {
+        console.error("Erro ao criar novo cliente:", error);
+        throw new Error("Não foi possível criar o cliente.");
+    }
+}

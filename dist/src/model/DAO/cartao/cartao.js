@@ -10,6 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.cadastrarCartao = cadastrarCartao;
+exports.buscarCartao = buscarCartao;
 const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
 function cadastrarCartao(cardData) {
@@ -23,6 +24,22 @@ function cadastrarCartao(cardData) {
                     validade: cardData.validade,
                     cvc: cardData.cvc
                 },
+            });
+            return card;
+        }
+        catch (error) {
+            console.error("Erro ao criar novo cliente:", error);
+            throw new Error("Não foi possível criar o cliente.");
+        }
+    });
+}
+function buscarCartao(cardId) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const card = yield prisma.tbl_cartoes.findUnique({
+                where: {
+                    id: cardId
+                }
             });
             return card;
         }

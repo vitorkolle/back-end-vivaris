@@ -10,6 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.setCadastrarCartao = setCadastrarCartao;
+exports.getBuscarCartao = getBuscarCartao;
 const config_1 = require("../../../module/config");
 const card_data_validations_1 = require("../../infra/card-data-validations");
 const zod_validations_1 = require("../../infra/zod-validations");
@@ -38,7 +39,6 @@ function setCadastrarCartao(cardData, contentType) {
                 }
                 return new Date(data);
             }
-            console.log((0, zod_validations_1.isValidCvc)(Number(cardData.cvc)));
             if (!cardData.numero_cartao || !(0, zod_validations_1.isValidCardNumber)(Number(cardData.numero_cartao)) ||
                 !cardData.modalidade || !(0, zod_validations_1.isValidModality)(cardData.modalidade) ||
                 !cardData.nome || !(0, zod_validations_1.isValidName)(cardData.nome) ||
@@ -74,5 +74,23 @@ function setCadastrarCartao(cardData, contentType) {
             console.error('Erro ao tentar inserir um novo cartao:', error);
             return config_1.ERROR_INTERNAL_SERVER;
         }
+    });
+}
+function getBuscarCartao(cardId) {
+    return __awaiter(this, void 0, void 0, function* () {
+        if (!(0, zod_validations_1.isValidId)(cardId)) {
+            return config_1.ERROR_INVALID_ID;
+        }
+        const card = yield (0, cartao_1.buscarCartao)(cardId);
+        if (card) {
+            return {
+                card: card,
+                status_code: 200
+            };
+        }
+        return {
+            card: config_1.ERROR_NOT_FOUND.message,
+            status_code: config_1.ERROR_NOT_FOUND.status_code
+        };
     });
 }

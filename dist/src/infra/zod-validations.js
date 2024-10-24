@@ -71,7 +71,6 @@ function isValidAvailbilityStatus(availabilityStatus) {
     return finalStatusTest.success;
 }
 function isValidCardNumber(cardNumber) {
-    console.log(cardNumber);
     const cardNumberSchema = zod_1.z.number().int().positive().min(1111111111111111).max(9999999999999999);
     const testNumber = cardNumberSchema.safeParse(cardNumber);
     return testNumber.success;

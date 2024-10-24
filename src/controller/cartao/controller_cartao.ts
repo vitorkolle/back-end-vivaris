@@ -1,8 +1,8 @@
-import { ERROR_CONTENT_TYPE, ERROR_INTERNAL_SERVER, ERROR_INTERNAL_SERVER_DB, ERROR_INVALID_CARD, ERROR_REQUIRED_FIELDS } from "../../../module/config";
+import { ERROR_CONTENT_TYPE, ERROR_INTERNAL_SERVER, ERROR_INTERNAL_SERVER_DB, ERROR_INVALID_CARD, ERROR_INVALID_ID, ERROR_NOT_FOUND, ERROR_REQUIRED_FIELDS } from "../../../module/config";
 import { TCard } from "../../domain/entities/card-entity";
 import { verificacao } from "../../infra/card-data-validations";
-import { isValidCardNumber, isValidCvc, isValidModality, isValidName } from "../../infra/zod-validations";
-import { cadastrarCartao } from "../../model/DAO/cartao/cartao";
+import { isValidCardNumber, isValidCvc, isValidId, isValidModality, isValidName } from "../../infra/zod-validations";
+import { buscarCartao, cadastrarCartao } from "../../model/DAO/cartao/cartao";
 
 
 export async function setCadastrarCartao(cardData:TCard, contentType:string | undefined) {
@@ -35,10 +35,8 @@ export async function setCadastrarCartao(cardData:TCard, contentType:string | un
         
             return new Date(data);
         }
-        
-        
 
-         if(
+        if(
             !cardData.numero_cartao || !isValidCardNumber(Number(cardData.numero_cartao)) ||
             !cardData.modalidade    || !isValidModality(cardData.modalidade)      ||
             !cardData.nome          || !isValidName(cardData.nome)                || 
@@ -79,5 +77,26 @@ export async function setCadastrarCartao(cardData:TCard, contentType:string | un
     } catch (error) {
         console.error('Erro ao tentar inserir um novo cartao:', error);
         return ERROR_INTERNAL_SERVER;
+    }
+}
+
+export async function getBuscarCartao(cardId:number) {
+
+    if(!isValidId(cardId)){
+        return ERROR_INVALID_ID
+    }    
+
+    const card = await buscarCartao(cardId)
+
+    if(card){
+        return{
+            card: card,
+            status_code: 200
+        }
+    }
+
+    return {
+        card: ERROR_NOT_FOUND.message,
+        status_code: ERROR_NOT_FOUND.status_code
     }
 }
