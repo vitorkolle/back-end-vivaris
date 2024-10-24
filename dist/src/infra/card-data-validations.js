@@ -28,5 +28,23 @@ exports.verificacao = {
             }
         });
         return card === null;
+    }),
+    verificarCartaoExistente: (cardData) => __awaiter(void 0, void 0, void 0, function* () {
+        const card = yield prisma.tbl_cartoes.findUnique({
+            where: {
+                numero_cartao: cardData.numero_cartao,
+                cvc: cardData.cvc
+            }
+        });
+        if (card) {
+            return {
+                modalidade: card.modalidade,
+                numero_cartao: card.numero_cartao,
+                nome: card.nome,
+                validade: card.validade,
+                cvc: card.cvc
+            };
+        }
+        return null;
     })
 };

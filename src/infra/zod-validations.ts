@@ -43,9 +43,23 @@ export function isValidPassword(password: string) : boolean{
 
 export function isValidWeekDay(date: string) : boolean{
 
-    const weekDaySchema = z.enum(['Domingo', 'Segunda', 'Terca', 'Quarta', 'Quinta', 'Sexta', 'Sabado'])
+    //? Verificar se o tipo 'date' do zod corresponde ao tipo de data que estamos utilizando
+    //* ^  Possível uso quando a aplicação estiver na fase final
+    const dateSchema = z.string().min(5).max(7)
+
+    const testDate = dateSchema.safeParse(date)
+
+    if(testDate.success === false){
+        return false
+    }
+
+    const weekDaysArray = ['Domingo', 'Segunda', 'Terca', 'Quarta', 'Quinta', 'Sexta', 'Sabado'] as const;
+
+    const weekDaySchema = z.enum(weekDaysArray)
 
     const finalDayTest = weekDaySchema.safeParse(date)
+
+    
 
     return finalDayTest.success
 }
@@ -55,6 +69,7 @@ export function isValidHour(hour: string) : boolean{
 
     const validateHour = hourSchema.safeParse(hour)  
     
+
     return validateHour.success
 }
 
@@ -69,19 +84,29 @@ export function isValidNumberArray(numberArray : Array<number>) : boolean{
 
 
 export function isValidAvailbilityStatus(availabilityStatus : string) : boolean{
+    const availabilityStatusSchema = z.string().min(4).max(11)
 
-   const availabilityStatusArraySchema = z.enum(['Livre', 'Selecionado', 'Pago', 'Concluido'])
+    const testStatus = availabilityStatusSchema.safeParse(availabilityStatus)
+
+    if(!testStatus.success){
+        return false
+    }
+
+    const availabilityStatusArray = ['Livre', 'Selecionado', 'Pago', 'Concluido'] as const
+
+   const availabilityStatusArraySchema = z.enum(availabilityStatusArray)
 
    const finalStatusTest = availabilityStatusArraySchema.safeParse(availabilityStatus)
 
    return finalStatusTest.success
 }
 
-export function isValidCardNumber(cardNumber: string){
-    const cardNumberSchema = z.string().length(16)
+export function isValidCardNumber(cardNumber: number){
+    
+    const cardNumberSchema = z.number().int().positive().min(1111111111111111).max(9999999999999999)
 
     const testNumber = cardNumberSchema.safeParse(cardNumber)
-
+    
     return testNumber.success
 }
 
@@ -94,8 +119,8 @@ export function isValidModality(modality:string){
     return testModality.success
 }
 
-export function isValidCvc(cvc: string){
-    const cvcSchema = z.number().int().positive().min(3)
+export function isValidCvc(cvc: number){
+    const cvcSchema = z.number().int().positive().min(111).max(9999)
 
     const testCvc = cvcSchema.safeParse(cvc)
 

@@ -85,7 +85,7 @@ model tbl_disponibilidade {
 model tbl_pagamentos {
   id                Int           @id @default(autoincrement())
   is_paid           Boolean
-  intent_payment_id String?       @db.VarChar(50)
+  intent_payment_id String?       @db.VarChar(250)
   id_consulta       Int
   id_cartao         Int
   tbl_cartoes       tbl_cartoes   @relation(fields: [id_cartao], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "CARTAO_PAGAMENTO")

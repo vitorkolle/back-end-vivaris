@@ -1,4 +1,4 @@
-import { ERROR_CONTENT_TYPE, ERROR_INTERNAL_SERVER, ERROR_INTERNAL_SERVER_DB, ERROR_REQUIRED_FIELDS } from "../../../module/config";
+import { ERROR_CONTENT_TYPE, ERROR_INTERNAL_SERVER, ERROR_INTERNAL_SERVER_DB, ERROR_INVALID_CARD, ERROR_REQUIRED_FIELDS } from "../../../module/config";
 import { TCard } from "../../domain/entities/card-entity";
 import { verificacao } from "../../infra/card-data-validations";
 import { isValidCardNumber, isValidCvc, isValidModality, isValidName } from "../../infra/zod-validations";
@@ -35,15 +35,24 @@ export async function setCadastrarCartao(cardData:TCard, contentType:string | un
         
             return new Date(data);
         }
+        
+        
 
-        if(
-            !cardData.numero_cartao || !isValidCardNumber(cardData.numero_cartao) || !await verificacao.verificarNumeroCartao(cardData.numero_cartao) ||
+         if(
+            !cardData.numero_cartao || !isValidCardNumber(Number(cardData.numero_cartao)) ||
             !cardData.modalidade    || !isValidModality(cardData.modalidade)      ||
             !cardData.nome          || !isValidName(cardData.nome)                || 
-            !cardData.validade      || !validarData(cardData.validade.toString()) || !transformarData(cardData.validade.toString()) ||
-            !cardData.cvc           || !isValidCvc(cardData.cvc)                  || !await verificacao.verificarCvcCartao(cardData.cvc)
-        ){
+            !cardData.validade      || !validarData(cardData.validade.toString()) ||  !transformarData(cardData.validade.toString()) ||
+            !cardData.cvc           || !isValidCvc(Number(cardData.cvc))     
+        )
+        {
          return ERROR_REQUIRED_FIELDS   
+        }
+
+        if(!await verificacao.verificarNumeroCartao(cardData.numero_cartao) || !await verificacao.verificarCvcCartao(cardData.cvc)){
+            if(verificacao.verificarCartaoExistente(cardData) !== null){
+                return ERROR_INVALID_CARD
+            }
         }
 
         const cardFinalData: TCard = {

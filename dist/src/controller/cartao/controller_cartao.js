@@ -11,6 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.setCadastrarCartao = setCadastrarCartao;
 const config_1 = require("../../../module/config");
+const card_data_validations_1 = require("../../infra/card-data-validations");
 const zod_validations_1 = require("../../infra/zod-validations");
 const cartao_1 = require("../../model/DAO/cartao/cartao");
 function setCadastrarCartao(cardData, contentType) {
@@ -37,14 +38,18 @@ function setCadastrarCartao(cardData, contentType) {
                 }
                 return new Date(data);
             }
-            if (
-            //  !cardData.numero_cartao || !isValidCardNumber(cardData.numero_cartao) || !await verificacao.verificarNumeroCartao(cardData.numero_cartao) ||
-            !cardData.modalidade || !(0, zod_validations_1.isValidModality)(cardData.modalidade) ||
-                !cardData.nome || !(0, zod_validations_1.isValidName)(cardData.nome)
-            //  !cardData.validade      || !validarData(cardData.validade.toString()) || !transformarData(cardData.validade.toString()) ||
-            //  !cardData.cvc           || !isValidCvc(cardData.cvc)                  || !await verificacao.verificarCvcCartao(cardData.cvc)
-            ) {
+            console.log((0, zod_validations_1.isValidCvc)(Number(cardData.cvc)));
+            if (!cardData.numero_cartao || !(0, zod_validations_1.isValidCardNumber)(Number(cardData.numero_cartao)) ||
+                !cardData.modalidade || !(0, zod_validations_1.isValidModality)(cardData.modalidade) ||
+                !cardData.nome || !(0, zod_validations_1.isValidName)(cardData.nome) ||
+                !cardData.validade || !validarData(cardData.validade.toString()) || !transformarData(cardData.validade.toString()) ||
+                !cardData.cvc || !(0, zod_validations_1.isValidCvc)(Number(cardData.cvc))) {
                 return config_1.ERROR_REQUIRED_FIELDS;
+            }
+            if (!(yield card_data_validations_1.verificacao.verificarNumeroCartao(cardData.numero_cartao)) || !(yield card_data_validations_1.verificacao.verificarCvcCartao(cardData.cvc))) {
+                if (card_data_validations_1.verificacao.verificarCartaoExistente(cardData) !== null) {
+                    return config_1.ERROR_INVALID_CARD;
+                }
             }
             const cardFinalData = {
                 modalidade: cardData.modalidade,
