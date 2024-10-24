@@ -46,6 +46,7 @@ const controller_disponibilidade_1 = require("./src/controller/disponibilidade/c
 const controller_preferencia_1 = require("./src/controller/preferencia/controller_preferencia");
 const controller_psicologo_1 = require("./src/controller/usuario/controller_psicologo");
 const controller_usuario_1 = require("./src/controller/usuario/controller_usuario");
+const controller_cartao_1 = require("./src/controller/cartao/controller_cartao");
 //Criação do app
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
@@ -232,6 +233,20 @@ route.get('/preferencias/:id', (req, res) => __awaiter(void 0, void 0, void 0, f
     let preferenceData = yield (0, controller_preferencia_1.getBuscarPreferencia)(id);
     res.status(preferenceData.status_code);
     res.json(preferenceData);
+}));
+/*****************************************************CARTOES*************************************************/
+route.post('/cartao', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const cardData = {
+        modalidade: req.body.modalidade,
+        numero_cartao: req.body.numero_cartao,
+        nome: req.body.nome,
+        validade: req.body.validade,
+        cvc: req.body.cvc
+    };
+    let contentType = req.header('Content-Type');
+    let newCard = yield (0, controller_cartao_1.setCadastrarCartao)(cardData, contentType);
+    res.status(newCard.status_code);
+    res.json(newCard);
 }));
 // Configurações do CORS
 const corsOptions = {

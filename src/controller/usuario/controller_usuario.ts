@@ -11,10 +11,7 @@ export async function setInserirUsuario(user: TUser, contentType: string | undef
         if (String(contentType).toLowerCase() !== 'application/json' || contentType === undefined) {
             return ERROR_CONTENT_TYPE;
         } 
-        if (!user) {
-            return ERROR_NOT_CREATED;
-        }
-
+        
         function validarData(data: string): boolean {
       
             if (data.length !== 10) return false;

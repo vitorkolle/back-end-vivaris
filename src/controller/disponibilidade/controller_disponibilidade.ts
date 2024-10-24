@@ -98,8 +98,8 @@ export async function criarDisponibilidadePsicologo(
         }
         
         else{
-            searchProfessionalAvailbility.forEach(async (searchAvailability : TProfessionalAvailability) => { 
-                if (searchAvailability.id_psicologo == availability.id_psicologo && searchAvailability.disponibilidade_id == availability.disponibilidade_id) {
+            searchProfessionalAvailbility.forEach(async (searchAvailability) => { 
+                if (searchAvailability.psicologo_id == availability.id_psicologo && searchAvailability.disponibilidade_id == availability.disponibilidade_id) {
                     novaDisponibilidade = await criarDisponibilidadeProfissional(availability.id_psicologo, availability.disponibilidade_id, availability.status)
                     console.log(novaDisponibilidade);
                 }

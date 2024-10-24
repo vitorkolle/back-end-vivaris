@@ -20,6 +20,8 @@ import { TAvailability } from './src/domain/entities/availability-entity'
 import { TProfessionalAvailability } from './src/domain/entities/professional-availability'
 import { TProfessional } from './src/domain/entities/professional-entity'
 import { json } from 'body-parser'
+import { TCard } from './src/domain/entities/card-entity'
+import { setCadastrarCartao } from './src/controller/cartao/controller_cartao'
 
 //Criação do app
 const app = express()
@@ -90,7 +92,7 @@ route.post('/login/usuario', async (req, res) => {
 })
 
 
-route.get('/usuario/:id', async (req, res) => {
+route.get('/usuario/:id', async (req, res) => { 
     let id = Number(req.params.id)
 
     let userData = await getBuscarCliente(id)
@@ -299,6 +301,23 @@ route.get('/preferencias/:id', async (req, res) =>{
     res.json(preferenceData)
 })
 
+/*****************************************************CARTOES*************************************************/
+route.post('/cartao', async (req, res) => {
+    const cardData : TCard = {
+        modalidade: req.body.modalidade,
+        numero_cartao: req.body.numero_cartao,
+        nome: req.body.nome,
+        validade: req.body.validade,
+        cvc: req.body.cvc
+    }
+
+    let contentType = req.header('Content-Type')
+
+    let newCard = await setCadastrarCartao(cardData, contentType)
+
+    res.status(newCard.status_code)
+    res.json(newCard)
+})
 
 // Configurações do CORS
 const corsOptions = {
