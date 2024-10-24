@@ -98,9 +98,15 @@ function buscarPsicologo(id) {
                 },
             });
             if (professional) {
-                return professional;
+                return {
+                    professional: professional,
+                    status_code: 200
+                };
             }
-            return Promise.resolve(config_1.ERROR_NOT_FOUND);
+            return {
+                professional: config_1.ERROR_NOT_FOUND.message,
+                status_code: config_1.ERROR_NOT_FOUND.status_code
+            };
         }
         catch (error) {
             console.error("Erro ao obter o usuário", error);

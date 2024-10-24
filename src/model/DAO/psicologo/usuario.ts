@@ -88,9 +88,16 @@ export async function buscarPsicologo(id:number) {
   })
 
     if(professional){
-      return professional
+      return {
+        professional: professional,
+        status_code: 200
+      }
     }
-      return Promise.resolve(ERROR_NOT_FOUND)
+      
+    return {
+      professional: ERROR_NOT_FOUND.message,
+      status_code: ERROR_NOT_FOUND.status_code
+    }
 
   } catch (error) {
     console.error("Erro ao obter o usuário", error);

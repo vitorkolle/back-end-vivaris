@@ -10,8 +10,6 @@ export function isValidId(id:number) : boolean {
 
     const testId = idSchema.safeParse(id)
 
-    console.log(testId, id);
-
     return testId.success
 }
 
@@ -22,9 +20,6 @@ export function isValidEmail(email:string) : boolean{
   
   const testEmail = emailSchema.safeParse(email)
 
-  console.log(testEmail);
-  
-
   return testEmail.success
 }
 
@@ -32,8 +27,6 @@ export function isValidName(name:string) : boolean{
     const nameSchema = z.string().max(50).refine((name) => /^[A-Za-zÀ-ÖØ-ÿ ]+$/.test(name))
 
     const testName = nameSchema.safeParse(name)
-
-    console.log(testName);
     
 
     return testName.success
@@ -43,8 +36,6 @@ export function isValidPassword(password: string) : boolean{
     const passwordSchema = z.string().min(8).max(20)
 
     const testPassword = passwordSchema.safeParse(password)
-
-    console.log(testPassword);
     
 
     return testPassword.success

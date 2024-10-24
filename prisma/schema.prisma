@@ -35,7 +35,6 @@ model tbl_preferencias {
   id                        Int                         @id @default(autoincrement())
   nome                      String                      @unique(map: "nome") @db.VarChar(15)
   cor                       String                      @unique(map: "cor") @db.VarChar(7)
-  
   tbl_clientes_preferencias tbl_clientes_preferencias[]
 }
 
@@ -81,8 +80,8 @@ model tbl_psicologo_disponibilidade {
   psicologo_id           Int
   disponibilidade_id     Int
   status_disponibilidade String              @db.VarChar(20)
-  tbl_psicologos         tbl_psicologos      @relation(fields: [psicologo_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "tbl_psicologo_disponibilidade_ibfk_1")
   tbl_disponibilidade    tbl_disponibilidade @relation(fields: [disponibilidade_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "tbl_psicologo_disponibilidade_ibfk_2")
+  tbl_psicologos         tbl_psicologos      @relation(fields: [psicologo_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "tbl_psicologo_disponibilidade_ibfk_1")
 
   @@index([disponibilidade_id], map: "DISPONIBILIDADE_PSICOLOGO_DISPONIBILIDADE")
   @@index([psicologo_id], map: "PSICOLOGO_PSICOLOGO_DISPONIBILIDADE")

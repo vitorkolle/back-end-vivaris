@@ -76,12 +76,12 @@ function criarDisponibilidadePsicologo(availability) {
                 return config_1.ERROR_REQUIRED_FIELDS;
             }
             const validateProfessional = yield (0, controller_psicologo_1.getBuscarPsicologo)(availability.id_psicologo);
-            if (validateProfessional.status == false) {
+            console.log(availability.id_psicologo, yield (0, controller_psicologo_1.getBuscarPsicologo)(availability.id_psicologo));
+            if (validateProfessional.status_code === 404) {
                 return config_1.ERROR_NOT_FOUND_PROFESSIONAL;
             }
             const validateAvailbility = yield getBuscarDisponibilidade(availability.disponibilidade_id);
-            console.log(validateAvailbility);
-            if (!validateAvailbility) {
+            if (validateAvailbility.status_code === 404) {
                 return config_1.ERROR_NOT_FOUND_AVAILBILITY;
             }
             const searchProfessionalAvailbility = yield (0, disponibilidade_1.buscarDisponibilidadePsicologo)(availability);
@@ -101,7 +101,7 @@ function criarDisponibilidadePsicologo(availability) {
             }
             else {
                 searchProfessionalAvailbility.forEach((searchAvailability) => __awaiter(this, void 0, void 0, function* () {
-                    if (searchAvailability.psicologo_id == availability.id_psicologo && searchAvailability.disponibilidade_id == availability.disponibilidade_id) {
+                    if (searchAvailability.id_psicologo == availability.id_psicologo && searchAvailability.disponibilidade_id == availability.disponibilidade_id) {
                         novaDisponibilidade = yield (0, disponibilidade_1.criarDisponibilidadeProfissional)(availability.id_psicologo, availability.disponibilidade_id, availability.status);
                         console.log(novaDisponibilidade);
                     }

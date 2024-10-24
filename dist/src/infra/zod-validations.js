@@ -15,26 +15,22 @@ const zod_1 = require("zod");
 function isValidId(id) {
     const idSchema = zod_1.z.number().int().positive();
     const testId = idSchema.safeParse(id);
-    console.log(testId, id);
     return testId.success;
 }
 function isValidEmail(email) {
     // TODO: Quando a aplicação estiver na fase final, trocar o .max(256) por .email()
     const emailSchema = zod_1.z.string().max(256);
     const testEmail = emailSchema.safeParse(email);
-    console.log(testEmail);
     return testEmail.success;
 }
 function isValidName(name) {
     const nameSchema = zod_1.z.string().max(50).refine((name) => /^[A-Za-zÀ-ÖØ-ÿ ]+$/.test(name));
     const testName = nameSchema.safeParse(name);
-    console.log(testName);
     return testName.success;
 }
 function isValidPassword(password) {
     const passwordSchema = zod_1.z.string().min(8).max(20);
     const testPassword = passwordSchema.safeParse(password);
-    console.log(testPassword);
     return testPassword.success;
 }
 function isValidWeekDay(date) {
