@@ -19,16 +19,16 @@ export const createPaymentIntent = async (idConsulta:number, id_cliente:number) 
     }
 };
 
-const confirmPayment = async (order:TWebhookEvent, sig:string|string[]|undefined) => {
+export const confirmPayment = async (order:TWebhookEvent, sig:string|string[]|undefined) => {
     try {
         const event = await handlePayment(order, sig);
         if (!event) return;
 
-        const { paymentMethod } = extractPaymentInfo(event);
+        const { consultaId, paymentMethod, currentDateTimeFormatted } = extractPaymentInfo(event);
 
-        // if (isMissingRequiredFields(paymentMethod)) {
-        //     return message.ERROR_REQUIRED_FIELDS;
-        // }
+        if (isMissingRequiredFields(consultaId, paymentMethod, currentDateTimeFormatted )) {
+            return message.ERROR_REQUIRED_FIELDS;
+        }
 
         const paymentMethodId = getPaymentMethodId(paymentMethod);
         if (paymentMethodId === null) {
@@ -46,15 +46,17 @@ const confirmPayment = async (order:TWebhookEvent, sig:string|string[]|undefined
 };
 
 const extractPaymentInfo = (event:TWebhookEvent) => {
+    const consultaId = Number(event.data.object.metadata.consultaId);
     const paymentMethod = event.data.object.payment_method_types[0];
     const currentDateTime = new Date();
     const currentDateTimeFormatted = currentDateTime.toISOString().replace('T',' ').slice(0, 19);
 
-    return { paymentMethod, currentDateTimeFormatted };
+    return {consultaId, paymentMethod, currentDateTimeFormatted};
 };
 
-const isMissingRequiredFields = (paymentMethod:string, currentDateTimeFormatted:string) => {
+const isMissingRequiredFields = (consultaId:number, paymentMethod:string, currentDateTimeFormatted:string) => {
     return (
+        consultaId === undefined || consultaId === null || isNaN(consultaId) ||
         paymentMethod === "" || paymentMethod === undefined || paymentMethod === null ||
         currentDateTimeFormatted === "" || currentDateTimeFormatted === undefined || currentDateTimeFormatted === null || currentDateTimeFormatted.length > 19
     );

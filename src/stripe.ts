@@ -29,7 +29,7 @@ export async function handlePayment(event:TWebhookEvent, sig:string|string[]|und
 };
 
 
-export const makePayment = async (data: TAppointment, id_cliente:number) => {
+export const  makePayment = async (data: TAppointment, id_cliente:number) => {
   try {
     let usuario = id_cliente
     

@@ -1,0 +1,111 @@
+import { TUser } from "../../domain/entities/user-entity";
+export declare function setInserirUsuario(user: TUser, contentType: string | undefined): Promise<{
+    status: boolean;
+    status_code: number;
+    message: string;
+} | {
+    user: TUser;
+    status_code: number;
+    message: string;
+}>;
+export declare function getListarSexo(): Promise<{
+    status: boolean;
+    status_code: number;
+    message: string;
+} | {
+    data: {
+        id: number;
+        sexo: string | null;
+    }[];
+    status_code: number;
+    quantidade: number;
+}>;
+export declare function getBuscarSexo(id: number): Promise<{
+    status: boolean;
+    status_code: number;
+    message: string;
+} | {
+    data: {
+        id: number;
+        sexo: string | null;
+    };
+    status_code: number;
+}>;
+export declare function getLogarCliente(email: string | undefined, senha: string | undefined): Promise<{
+    status: boolean;
+    status_code: number;
+    message: string;
+} | {
+    cliente: {
+        usuario: {
+            id: number;
+            nome: string;
+            data_nascimento: Date;
+            telefone: string;
+            foto_perfil: string | null;
+        };
+        status: number;
+        message: string;
+    } | {
+        usuario: {
+            id: number;
+            nome: string;
+            data_nascimento: Date;
+            telefone: string;
+            foto_perfil: string | null;
+        };
+        preferencias_usuario: {
+            id: number;
+            nome: string;
+            cor: string;
+        }[][];
+        status: number;
+    } | {
+        status: number;
+        message: string;
+    };
+    status_code: number;
+}>;
+export declare function getBuscarCliente(id: number): Promise<{
+    status: boolean;
+    status_code: number;
+    message: string;
+} | {
+    data: {
+        id: number;
+        nome: string;
+        data_nascimento: Date;
+        cpf: string;
+        email: string;
+        senha: string;
+        telefone: string;
+        foto_perfil: string | null;
+        link_instagram: string | null;
+        id_sexo: number | null;
+    };
+    status_code: number;
+} | {
+    data: string;
+    status_code: number;
+}>;
+export declare function getBuscarClientePreferencias(id: number): Promise<{
+    status: boolean;
+    status_code: number;
+    message: string;
+} | {
+    data: string;
+    status_code: number;
+} | {
+    data: {
+        id: number;
+        nome: string;
+        email: string;
+        telefone: string;
+        preferencias: {
+            id: any;
+            nome: any;
+            hexcolor: any;
+        }[];
+    };
+    status_code: number;
+}>;
