@@ -20,6 +20,7 @@ import { TAvailability } from './src/domain/entities/availability-entity'
 import { TProfessionalAvailability } from './src/domain/entities/professional-availability'
 import { TProfessional } from './src/domain/entities/professional-entity'
 import { json } from 'body-parser'
+import { createPaymentIntent } from './src/controller/pagamento/controller_pagamento'
 
 //Criação do app
 const app = express()
@@ -33,6 +34,31 @@ app.use((request, response, next) => {
 
     next()
 })
+
+app.post('/webhook', express.raw({type: 'application/json'}), async (req, res) => {
+    //const result = confirmPayment(req.body, req.headers['stripe-signature'])
+    const event = req.body;
+
+    switch (event.type) {
+        case 'payment_intent.succeeded':
+          const paymentIntent = event.data.object;
+          // Then define and call a method to handle the successful payment intent.
+          // handlePaymentIntentSucceeded(paymentIntent);
+          break;
+        case 'payment_method.attached':
+          const paymentMethod = event.data.object;
+          // Then define and call a method to handle the successful attachment of a PaymentMethod.
+          // handlePaymentMethodAttached(paymentMethod);
+          break;
+        // ... handle other event types
+        default:
+          console.log(`Unhandled event type ${event.type}`);
+      }
+    
+      // Return a response to acknowledge receipt of the event
+      res.json({received: true});
+    //res.send(result)
+  })
 
 /****************************************************USUARIO-CLIENTE****************************************************/
 //post de clientes
@@ -299,10 +325,22 @@ route.get('/preferencias/:id', async (req, res) =>{
     res.json(preferenceData)
 })
 
+/****************************************************PAGAMENTO****************************************************/
+
+app.post('/create-checkout-session/:id', async (req, res) => {
+    let idConsulta = Number(req.params.id)
+
+    let idCliente = Number(req.body)
+
+    const result = await createPaymentIntent(idConsulta, idCliente)
+   
+    res.send(result)
+})
+
 
 // Configurações do CORS
 const corsOptions = {
-    origin: ['http://localhost:5173', 'http://127.0.0.1:5173'], // Permita o seu frontend
+    origin: ['http://localhost:5173', 'http://127.0.0.1:5173'],
     methods: ['GET', 'POST', 'PUT', 'DELETE'], // Métodos permitidos
     allowedHeaders: ['Content-Type', 'Authorization'], // Cabeçalhos permitidos
     optionsSuccessStatus: 200
@@ -317,4 +355,3 @@ app.use('/v1/vivaris', route)
 app.listen('8080', () => {
     console.log("API funcionando na porta 8080");
 })
-
