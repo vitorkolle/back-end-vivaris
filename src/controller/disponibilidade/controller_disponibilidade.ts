@@ -66,15 +66,16 @@ export async function criarDisponibilidadePsicologo(
             return ERROR_REQUIRED_FIELDS;
         }
 
-        const validateProfessional = await getBuscarPsicologo(availability.id_psicologo)
-        if (validateProfessional.status == false) {
+        const validateProfessional = await getBuscarPsicologo(availability.id_psicologo)     
+        
+        console.log(availability.id_psicologo, await getBuscarPsicologo(availability.id_psicologo));
+        
+        if (validateProfessional.status_code === 404) {
             return ERROR_NOT_FOUND_PROFESSIONAL
         }
 
         const validateAvailbility = await getBuscarDisponibilidade(availability.disponibilidade_id)
-        console.log(validateAvailbility);
-
-        if (!validateAvailbility) {
+        if (validateAvailbility.status_code === 404) {
             return ERROR_NOT_FOUND_AVAILBILITY
         }
 
@@ -95,6 +96,7 @@ export async function criarDisponibilidadePsicologo(
                 return ERROR_INTERNAL_SERVER_DB;
             }
         }
+        
         else{
             searchProfessionalAvailbility.forEach(async (searchAvailability) => { 
                 if (searchAvailability.psicologo_id == availability.id_psicologo && searchAvailability.disponibilidade_id == availability.disponibilidade_id) {
