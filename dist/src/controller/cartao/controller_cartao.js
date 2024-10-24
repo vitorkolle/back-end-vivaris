@@ -11,6 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.setCadastrarCartao = setCadastrarCartao;
 exports.getBuscarCartao = getBuscarCartao;
+exports.setDeletarCartao = setDeletarCartao;
 const config_1 = require("../../../module/config");
 const card_data_validations_1 = require("../../infra/card-data-validations");
 const zod_validations_1 = require("../../infra/zod-validations");
@@ -92,5 +93,27 @@ function getBuscarCartao(cardId) {
             card: config_1.ERROR_NOT_FOUND.message,
             status_code: config_1.ERROR_NOT_FOUND.status_code
         };
+    });
+}
+function setDeletarCartao(cardId) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            if (!(0, zod_validations_1.isValidId)(cardId)) {
+                return config_1.ERROR_INVALID_ID;
+            }
+            const validateId = yield getBuscarCartao(cardId);
+            if (validateId.status_code === 404) {
+                return config_1.ERROR_NOT_FOUND;
+            }
+            let deleteId = yield (0, cartao_1.deletarCartao)(cardId);
+            if (deleteId) {
+                return config_1.SUCCESS_DELETED_ITEM;
+            }
+            return config_1.ERROR_INTERNAL_SERVER_DB;
+        }
+        catch (error) {
+            console.error('Erro ao tentar deletar um cartao:', error);
+            return config_1.ERROR_INTERNAL_SERVER;
+        }
     });
 }

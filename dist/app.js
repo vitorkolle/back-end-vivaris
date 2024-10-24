@@ -254,6 +254,12 @@ route.get('/cartao/:id', (req, res) => __awaiter(void 0, void 0, void 0, functio
     res.status(card.status_code);
     res.json(card);
 }));
+route.delete('/cartao/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    let id = Number(req.params.id);
+    let deleteCard = yield (0, controller_cartao_1.setDeletarCartao)(id);
+    res.status(deleteCard.status_code);
+    res.json(deleteCard);
+}));
 // Configurações do CORS
 const corsOptions = {
     origin: ['http://localhost:5173', 'http://127.0.0.1:5173'], // Permita o seu frontend

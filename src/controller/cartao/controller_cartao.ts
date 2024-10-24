@@ -1,8 +1,8 @@
-import { ERROR_CONTENT_TYPE, ERROR_INTERNAL_SERVER, ERROR_INTERNAL_SERVER_DB, ERROR_INVALID_CARD, ERROR_INVALID_ID, ERROR_NOT_FOUND, ERROR_REQUIRED_FIELDS } from "../../../module/config";
+import { ERROR_CONTENT_TYPE, ERROR_INTERNAL_SERVER, ERROR_INTERNAL_SERVER_DB, ERROR_INVALID_CARD, ERROR_INVALID_ID, ERROR_NOT_FOUND, ERROR_REQUIRED_FIELDS, SUCCESS_DELETED_ITEM } from "../../../module/config";
 import { TCard } from "../../domain/entities/card-entity";
 import { verificacao } from "../../infra/card-data-validations";
 import { isValidCardNumber, isValidCvc, isValidId, isValidModality, isValidName } from "../../infra/zod-validations";
-import { buscarCartao, cadastrarCartao } from "../../model/DAO/cartao/cartao";
+import { buscarCartao, cadastrarCartao, deletarCartao } from "../../model/DAO/cartao/cartao";
 
 
 export async function setCadastrarCartao(cardData:TCard, contentType:string | undefined) {
@@ -98,5 +98,30 @@ export async function getBuscarCartao(cardId:number) {
     return {
         card: ERROR_NOT_FOUND.message,
         status_code: ERROR_NOT_FOUND.status_code
+    }
+}
+
+export async function setDeletarCartao(cardId:number) {
+    try {
+        if(!isValidId(cardId)){
+            return ERROR_INVALID_ID
+        }
+
+        const validateId = await getBuscarCartao(cardId)
+
+        if(validateId.status_code === 404){
+            return ERROR_NOT_FOUND
+        }
+
+        let deleteId = await deletarCartao(cardId)
+
+        if(deleteId){
+            return SUCCESS_DELETED_ITEM
+        }
+
+        return ERROR_INTERNAL_SERVER_DB
+    } catch (error) {
+        console.error('Erro ao tentar deletar um cartao:', error);
+        return ERROR_INTERNAL_SERVER;
     }
 }

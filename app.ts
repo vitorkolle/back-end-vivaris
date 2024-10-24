@@ -21,7 +21,7 @@ import { TProfessionalAvailability } from './src/domain/entities/professional-av
 import { TProfessional } from './src/domain/entities/professional-entity'
 import { json } from 'body-parser'
 import { TCard } from './src/domain/entities/card-entity'
-import { getBuscarCartao, setCadastrarCartao } from './src/controller/cartao/controller_cartao'
+import { getBuscarCartao, setCadastrarCartao, setDeletarCartao } from './src/controller/cartao/controller_cartao'
 
 //Criação do app
 const app = express()
@@ -326,6 +326,15 @@ route.get('/cartao/:id', async (req, res) => {
 
     res.status(card.status_code)
     res.json(card)
+})
+
+route.delete('/cartao/:id', async (req, res) => {
+    let id = Number(req.params.id)
+
+    let deleteCard = await setDeletarCartao(id)
+
+    res.status(deleteCard.status_code)
+    res.json(deleteCard)
 })
 
 // Configurações do CORS
