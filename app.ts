@@ -50,8 +50,8 @@ route.post('/webhook', express.raw({type: 'application/json'}), async (req, res)
     const result = confirmPayment(req.body, req.headers['stripe-signature'])
     
     res.send(result)
-  })
-
+})
+  
 /****************************************************USUARIO-CLIENTE****************************************************/
 //post de clientes
 route.post('/cliente', async (req, res) => {
@@ -321,9 +321,8 @@ route.get('/preferencias/:id', async (req, res) =>{
 
 /****************************************************PAGAMENTO****************************************************/
 route.post('/create-checkout-session', async (req, res) =>{
-    console.log("g");
 
-    let idConsulta = Number(req.body.id)
+    let idConsulta = Number(req.body.id_consulta)
 
     let idCliente = Number(req.body.id_cliente)
 
@@ -332,12 +331,6 @@ route.post('/create-checkout-session', async (req, res) =>{
     res.status(result.status_code)
     res.json(result)
 
-})
-
-
-route.get('/coisa', async(req, res)=>{ 
-    console.log("teste teste");
-    res.json("ofofoinoefno")
 })
 
 /*****************************************************CARTOES*************************************************/

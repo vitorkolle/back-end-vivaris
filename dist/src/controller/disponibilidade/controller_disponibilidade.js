@@ -100,6 +100,7 @@ function criarDisponibilidadePsicologo(availability) {
                 }
             }
             else {
+                // ! Se o problema for de tipo, reiniciar o vs code
                 searchProfessionalAvailbility.forEach((searchAvailability) => __awaiter(this, void 0, void 0, function* () {
                     if (searchAvailability.psicologo_id == availability.id_psicologo && searchAvailability.disponibilidade_id == availability.disponibilidade_id) {
                         novaDisponibilidade = yield (0, disponibilidade_1.criarDisponibilidadeProfissional)(availability.id_psicologo, availability.disponibilidade_id, availability.status);

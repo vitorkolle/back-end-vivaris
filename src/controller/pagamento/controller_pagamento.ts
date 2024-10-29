@@ -1,17 +1,16 @@
-const message = require('../module/config.ts')
-import { TWebhookEvent } from "../../domain/entities/stripe-event-entity.ts";
-import { selectAppointment } from "../../model/DAO/consulta/consulta.ts";
-import { createPayment } from "../../model/DAO/pagamento/pagamento.ts";
-import { handlePayment, makePayment } from "../../stripe.ts";
+const message = require('../../../module/config')
+import { TWebhookEvent } from "../../domain/entities/stripe-event-entity";
+import { selectAppointment } from "../../model/DAO/consulta/consulta";
+import { createPayment } from "../../model/DAO/pagamento/pagamento";
+import { handlePayment, makePayment } from "../../stripe";
 
 export const createPaymentIntent = async (idConsulta:number, id_cliente:number) => {
 
     try {
         const dadosConsulta = await selectAppointment(idConsulta)
 
-        console.log(idConsulta)
-
         const result = await makePayment(dadosConsulta, id_cliente);
+console.log(result);
 
         return {
             result: result,

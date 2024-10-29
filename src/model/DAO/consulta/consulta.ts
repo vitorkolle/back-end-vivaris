@@ -27,36 +27,40 @@ export async function selectAppointment(id: number) {
                             sexo: true,
                         },
                     },
-                    tbl_cliente_preferencia: {
+                    tbl_clientes_preferencias: {
                         select: {
-                            tbl_preferencia: {
-                                id: true,
-                                nome: true,
-                                cor: true
-                            },
-                        },
-                    },
-                    tbl_psicologos: {
-                        select: {
-                            id: true,
-                            nome: true,
-                            email: true,
-                            telefone: true,
-                            cpf: true,
-                            cip: true,
-                            data_nascimento: true,
-                            foto_perfil: true,
-                            link_instagram: true,
-                            tbl_sexo: {
+                            id_clientes: true,
+                            id_preferencias: true,
+                            tbl_preferencias: {
                                 select: {
                                     id: true,
-                                    sexo: true,
-                                },
+                                    nome: true,
+                                    cor: true,
+                                }
                             },
                         },
                     },
                 }
-            }
+            },
+            tbl_psicologos: {
+                select: {
+                    id: true,
+                    nome: true,
+                    email: true,
+                    telefone: true,
+                    cpf: true,
+                    cip: true,
+                    data_nascimento: true,
+                    foto_perfil: true,
+                    link_instagram: true,
+                    tbl_sexo: {
+                        select: {
+                            id: true,
+                            sexo: true,
+                        },
+                    },
+                },
+            },
         }
     })
 

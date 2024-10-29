@@ -32,6 +32,7 @@ export async function handlePayment(event:TWebhookEvent, sig:string|string[]|und
 export const  makePayment = async (data: TAppointment, id_cliente:number) => {
   try {
     let usuario = id_cliente
+
     
     const customer = await stripe.customers.create({
       metadata:{
@@ -40,27 +41,21 @@ export const  makePayment = async (data: TAppointment, id_cliente:number) => {
       }
     })
 
+
     const session = await stripe.checkout.sessions.create({
-  
       line_items: [
         {
-          price_data: {
-            currency: "brl",
-            product_data: {
-              name:"Consulta Terapêutica - Individual" ,
-              images: "/img/consulta-icon.png",
-            },
-            unit_amount: Number(data.valor.toFixed(2)) * 100,
-          },
+          price: 'price_1QFLpvDSzwYL8uNxEgBISYdF',
           quantity: 1,
         },
       ],
       mode: 'payment',
       payment_method_types: ['card'],
-      customer: customer.userId,
+      customer: customer.id,
       success_url: `http://localhost:5501/success.html`,
       cancel_url: `http://localhost:5501/canceled.html`,
     });
+  console.log(session);
   
     return {url: session.url}
     
