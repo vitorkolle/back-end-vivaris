@@ -19,9 +19,14 @@ import { getBuscarCliente, getBuscarClientePreferencias, getBuscarSexo, getLista
 import { TAvailability } from './src/domain/entities/availability-entity'
 import { TProfessionalAvailability } from './src/domain/entities/professional-availability'
 import { TProfessional } from './src/domain/entities/professional-entity'
-import { json } from 'body-parser'
+
+import { confirmPayment, createPaymentIntent } from './src/controller/pagamento/controller_pagamento'
 import { TCard } from './src/domain/entities/card-entity'
 import { getBuscarCartao, setCadastrarCartao, setDeletarCartao } from './src/controller/cartao/controller_cartao'
+
+//import { TCard } from './src/domain/entities/card-entity'
+//import { setCadastrarCartao } from './src/controller/cartao/controller_cartao'
+
 
 //Criação do app
 const app = express()
@@ -35,6 +40,12 @@ app.use((request, response, next) => {
 
     next()
 })
+
+route.post('/webhook', express.raw({type: 'application/json'}), async (req, res) => {
+    const result = confirmPayment(req.body, req.headers['stripe-signature'])
+    
+    res.send(result)
+  })
 
 /****************************************************USUARIO-CLIENTE****************************************************/
 //post de clientes
@@ -301,6 +312,22 @@ route.get('/preferencias/:id', async (req, res) =>{
     res.json(preferenceData)
 })
 
+
+/****************************************************PAGAMENTO****************************************************/
+
+route.post('/create-checkout-session/:id', async (req, res) => {
+    console.log("g");
+
+    let idConsulta = Number(req.params.id)
+
+    let idCliente = Number(req.body.id_cliente)
+
+    const result = await createPaymentIntent(idConsulta, idCliente)
+   
+    res.send(result)
+})
+
+
 /*****************************************************CARTOES*************************************************/
 route.post('/cartao', async (req, res) => {
     const cardData : TCard = {
@@ -319,6 +346,7 @@ route.post('/cartao', async (req, res) => {
     res.json(newCard)
 })
 
+
 route.get('/cartao/:id', async (req, res) => {
     let id = Number(req.params.id)
 
@@ -327,6 +355,7 @@ route.get('/cartao/:id', async (req, res) => {
     res.status(card.status_code)
     res.json(card)
 })
+
 
 route.delete('/cartao/:id', async (req, res) => {
     let id = Number(req.params.id)
@@ -337,9 +366,10 @@ route.delete('/cartao/:id', async (req, res) => {
     res.json(deleteCard)
 })
 
+/**************************************CONFIG****************************************/
 // Configurações do CORS
 const corsOptions = {
-    origin: ['http://localhost:5173', 'http://127.0.0.1:5173'], // Permita o seu frontend
+    origin: ['http://localhost:5173', 'http://127.0.0.1:5173', '*'],
     methods: ['GET', 'POST', 'PUT', 'DELETE'], // Métodos permitidos
     allowedHeaders: ['Content-Type', 'Authorization'], // Cabeçalhos permitidos
     optionsSuccessStatus: 200
