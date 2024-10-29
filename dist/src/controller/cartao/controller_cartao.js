@@ -10,7 +10,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.setCadastrarCartao = setCadastrarCartao;
+exports.getBuscarCartao = getBuscarCartao;
+exports.setDeletarCartao = setDeletarCartao;
 const config_1 = require("../../../module/config");
+const card_data_validations_1 = require("../../infra/card-data-validations");
 const zod_validations_1 = require("../../infra/zod-validations");
 const cartao_1 = require("../../model/DAO/cartao/cartao");
 function setCadastrarCartao(cardData, contentType) {
@@ -37,14 +40,17 @@ function setCadastrarCartao(cardData, contentType) {
                 }
                 return new Date(data);
             }
-            if (
-            //  !cardData.numero_cartao || !isValidCardNumber(cardData.numero_cartao) || !await verificacao.verificarNumeroCartao(cardData.numero_cartao) ||
-            !cardData.modalidade || !(0, zod_validations_1.isValidModality)(cardData.modalidade) ||
-                !cardData.nome || !(0, zod_validations_1.isValidName)(cardData.nome)
-            //  !cardData.validade      || !validarData(cardData.validade.toString()) || !transformarData(cardData.validade.toString()) ||
-            //  !cardData.cvc           || !isValidCvc(cardData.cvc)                  || !await verificacao.verificarCvcCartao(cardData.cvc)
-            ) {
+            if (!cardData.numero_cartao || !(0, zod_validations_1.isValidCardNumber)(Number(cardData.numero_cartao)) ||
+                !cardData.modalidade || !(0, zod_validations_1.isValidModality)(cardData.modalidade) ||
+                !cardData.nome || !(0, zod_validations_1.isValidName)(cardData.nome) ||
+                !cardData.validade || !validarData(cardData.validade.toString()) || !transformarData(cardData.validade.toString()) ||
+                !cardData.cvc || !(0, zod_validations_1.isValidCvc)(Number(cardData.cvc))) {
                 return config_1.ERROR_REQUIRED_FIELDS;
+            }
+            if (!(yield card_data_validations_1.verificacao.verificarNumeroCartao(cardData.numero_cartao)) || !(yield card_data_validations_1.verificacao.verificarCvcCartao(cardData.cvc))) {
+                if (card_data_validations_1.verificacao.verificarCartaoExistente(cardData) !== null) {
+                    return config_1.ERROR_INVALID_CARD;
+                }
             }
             const cardFinalData = {
                 modalidade: cardData.modalidade,
@@ -67,6 +73,46 @@ function setCadastrarCartao(cardData, contentType) {
         }
         catch (error) {
             console.error('Erro ao tentar inserir um novo cartao:', error);
+            return config_1.ERROR_INTERNAL_SERVER;
+        }
+    });
+}
+function getBuscarCartao(cardId) {
+    return __awaiter(this, void 0, void 0, function* () {
+        if (!(0, zod_validations_1.isValidId)(cardId)) {
+            return config_1.ERROR_INVALID_ID;
+        }
+        const card = yield (0, cartao_1.buscarCartao)(cardId);
+        if (card) {
+            return {
+                card: card,
+                status_code: 200
+            };
+        }
+        return {
+            card: config_1.ERROR_NOT_FOUND.message,
+            status_code: config_1.ERROR_NOT_FOUND.status_code
+        };
+    });
+}
+function setDeletarCartao(cardId) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            if (!(0, zod_validations_1.isValidId)(cardId)) {
+                return config_1.ERROR_INVALID_ID;
+            }
+            const validateId = yield getBuscarCartao(cardId);
+            if (validateId.status_code === 404) {
+                return config_1.ERROR_NOT_FOUND;
+            }
+            let deleteId = yield (0, cartao_1.deletarCartao)(cardId);
+            if (deleteId) {
+                return config_1.SUCCESS_DELETED_ITEM;
+            }
+            return config_1.ERROR_INTERNAL_SERVER_DB;
+        }
+        catch (error) {
+            console.error('Erro ao tentar deletar um cartao:', error);
             return config_1.ERROR_INTERNAL_SERVER;
         }
     });

@@ -37,7 +37,15 @@ function isValidPassword(password) {
     return testPassword.success;
 }
 function isValidWeekDay(date) {
-    const weekDaySchema = zod_1.z.enum(['Domingo', 'Segunda', 'Terca', 'Quarta', 'Quinta', 'Sexta', 'Sabado']);
+    //? Verificar se o tipo 'date' do zod corresponde ao tipo de data que estamos utilizando
+    //* ^  Possível uso quando a aplicação estiver na fase final
+    const dateSchema = zod_1.z.string().min(5).max(7);
+    const testDate = dateSchema.safeParse(date);
+    if (testDate.success === false) {
+        return false;
+    }
+    const weekDaysArray = ['Domingo', 'Segunda', 'Terca', 'Quarta', 'Quinta', 'Sexta', 'Sabado'];
+    const weekDaySchema = zod_1.z.enum(weekDaysArray);
     const finalDayTest = weekDaySchema.safeParse(date);
     return finalDayTest.success;
 }
@@ -52,12 +60,18 @@ function isValidNumberArray(numberArray) {
     return testNumberArray.success;
 }
 function isValidAvailbilityStatus(availabilityStatus) {
-    const availabilityStatusArraySchema = zod_1.z.enum(['Livre', 'Selecionado', 'Pago', 'Concluido']);
+    const availabilityStatusSchema = zod_1.z.string().min(4).max(11);
+    const testStatus = availabilityStatusSchema.safeParse(availabilityStatus);
+    if (!testStatus.success) {
+        return false;
+    }
+    const availabilityStatusArray = ['Livre', 'Selecionado', 'Pago', 'Concluido'];
+    const availabilityStatusArraySchema = zod_1.z.enum(availabilityStatusArray);
     const finalStatusTest = availabilityStatusArraySchema.safeParse(availabilityStatus);
     return finalStatusTest.success;
 }
 function isValidCardNumber(cardNumber) {
-    const cardNumberSchema = zod_1.z.string().length(16);
+    const cardNumberSchema = zod_1.z.number().int().positive().min(1111111111111111).max(9999999999999999);
     const testNumber = cardNumberSchema.safeParse(cardNumber);
     return testNumber.success;
 }
@@ -67,7 +81,7 @@ function isValidModality(modality) {
     return testModality.success;
 }
 function isValidCvc(cvc) {
-    const cvcSchema = zod_1.z.number().int().positive().min(3);
+    const cvcSchema = zod_1.z.number().int().positive().min(111).max(9999);
     const testCvc = cvcSchema.safeParse(cvc);
     return testCvc.success;
 }

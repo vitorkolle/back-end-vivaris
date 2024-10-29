@@ -22,7 +22,7 @@ import { TProfessional } from './src/domain/entities/professional-entity'
 
 import { confirmPayment, createPaymentIntent } from './src/controller/pagamento/controller_pagamento'
 import { TCard } from './src/domain/entities/card-entity'
-import { setCadastrarCartao } from './src/controller/cartao/controller_cartao'
+import { getBuscarCartao, setCadastrarCartao, setDeletarCartao } from './src/controller/cartao/controller_cartao'
 
 //import { TCard } from './src/domain/entities/card-entity'
 //import { setCadastrarCartao } from './src/controller/cartao/controller_cartao'
@@ -347,6 +347,26 @@ route.post('/cartao', async (req, res) => {
 })
 
 
+route.get('/cartao/:id', async (req, res) => {
+    let id = Number(req.params.id)
+
+    let card = await getBuscarCartao(id)
+
+    res.status(card.status_code)
+    res.json(card)
+})
+
+
+route.delete('/cartao/:id', async (req, res) => {
+    let id = Number(req.params.id)
+
+    let deleteCard = await setDeletarCartao(id)
+
+    res.status(deleteCard.status_code)
+    res.json(deleteCard)
+})
+
+/**************************************CONFIG****************************************/
 // Configurações do CORS
 const corsOptions = {
     origin: ['http://localhost:5173', 'http://127.0.0.1:5173', '*'],
