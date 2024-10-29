@@ -6,12 +6,7 @@ export declare function setInserirDisponibilidade(disponibilidade: TAvailability
     status_code: number;
     message: string;
 } | {
-    data: {
-        id: number;
-        dia_semana: import(".prisma/client").$Enums.tbl_disponibilidade_dia_semana;
-        horario_inicio: Date;
-        horario_fim: Date;
-    };
+    data: any;
     status_code: number;
     message: string;
 }>;
@@ -21,17 +16,11 @@ export declare function criarDisponibilidadePsicologo(availability: TProfessiona
     message: string;
 } | {
     data: {
-        id: number;
-        nome: string;
-        email: string;
-        telefone: string;
-        disponibilidades: {
-            id: any;
-            dia_semana: any;
-            from: any;
-            to: any;
-            status: any;
-        }[];
+        id: any;
+        nome: any;
+        email: any;
+        telefone: any;
+        disponibilidades: any;
     };
     status_code: number;
     message: string;
@@ -50,18 +39,7 @@ export declare function getBuscarDisponibilidade(id: number): Promise<{
     message: string;
 } | {
     status_code: number;
-    data: {
-        status: boolean;
-        status_code: number;
-        message: string;
-    };
-} | {
-    status_code: number;
-    data: {
-        dia_semana: import(".prisma/client").$Enums.tbl_disponibilidade_dia_semana;
-        horario_inicio: Date;
-        horario_fim: Date;
-    }[];
+    data: any;
 }>;
 export declare function getListarDisponibilidadesProfissional(idProfessional: number): Promise<{
     status: boolean;
@@ -69,15 +47,11 @@ export declare function getListarDisponibilidadesProfissional(idProfessional: nu
     message: string;
 } | {
     data: {
-        id: number;
-        nome: string;
-        email: string;
-        telefone: string;
-        disponibilidades: {
-            id: any;
-            dia_semana: any;
-            hexcolor: any;
-        }[];
+        id: any;
+        nome: any;
+        email: any;
+        telefone: any;
+        disponibilidades: any;
     } | {
         id: boolean;
     };
@@ -101,12 +75,7 @@ export declare function setAtualizarDisponibilidade(availabilityData: TAvailabil
     data?: undefined;
 } | {
     status_code: number;
-    data: {
-        id: number;
-        dia_semana: import(".prisma/client").$Enums.tbl_disponibilidade_dia_semana;
-        horario_inicio: Date;
-        horario_fim: Date;
-    };
+    data: any;
     message?: undefined;
 }>;
 export declare function setAtualizarDisponibilidadeProfissional(availabilityData: TProfessionalAvailability, contentType: string | undefined): Promise<{
@@ -118,12 +87,7 @@ export declare function setAtualizarDisponibilidadeProfissional(availabilityData
     message: string;
     data?: undefined;
 } | {
-    data: {
-        id: number;
-        psicologo_id: number;
-        disponibilidade_id: number;
-        status_disponibilidade: string;
-    };
+    data: any;
     status_code: number;
     message?: undefined;
 }>;

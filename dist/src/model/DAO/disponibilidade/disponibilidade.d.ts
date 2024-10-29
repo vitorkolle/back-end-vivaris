@@ -1,70 +1,33 @@
 import { TAvailability } from "../../../domain/entities/availability-entity";
 import { TProfessionalAvailability } from "../../../domain/entities/professional-availability";
-export declare function criarDisponibilidade(disponibilidade: TAvailability): Promise<{
-    id: number;
-    dia_semana: import(".prisma/client").$Enums.tbl_disponibilidade_dia_semana;
-    horario_inicio: Date;
-    horario_fim: Date;
-}>;
+export declare function criarDisponibilidade(disponibilidade: TAvailability): Promise<any>;
 export declare function listarDisponibilidadesPorProfissional(profissionalId: number): Promise<{
-    id: number;
-    nome: string;
-    email: string;
-    telefone: string;
-    disponibilidades: {
-        id: any;
-        dia_semana: any;
-        hexcolor: any;
-    }[];
+    id: any;
+    nome: any;
+    email: any;
+    telefone: any;
+    disponibilidades: any;
 } | {
     id: boolean;
 }>;
 export declare function criarDisponibilidadeProfissional(profissionalId: number, disponibilidade: number, status: string): Promise<{
-    id: number;
-    nome: string;
-    email: string;
-    telefone: string;
-    disponibilidades: {
-        id: any;
-        dia_semana: any;
-        from: any;
-        to: any;
-        status: any;
-    }[];
+    id: any;
+    nome: any;
+    email: any;
+    telefone: any;
+    disponibilidades: any;
 }>;
-export declare function buscarDisponibilidadePsicologo(availabilityData: TProfessionalAvailability): Promise<false | {
-    psicologo_id: number;
-    disponibilidade_id: number;
-    status_disponibilidade: string;
-}[]>;
-export declare function buscarDisponibilidade(id: number): Promise<false | {
-    dia_semana: import(".prisma/client").$Enums.tbl_disponibilidade_dia_semana;
-    horario_inicio: Date;
-    horario_fim: Date;
-}[]>;
+export declare function buscarDisponibilidadePsicologo(availabilityData: TProfessionalAvailability): Promise<any>;
+export declare function buscarDisponibilidade(id: number): Promise<any>;
 export declare function deletarDisponibilidade(diaSemana: string, idPsicologo: number): Promise<boolean>;
-export declare function atualizarDisponibilidade(availabilityData: TAvailability, availabilityId: number): Promise<false | {
-    id: number;
-    dia_semana: import(".prisma/client").$Enums.tbl_disponibilidade_dia_semana;
-    horario_inicio: Date;
-    horario_fim: Date;
-}>;
-export declare function atualizarDisponibilidadeProfissional(availabilityData: TProfessionalAvailability): Promise<false | {
-    id: number;
-    psicologo_id: number;
-    disponibilidade_id: number;
-    status_disponibilidade: string;
-}>;
+export declare function atualizarDisponibilidade(availabilityData: TAvailability, availabilityId: number): Promise<any>;
+export declare function atualizarDisponibilidadeProfissional(availabilityData: TProfessionalAvailability): Promise<any>;
 export declare function buscarDisponibilidadePsicologoById(availabilityId: number): Promise<{
     status_code: number;
     message: string;
     data?: undefined;
 } | {
-    data: {
-        psicologo_id: number;
-        disponibilidade_id: number;
-        status_disponibilidade: string;
-    };
+    data: any;
     status_code: number;
     message?: undefined;
 } | undefined>;
