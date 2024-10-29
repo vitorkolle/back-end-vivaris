@@ -9,13 +9,21 @@ export const createPaymentIntent = async (idConsulta:number, id_cliente:number) 
     try {
         const dadosConsulta = await selectAppointment(idConsulta)
 
+        console.log(idConsulta)
+
         const result = await makePayment(dadosConsulta, id_cliente);
 
-        return result;
+        return {
+            result: result,
+            status_code: 200
+        };
 
     } catch (error) {
         console.log(error);
-        return false
+        return {
+            result: error,
+            status_code: 400
+        };
     }
 };
 

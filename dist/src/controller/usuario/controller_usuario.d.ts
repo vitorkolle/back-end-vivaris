@@ -13,16 +13,22 @@ export declare function getListarSexo(): Promise<{
     status_code: number;
     message: string;
 } | {
-    data: any;
+    data: {
+        id: number;
+        sexo: string | null;
+    }[];
     status_code: number;
-    quantidade: any;
+    quantidade: number;
 }>;
 export declare function getBuscarSexo(id: number): Promise<{
     status: boolean;
     status_code: number;
     message: string;
 } | {
-    data: any;
+    data: {
+        id: number;
+        sexo: string | null;
+    };
     status_code: number;
 }>;
 export declare function getLogarCliente(email: string | undefined, senha: string | undefined): Promise<{
@@ -31,12 +37,28 @@ export declare function getLogarCliente(email: string | undefined, senha: string
     message: string;
 } | {
     cliente: {
-        usuario: any;
+        usuario: {
+            id: number;
+            nome: string;
+            data_nascimento: Date;
+            telefone: string;
+            foto_perfil: string | null;
+        };
         status: number;
         message: string;
     } | {
-        usuario: any;
-        preferencias_usuario: any[];
+        usuario: {
+            id: number;
+            nome: string;
+            data_nascimento: Date;
+            telefone: string;
+            foto_perfil: string | null;
+        };
+        preferencias_usuario: {
+            id: number;
+            nome: string;
+            cor: string;
+        }[][];
         status: number;
     } | {
         status: number;
@@ -49,7 +71,21 @@ export declare function getBuscarCliente(id: number): Promise<{
     status_code: number;
     message: string;
 } | {
-    data: any;
+    data: {
+        id: number;
+        nome: string;
+        data_nascimento: Date;
+        cpf: string;
+        email: string;
+        senha: string;
+        telefone: string;
+        foto_perfil: string | null;
+        link_instagram: string | null;
+        id_sexo: number | null;
+    };
+    status_code: number;
+} | {
+    data: string;
     status_code: number;
 }>;
 export declare function getBuscarClientePreferencias(id: number): Promise<{
@@ -61,11 +97,15 @@ export declare function getBuscarClientePreferencias(id: number): Promise<{
     status_code: number;
 } | {
     data: {
-        id: any;
-        nome: any;
-        email: any;
-        telefone: any;
-        preferencias: any;
+        id: number;
+        nome: string;
+        email: string;
+        telefone: string;
+        preferencias: {
+            id: any;
+            nome: any;
+            hexcolor: any;
+        }[];
     };
     status_code: number;
 }>;

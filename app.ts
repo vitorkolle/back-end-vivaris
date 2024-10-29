@@ -5,7 +5,7 @@ import { TUserPreferences } from './src/domain/entities/user-preferences'
 import express, { Router } from 'express' 
 
 //Criação das configurações das rotas para endpoint 
-const route = Router()
+const route : Router = express.Router()
 
 
 //Import pacotes cors 
@@ -24,9 +24,6 @@ import { confirmPayment, createPaymentIntent } from './src/controller/pagamento/
 import { TCard } from './src/domain/entities/card-entity'
 import { getBuscarCartao, setCadastrarCartao, setDeletarCartao } from './src/controller/cartao/controller_cartao'
 
-//import { TCard } from './src/domain/entities/card-entity'
-//import { setCadastrarCartao } from './src/controller/cartao/controller_cartao'
-
 
 //Criação do app
 const app = express()
@@ -39,6 +36,14 @@ app.use((request, response, next) => {
     app.use(cors())
 
     next()
+})
+
+  //Ativação das rotas
+app.use('/v1/vivaris', route)
+
+//Ativação na porta 8080
+app.listen('8080', () => {
+    console.log("API funcionando na porta 8080");
 })
 
 route.post('/webhook', express.raw({type: 'application/json'}), async (req, res) => {
@@ -304,6 +309,8 @@ route.get('/preferencias', async (req, res) =>{
 })
 
 route.get('/preferencias/:id', async (req, res) =>{
+    console.log("g");
+    
     let id = Number(req.params.id)
 
     let preferenceData = await getBuscarPreferencia(id)
@@ -312,21 +319,26 @@ route.get('/preferencias/:id', async (req, res) =>{
     res.json(preferenceData)
 })
 
-
 /****************************************************PAGAMENTO****************************************************/
-
-route.post('/create-checkout-session/:id', async (req, res) => {
+route.post('/create-checkout-session', async (req, res) =>{
     console.log("g");
 
-    let idConsulta = Number(req.params.id)
+    let idConsulta = Number(req.body.id)
 
     let idCliente = Number(req.body.id_cliente)
 
     const result = await createPaymentIntent(idConsulta, idCliente)
    
-    res.send(result)
+    res.status(result.status_code)
+    res.json(result)
+
 })
 
+
+route.get('/coisa', async(req, res)=>{ 
+    console.log("teste teste");
+    res.json("ofofoinoefno")
+})
 
 /*****************************************************CARTOES*************************************************/
 route.post('/cartao', async (req, res) => {
@@ -348,6 +360,8 @@ route.post('/cartao', async (req, res) => {
 
 
 route.get('/cartao/:id', async (req, res) => {
+
+    console.log(req.params.id);
     let id = Number(req.params.id)
 
     let card = await getBuscarCartao(id)
@@ -376,12 +390,4 @@ const corsOptions = {
   };
   
 app.use(cors(corsOptions));
-
-//Ativação das rotas
-app.use('/v1/vivaris', route)
-
-//Ativação na porta 8080
-app.listen('8080', () => {
-    console.log("API funcionando na porta 8080");
-})
 

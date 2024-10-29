@@ -71,7 +71,6 @@ model tbl_disponibilidade {
   tbl_psicologo_disponibilidade tbl_psicologo_disponibilidade[]
 }
 
-
 model tbl_pagamentos {
   id                Int           @id @default(autoincrement())
   is_paid           Boolean
@@ -84,7 +83,6 @@ model tbl_pagamentos {
   @@index([id_cartao], map: "CARTAO_PAGAMENTO")
   @@index([id_consulta], map: "CONSULTA_PAGAMENTO")
 }
-
 
 model tbl_preferencias {
   id                        Int                         @id @default(autoincrement())
@@ -131,12 +129,6 @@ model tbl_sexo {
   tbl_psicologos tbl_psicologos[]
 }
 
-enum tbl_cartoes_modalidade {
-  Credito
-  Debito
-
-}
-
 model tbl_cliente_cartao {
   id           Int          @id @default(autoincrement())
   id_cliente   Int
@@ -148,17 +140,9 @@ model tbl_cliente_cartao {
   @@index([id_cliente], map: "CLIENTE_CLIENTE_CARTAO")
 }
 
-model tbl_pagamentos {
-  id                Int           @id @default(autoincrement())
-  is_paid           Boolean
-  intent_payment_id String?       @db.VarChar(250)
-  id_consulta       Int
-  id_cartao         Int
-  tbl_cartoes       tbl_cartoes   @relation(fields: [id_cartao], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "CARTAO_PAGAMENTO")
-  tbl_consultas     tbl_consultas @relation(fields: [id_consulta], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "CONSULTA_PAGAMENTO")
-
-  @@index([id_cartao], map: "CARTAO_PAGAMENTO")
-  @@index([id_consulta], map: "CONSULTA_PAGAMENTO")
+enum tbl_cartoes_modalidade {
+  Credito
+  Debito
 }
 
 enum tbl_disponibilidade_dia_semana {
@@ -172,9 +156,9 @@ enum tbl_disponibilidade_dia_semana {
 }
 
 enum tbl_consultas_avaliacao {
-   Um @map("1")
-   Dois @map("2")
-   Tres @map("3")
-   Quatro @map("4")
-   Cinco @map("5")
+  Um     @map("1")
+  Dois   @map("2")
+  Tres   @map("3")
+  Quatro @map("4")
+  Cinco  @map("5")
 }
