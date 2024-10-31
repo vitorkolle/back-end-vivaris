@@ -51,34 +51,32 @@ export declare function getBuscarPsicologo(id: number): Promise<{
     message: string;
 } | {
     data: {
-        professional: {
-            tbl_psicologo_disponibilidade: {
-                tbl_disponibilidade: {
-                    id: number;
-                    dia_semana: import(".prisma/client").$Enums.tbl_disponibilidade_dia_semana;
-                    horario_inicio: Date;
-                    horario_fim: Date;
-                };
-                psicologo_id: number;
-            }[];
-        } & {
-            id: number;
-            nome: string;
-            data_nascimento: Date;
-            cip: string;
-            cpf: string;
-            email: string;
-            senha: string;
-            telefone: string;
-            foto_perfil: string | null;
-            link_instagram: string | null;
-            id_sexo: number;
-        };
+        status: boolean;
         status_code: number;
-    } | {
-        professional: string;
-        status_code: number;
-    };
+        message: string;
+    } | ({
+        tbl_psicologo_disponibilidade: {
+            tbl_disponibilidade: {
+                id: number;
+                dia_semana: import(".prisma/client").$Enums.tbl_disponibilidade_dia_semana;
+                horario_inicio: Date;
+                horario_fim: Date;
+            };
+            psicologo_id: number;
+        }[];
+    } & {
+        id: number;
+        nome: string;
+        data_nascimento: Date;
+        cip: string;
+        cpf: string;
+        email: string;
+        senha: string;
+        telefone: string;
+        foto_perfil: string | null;
+        link_instagram: string | null;
+        id_sexo: number;
+    });
     status_code: number;
     status: boolean;
 } | {

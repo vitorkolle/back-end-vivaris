@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.confirmPayment = exports.createPaymentIntent = void 0;
+exports.createPaymentIntent = void 0;
 const message = require('../../../module/config');
 const consulta_1 = require("../../model/DAO/consulta/consulta");
 const pagamento_1 = require("../../model/DAO/pagamento/pagamento");
@@ -18,18 +18,11 @@ const createPaymentIntent = (idConsulta, id_cliente) => __awaiter(void 0, void 0
     try {
         const dadosConsulta = yield (0, consulta_1.selectAppointment)(idConsulta);
         const result = yield (0, stripe_1.makePayment)(dadosConsulta, id_cliente);
-        console.log(result);
-        return {
-            result: result,
-            status_code: 200
-        };
+        return result;
     }
     catch (error) {
         console.log(error);
-        return {
-            result: error,
-            status_code: 400
-        };
+        return false;
     }
 });
 exports.createPaymentIntent = createPaymentIntent;
@@ -38,8 +31,8 @@ const confirmPayment = (order, sig) => __awaiter(void 0, void 0, void 0, functio
         const event = yield (0, stripe_1.handlePayment)(order, sig);
         if (!event)
             return;
-        const { consultaId, paymentMethod, currentDateTimeFormatted } = extractPaymentInfo(event);
-        if (isMissingRequiredFields(consultaId, paymentMethod, currentDateTimeFormatted)) {
+        const { paymentMethod, currentDateTimeFormatted, consultaId } = extractPaymentInfo(event);
+        if (isMissingRequiredFields(paymentMethod, currentDateTimeFormatted, consultaId)) {
             return message.ERROR_REQUIRED_FIELDS;
         }
         const paymentMethodId = getPaymentMethodId(paymentMethod);
@@ -49,25 +42,24 @@ const confirmPayment = (order, sig) => __awaiter(void 0, void 0, void 0, functio
         else {
             event.forma_pagamento_id = paymentMethodId;
         }
-        const payment = yield (0, pagamento_1.createPayment)(event, event.paymentIntentSucceeded.payment_intent);
+        const payment = yield (0, pagamento_1.createPayment)(event, event.paymentIntentSucceeded.payment_intent, consultaId);
         return { received: true, pagamento: payment };
     }
     catch (error) {
         return false;
     }
 });
-exports.confirmPayment = confirmPayment;
 const extractPaymentInfo = (event) => {
-    const consultaId = Number(event.data.object.metadata.consultaId);
     const paymentMethod = event.data.object.payment_method_types[0];
     const currentDateTime = new Date();
     const currentDateTimeFormatted = currentDateTime.toISOString().replace('T', ' ').slice(0, 19);
-    return { consultaId, paymentMethod, currentDateTimeFormatted };
+    const consultaId = Number(event.data.object.customer.metadata.consulta);
+    return { paymentMethod, currentDateTimeFormatted, consultaId };
 };
-const isMissingRequiredFields = (consultaId, paymentMethod, currentDateTimeFormatted) => {
-    return (consultaId === undefined || consultaId === null || isNaN(consultaId) ||
-        paymentMethod === "" || paymentMethod === undefined || paymentMethod === null ||
-        currentDateTimeFormatted === "" || currentDateTimeFormatted === undefined || currentDateTimeFormatted === null || currentDateTimeFormatted.length > 19);
+const isMissingRequiredFields = (paymentMethod, currentDateTimeFormatted, consultaId) => {
+    return (paymentMethod === "" || paymentMethod === undefined || paymentMethod === null ||
+        currentDateTimeFormatted === "" || currentDateTimeFormatted === undefined || currentDateTimeFormatted === null || currentDateTimeFormatted.length > 19 ||
+        consultaId === undefined || consultaId === null || isNaN(consultaId));
 };
 const getPaymentMethodId = (paymentMethod) => {
     if (paymentMethod === "card") {

@@ -26,6 +26,9 @@ function setInserirUsuario(user, contentType) {
             if (String(contentType).toLowerCase() !== 'application/json' || contentType === undefined) {
                 return config_1.ERROR_CONTENT_TYPE;
             }
+            if (!user) {
+                return config_1.ERROR_NOT_CREATED;
+            }
             function validarData(data) {
                 if (data.length !== 10)
                     return false;

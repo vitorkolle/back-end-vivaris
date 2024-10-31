@@ -76,8 +76,7 @@ export declare function getListarDisponibilidadesProfissional(idProfessional: nu
         disponibilidades: {
             id: any;
             dia_semana: any;
-            horario_inicio: any;
-            horario_fim: any;
+            hexcolor: any;
         }[];
     } | {
         id: boolean;

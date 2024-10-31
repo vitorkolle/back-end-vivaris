@@ -5,34 +5,10 @@ import { TUserPreferences } from './src/domain/entities/user-preferences'
 import express, { Router } from 'express'
 
 //Criação das configurações das rotas para endpoint 
-const route: Router = express.Router()
-
-//Criação do app
-const app = express()
-
-app.use(express.json())
+const route = Router()
 
 //Import pacotes cors 
 import cors from 'cors'
-
-// Configurações do CORS
-const corsOptions = {
-    origin: ['http://localhost:5173', 'http://127.0.0.1:5173', '*'],
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Métodos permitidos
-    allowedHeaders: ['Content-Type', 'Authorization'], // Cabeçalhos permitidos
-    optionsSuccessStatus: 200
-};
-
-app.use(cors(corsOptions));
-
-//Ativação das rotas
-app.use('/v1/vivaris', route)
-
-//Ativação na porta 8080
-app.listen('8080', () => {
-    console.log("API funcionando na porta 8080");
-})
-
 
 //Import Controller 
 import { criarDisponibilidadePsicologo, getBuscarDisponibilidade, getListarDisponibilidadesProfissional, setAtualizarDisponibilidade, setAtualizarDisponibilidadeProfissional, setDeletarDisponibilidade, setInserirDisponibilidade } from './src/controller/disponibilidade/controller_disponibilidade'
@@ -42,15 +18,21 @@ import { getBuscarCliente, getBuscarClientePreferencias, getBuscarSexo, getLista
 import { TAvailability } from './src/domain/entities/availability-entity'
 import { TProfessionalAvailability } from './src/domain/entities/professional-availability'
 import { TProfessional } from './src/domain/entities/professional-entity'
-
-import { confirmPayment, createPaymentIntent } from './src/controller/pagamento/controller_pagamento'
+import { createPaymentIntent, confirmPayment } from './src/controller/pagamento/controller_pagamento'
 import { TCard } from './src/domain/entities/card-entity'
 import { getBuscarCartao, setCadastrarCartao, setDeletarCartao } from './src/controller/cartao/controller_cartao'
 
-route.post('/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
-    const result = confirmPayment(req.body, req.headers['stripe-signature'])
+//Criação do app
+const app = express()
 
-    res.send(result)
+app.use(express.json())
+app.use((request, response, next) => {
+    response.header('Access-Control-Allow-Origin', '*')
+    response.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+
+    app.use(cors())
+
+    next()
 })
 
 /****************************************************USUARIO-CLIENTE****************************************************/
@@ -310,8 +292,6 @@ route.get('/preferencias', async (req, res) => {
 })
 
 route.get('/preferencias/:id', async (req, res) => {
-    console.log("g");
-
     let id = Number(req.params.id)
 
     let preferenceData = await getBuscarPreferencia(id)
@@ -321,19 +301,31 @@ route.get('/preferencias/:id', async (req, res) => {
 })
 
 /****************************************************PAGAMENTO****************************************************/
+
 route.post('/create-checkout-session', async (req, res) => {
-
-    let idConsulta = Number(req.body.id_consulta)
-
-    let idCliente = Number(req.body.id_cliente)
-
-    const result = await createPaymentIntent(idConsulta, idCliente)
-
-    res.status(result.status_code)
-    res.json(result)
-
+    try {
+        let idConsulta = Number(req.body.id_consulta);
+        let idCliente = Number(req.body.id_cliente);
+        
+        const result = await createPaymentIntent(idConsulta, idCliente);
+        res.status(200).send(result);
+    } catch (error) {
+        console.error('Error creating checkout session:', error);
+        res.status(500).send({ error: 'Failed to create checkout session' });
+    }
 })
 
+app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
+    try {
+        const signature = req.headers['stripe-signature'];
+        const result = confirmPayment(req.body, signature);
+
+        res.status(200).send(result);
+    } catch (error) {
+        console.error('Error processing webhook:', error);
+        res.status(400).send({ error: 'Webhook Error' });
+    }
+})
 /*****************************************************CARTOES*************************************************/
 route.post('/cartao', async (req, res) => {
     const cardData: TCard = {
@@ -373,3 +365,24 @@ route.delete('/cartao/:id', async (req, res) => {
     res.status(deleteCard.status_code)
     res.json(deleteCard)
 })
+
+
+
+// Configurações do CORS
+const corsOptions = {
+    origin: ['http://localhost:5173', 'http://127.0.0.1:5173'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Métodos permitidos
+    allowedHeaders: ['Content-Type', 'Authorization'], // Cabeçalhos permitidos
+    optionsSuccessStatus: 200
+};
+
+app.use(cors(corsOptions));
+
+//Ativação das rotas
+app.use('/v1/vivaris', route)
+
+//Ativação na porta 8080
+app.listen('8080', () => {
+    console.log("API funcionando na porta 8080");
+})
+

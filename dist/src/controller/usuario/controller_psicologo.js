@@ -144,8 +144,7 @@ function getBuscarPsicologo(id) {
         }
         else {
             let professionalData = yield (0, usuario_1.buscarPsicologo)(id);
-            console.log(professionalData);
-            if (professionalData.status_code === 200) {
+            if (professionalData) {
                 return {
                     data: professionalData,
                     status_code: 200,

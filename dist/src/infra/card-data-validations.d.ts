@@ -1,2 +1,2 @@
-import { IVerificarDadosCartao } from "../application/card-indentification";
+import { IVerificarDadosCartao } from "../application/card-identification";
 export declare const verificacao: IVerificarDadosCartao;
