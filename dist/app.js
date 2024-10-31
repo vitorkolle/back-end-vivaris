@@ -16,8 +16,26 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 //Criação das configurações das rotas para endpoint 
 const route = express_1.default.Router();
+//Criação do app
+const app = (0, express_1.default)();
+app.use(express_1.default.json());
 //Import pacotes cors 
 const cors_1 = __importDefault(require("cors"));
+/**************************************CONFIG****************************************/
+// Configurações do CORS
+const corsOptions = {
+    origin: ['http://localhost:5173', 'http://127.0.0.1:5173', '*'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Métodos permitidos
+    allowedHeaders: ['Content-Type', 'Authorization'], // Cabeçalhos permitidos
+    optionsSuccessStatus: 200
+};
+app.use((0, cors_1.default)(corsOptions));
+//Ativação das rotas
+app.use('/v1/vivaris', route);
+//Ativação na porta 8080
+app.listen('8080', () => {
+    console.log("API funcionando na porta 8080");
+});
 //Import Controller 
 const controller_disponibilidade_1 = require("./src/controller/disponibilidade/controller_disponibilidade");
 const controller_preferencia_1 = require("./src/controller/preferencia/controller_preferencia");
@@ -25,15 +43,6 @@ const controller_psicologo_1 = require("./src/controller/usuario/controller_psic
 const controller_usuario_1 = require("./src/controller/usuario/controller_usuario");
 const controller_pagamento_1 = require("./src/controller/pagamento/controller_pagamento");
 const controller_cartao_1 = require("./src/controller/cartao/controller_cartao");
-//Criação do app
-const app = (0, express_1.default)();
-app.use(express_1.default.json());
-//Ativação das rotas
-app.use('/v1/vivaris', route);
-//Ativação na porta 8080
-app.listen('8080', () => {
-    console.log("API funcionando na porta 8080");
-});
 route.post('/webhook', express_1.default.raw({ type: 'application/json' }), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const result = (0, controller_pagamento_1.confirmPayment)(req.body, req.headers['stripe-signature']);
     res.send(result);
@@ -252,12 +261,3 @@ route.delete('/cartao/:id', (req, res) => __awaiter(void 0, void 0, void 0, func
     res.status(deleteCard.status_code);
     res.json(deleteCard);
 }));
-/**************************************CONFIG****************************************/
-// Configurações do CORS
-const corsOptions = {
-    origin: ['http://localhost:5173', 'http://127.0.0.1:5173', '*'],
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Métodos permitidos
-    allowedHeaders: ['Content-Type', 'Authorization'], // Cabeçalhos permitidos
-    optionsSuccessStatus: 200
-};
-app.use((0, cors_1.default)(corsOptions));
