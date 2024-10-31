@@ -14,7 +14,8 @@ export declare function listarDisponibilidadesPorProfissional(profissionalId: nu
     disponibilidades: {
         id: any;
         dia_semana: any;
-        hexcolor: any;
+        horario_inicio: any;
+        horario_fim: any;
     }[];
 } | {
     id: boolean;

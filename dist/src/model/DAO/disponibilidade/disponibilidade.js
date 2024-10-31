@@ -90,15 +90,14 @@ function listarDisponibilidadesPorProfissional(profissionalId) {
                 nome: usuario.nome,
                 email: usuario.email,
                 telefone: usuario.telefone,
-                disponibilidades: disponibilidades.map((disp) => {
-                    var _a, _b, _c;
-                    return ({
-                        id: (_a = disp.tbl_disponibilidade) === null || _a === void 0 ? void 0 : _a.id,
-                        dia_semana: (_b = disp.tbl_preferencias) === null || _b === void 0 ? void 0 : _b.d,
-                        hexcolor: (_c = disp.tbl_preferencias) === null || _c === void 0 ? void 0 : _c.cor
-                    });
-                }),
+                disponibilidades: disponibilidades.map((disp) => ({
+                    id: disp.tbl_disponibilidade.id,
+                    dia_semana: disp.tbl_disponibilidade.dia_semana,
+                    horario_inicio: disp.tbl_disponibilidade.horario_inicio,
+                    horario_fim: disp.tbl_disponibilidade.horario_fim
+                })),
             };
+            console.log(response);
             return response;
         }
         catch (error) {
