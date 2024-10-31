@@ -10,7 +10,6 @@ export const createPaymentIntent = async (idConsulta:number, id_cliente:number) 
         const dadosConsulta = await selectAppointment(idConsulta)
 
         const result = await makePayment(dadosConsulta, id_cliente);
-console.log(result);
 
         return {
             result: result,
@@ -29,6 +28,8 @@ console.log(result);
 export const confirmPayment = async (order:TWebhookEvent, sig:string|string[]|undefined) => {
     try {
         const event = await handlePayment(order, sig);
+        console.log(event);
+        
         if (!event) return;
 
         const { consultaId, paymentMethod, currentDateTimeFormatted } = extractPaymentInfo(event);
@@ -44,7 +45,9 @@ export const confirmPayment = async (order:TWebhookEvent, sig:string|string[]|un
             event.forma_pagamento_id = paymentMethodId
         }
 
-        const payment = await createPayment(event, event.paymentIntentSucceeded.payment_intent, );
+        const payment = await createPayment(event, event.paymentIntentSucceeded.payment_intent, consultaId );
+        console.log(payment);
+        
         return { received: true, pagamento: payment };
     } catch (error) {
        

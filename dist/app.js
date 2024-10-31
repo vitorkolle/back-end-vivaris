@@ -48,6 +48,7 @@ const controller_psicologo_1 = require("./src/controller/usuario/controller_psic
 const controller_usuario_1 = require("./src/controller/usuario/controller_usuario");
 const controller_pagamento_1 = require("./src/controller/pagamento/controller_pagamento");
 const controller_cartao_1 = require("./src/controller/cartao/controller_cartao");
+const body_parser_1 = __importDefault(require("body-parser"));
 //Criação do app
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
@@ -57,28 +58,6 @@ app.use((request, response, next) => {
     app.use((0, cors_1.default)());
     next();
 });
-// app.post('/webhook', express.raw({type: 'application/json'}), async (req, res) => {
-//     //const result = confirmPayment(req.body, req.headers['stripe-signature'])
-//     const event = req.body;
-//     switch (event.type) {
-//         case 'payment_intent.succeeded':
-//           const paymentIntent = event.data.object;
-//           // Then define and call a method to handle the successful payment intent.
-//           // handlePaymentIntentSucceeded(paymentIntent);
-//           break;
-//         case 'payment_method.attached':
-//           const paymentMethod = event.data.object;
-//           // Then define and call a method to handle the successful attachment of a PaymentMethod.
-//           // handlePaymentMethodAttached(paymentMethod);
-//           break;
-//         // ... handle other event types
-//         default:
-//           console.log(`Unhandled event type ${event.type}`);
-//       }
-//       // Return a response to acknowledge receipt of the event
-//       res.json({received: true});
-//     //res.send(result)
-//   })
 /****************************************************USUARIO-CLIENTE****************************************************/
 //post de clientes
 route.post('/cliente', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -259,10 +238,44 @@ route.get('/preferencias/:id', (req, res) => __awaiter(void 0, void 0, void 0, f
 }));
 /****************************************************PAGAMENTO****************************************************/
 route.post('/create-checkout-session', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    let idConsulta = Number(req.body.id_consulta);
-    let idCliente = Number(req.body.id_cliente);
-    const result = yield (0, controller_pagamento_1.createPaymentIntent)(idConsulta, idCliente);
-    res.send(result);
+    try {
+        let idConsulta = Number(req.body.id_consulta);
+        let idCliente = Number(req.body.id_cliente);
+        const result = yield (0, controller_pagamento_1.createPaymentIntent)(idConsulta, idCliente);
+        res.status(200).send(result);
+    }
+    catch (error) {
+        console.error('Error creating checkout session:', error);
+        res.status(500).send({ error: 'Failed to create checkout session' });
+    }
+}));
+route.post('/webhook', body_parser_1.default.raw({ type: 'application/json' }), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    // try {
+    // } catch (error) {
+    //     console.error('Erro ao processar webhook:', error);
+    //     res.statu    s(400).send({ error: 'Erro no Webhook' });
+    // }
+    const signature = req.headers['stripe-signature'];
+    const event = req.body;
+    let result;
+    switch (event.type) {
+        case 'payment_intent.succeeded':
+            const paymentIntent = event.data.object;
+            console.log('PaymentIntent was successful!');
+            break;
+        case 'payment_method.attached':
+            const paymentMethod = event.data.object;
+            console.log('PaymentMethod was attached to a Customer!');
+            break;
+        case 'checkout.session.completed':
+            result = yield (0, controller_pagamento_1.confirmPayment)(req.body, signature);
+            console.log("result: ", result);
+            console.log('OK');
+            break;
+        default:
+            console.log(`Unhandled event type ${event.type}`);
+    }
+    res.status(200).send(result);
 }));
 /*****************************************************CARTOES*************************************************/
 route.post('/cartao', (req, res) => __awaiter(void 0, void 0, void 0, function* () {

@@ -2,7 +2,7 @@ import { ERROR_CONTENT_TYPE, ERROR_INTERNAL_SERVER, ERROR_INTERNAL_SERVER_DB, ER
 import { TCard } from "../../domain/entities/card-entity";
 import { verificacao } from "../../infra/card-data-validations";
 import { isValidCardNumber, isValidCvc, isValidId, isValidModality, isValidName } from "../../infra/zod-validations";
-import { buscarCartao, cadastrarCartao, deletarCartao } from "../../model/DAO/cartao/cartao";
+import { buscarCartao, buscarCartaoPorCliente, cadastrarCartao, deletarCartao } from "../../model/DAO/cartao/cartao";
 
 
 export async function setCadastrarCartao(cardData:TCard, contentType:string | undefined) {
@@ -97,6 +97,26 @@ export async function getBuscarCartao(cardId:number) {
 
     return {
         card: ERROR_NOT_FOUND.message,
+        status_code: ERROR_NOT_FOUND.status_code
+    }
+}
+
+export async function getBuscarCartaoPorCliente(clientId:number){
+    if(!isValidId(clientId)){
+        return ERROR_INVALID_ID
+    }
+
+    const cards = await buscarCartaoPorCliente(clientId)
+
+    if(cards){
+        return{
+            cards: cards,
+            status_code: 200
+        }
+    }
+
+    return {
+        cards: ERROR_NOT_FOUND.message,
         status_code: ERROR_NOT_FOUND.status_code
     }
 }

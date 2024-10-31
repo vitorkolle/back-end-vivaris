@@ -21,6 +21,8 @@ import { TProfessional } from './src/domain/entities/professional-entity'
 import { createPaymentIntent, confirmPayment } from './src/controller/pagamento/controller_pagamento'
 import { TCard } from './src/domain/entities/card-entity'
 import { getBuscarCartao, setCadastrarCartao, setDeletarCartao } from './src/controller/cartao/controller_cartao'
+import stripe from 'stripe'
+import bodyParser from 'body-parser'
 
 //Criação do app
 const app = express()
@@ -306,7 +308,7 @@ route.post('/create-checkout-session', async (req, res) => {
     try {
         let idConsulta = Number(req.body.id_consulta);
         let idCliente = Number(req.body.id_cliente);
-        
+
         const result = await createPaymentIntent(idConsulta, idCliente);
         res.status(200).send(result);
     } catch (error) {
@@ -315,17 +317,41 @@ route.post('/create-checkout-session', async (req, res) => {
     }
 })
 
-app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
-    try {
-        const signature = req.headers['stripe-signature'];
-        const result = confirmPayment(req.body, signature);
+route.post('/webhook', bodyParser.raw({ type: 'application/json' }), async (req, res) => {
+    // try {
 
-        res.status(200).send(result);
-    } catch (error) {
-        console.error('Error processing webhook:', error);
-        res.status(400).send({ error: 'Webhook Error' });
+    
+    // } catch (error) {
+    //     console.error('Erro ao processar webhook:', error);
+    //     res.statu    s(400).send({ error: 'Erro no Webhook' });
+    // }
+    const signature = req.headers['stripe-signature'];
+    const event = req.body;
+
+    let result 
+
+    switch (event.type) {
+        case 'payment_intent.succeeded':
+            const paymentIntent = event.data.object;
+            console.log('PaymentIntent was successful!');
+            break;
+        case 'payment_method.attached':
+            const paymentMethod = event.data.object;
+            console.log('PaymentMethod was attached to a Customer!');
+            break;
+        case 'checkout.session.completed':
+            result = await confirmPayment(req.body, signature);
+            console.log("result: ", result);
+            
+            console.log('OK');
+            break;
+        default:
+            console.log(`Unhandled event type ${event.type}`);
     }
-})
+
+    res.status(200).send(result);
+});
+
 /*****************************************************CARTOES*************************************************/
 route.post('/cartao', async (req, res) => {
     const cardData: TCard = {
