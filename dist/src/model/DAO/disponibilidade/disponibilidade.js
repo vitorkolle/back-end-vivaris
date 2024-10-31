@@ -97,7 +97,6 @@ function listarDisponibilidadesPorProfissional(profissionalId) {
                     horario_fim: disp.tbl_disponibilidade.horario_fim
                 })),
             };
-            console.log(response);
             return response;
         }
         catch (error) {

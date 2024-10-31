@@ -29,14 +29,7 @@ import { getBuscarCartao, setCadastrarCartao, setDeletarCartao } from './src/con
 const app = express()
 
 app.use(express.json())
-app.use((request, response, next) => {
-    response.header('Access-Control-Allow-Origin', '*')
-    response.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
 
-    app.use(cors())
-
-    next()
-})
 
   //Ativação das rotas
 app.use('/v1/vivaris', route)
@@ -377,7 +370,7 @@ route.delete('/cartao/:id', async (req, res) => {
 // Configurações do CORS
 const corsOptions = {
     origin: ['http://localhost:5173', 'http://127.0.0.1:5173', '*'],
-    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Métodos permitidos
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Métodos permitidos
     allowedHeaders: ['Content-Type', 'Authorization'], // Cabeçalhos permitidos
     optionsSuccessStatus: 200
   };

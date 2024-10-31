@@ -28,12 +28,6 @@ const controller_cartao_1 = require("./src/controller/cartao/controller_cartao")
 //Criação do app
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
-app.use((request, response, next) => {
-    response.header('Access-Control-Allow-Origin', '*');
-    response.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    app.use((0, cors_1.default)());
-    next();
-});
 //Ativação das rotas
 app.use('/v1/vivaris', route);
 //Ativação na porta 8080
@@ -262,7 +256,7 @@ route.delete('/cartao/:id', (req, res) => __awaiter(void 0, void 0, void 0, func
 // Configurações do CORS
 const corsOptions = {
     origin: ['http://localhost:5173', 'http://127.0.0.1:5173', '*'],
-    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Métodos permitidos
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Métodos permitidos
     allowedHeaders: ['Content-Type', 'Authorization'], // Cabeçalhos permitidos
     optionsSuccessStatus: 200
 };
