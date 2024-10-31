@@ -115,6 +115,7 @@ function criarPreferenciasUsuario(userId, preference) {
             if (!usuario) {
                 throw new Error('Usuário não encontrado.');
             }
+            // ! Sempre que o problema for a realação do tbl_clientes_preferencias com tbl_preferencias, fazer a relação manualmente e usar o prisma format. Após isso, reiniciar o vscode.
             const preferencias = yield prisma.tbl_clientes_preferencias.findMany({
                 where: {
                     id_clientes: userId,

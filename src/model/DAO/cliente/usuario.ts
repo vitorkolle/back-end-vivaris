@@ -106,6 +106,7 @@ export async function criarPreferenciasUsuario(userId: number, preference: numbe
       throw new Error('Usuário não encontrado.');
     }
 
+    // ! Sempre que o problema for a realação do tbl_clientes_preferencias com tbl_preferencias, fazer a relação manualmente e usar o prisma format. Após isso, reiniciar o vscode.
     const preferencias = await prisma.tbl_clientes_preferencias.findMany({
       where: {
         id_clientes: userId,
