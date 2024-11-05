@@ -2,14 +2,37 @@ import { TUser } from './src/domain/entities/user-entity'
 import { TUserPreferences } from './src/domain/entities/user-preferences'
 
 //Import pacotes express
-import express, { Router } from 'express' 
+import express, { Router } from 'express'
 
 //Criação das configurações das rotas para endpoint 
-const route : Router = express.Router()
+const route: Router = express.Router()
 
+//Criação do app
+const app = express()
+
+app.use(express.json())
 
 //Import pacotes cors 
 import cors from 'cors'
+
+// Configurações do CORS
+const corsOptions = {
+    origin: ['http://localhost:5173', 'http://127.0.0.1:5173', '*'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Métodos permitidos
+    allowedHeaders: ['Content-Type', 'Authorization'], // Cabeçalhos permitidos
+    optionsSuccessStatus: 200
+};
+
+app.use(cors(corsOptions));
+
+//Ativação das rotas
+app.use('/v1/vivaris', route)
+
+//Ativação na porta 8080
+app.listen('8080', () => {
+    console.log("API funcionando na porta 8080");
+})
+
 
 //Import Controller 
 import { criarDisponibilidadePsicologo, getBuscarDisponibilidade, getListarDisponibilidadesProfissional, setAtualizarDisponibilidade, setAtualizarDisponibilidadeProfissional, setDeletarDisponibilidade, setInserirDisponibilidade } from './src/controller/disponibilidade/controller_disponibilidade'
@@ -24,34 +47,12 @@ import { confirmPayment, createPaymentIntent } from './src/controller/pagamento/
 import { TCard } from './src/domain/entities/card-entity'
 import { getBuscarCartao, setCadastrarCartao, setDeletarCartao } from './src/controller/cartao/controller_cartao'
 
-
-//Criação do app
-const app = express()
-
-app.use(express.json())
-app.use((request, response, next) => {
-    response.header('Access-Control-Allow-Origin', '*')
-    response.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
-
-    app.use(cors())
-
-    next()
-})
-
-  //Ativação das rotas
-app.use('/v1/vivaris', route)
-
-//Ativação na porta 8080
-app.listen('8080', () => {
-    console.log("API funcionando na porta 8080");
-})
-
-route.post('/webhook', express.raw({type: 'application/json'}), async (req, res) => {
+route.post('/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
     const result = confirmPayment(req.body, req.headers['stripe-signature'])
-    
+
     res.send(result)
 })
-  
+
 /****************************************************USUARIO-CLIENTE****************************************************/
 //post de clientes
 route.post('/cliente', async (req, res) => {
@@ -95,12 +96,12 @@ route.post('/cliente/preferencias', async (req, res) => {
 //login de usuário
 route.post('/login/usuario', async (req, res) => {
     let email = req.body.email
-    let senha = req.body.senha     
+    let senha = req.body.senha
 
     let user = await getLogarCliente(email, senha)
 
     console.log(user);
-    
+
 
     res.status(user.status_code)
     res.json(user)
@@ -108,7 +109,7 @@ route.post('/login/usuario', async (req, res) => {
 })
 
 
-route.get('/usuario/:id', async (req, res) => { 
+route.get('/usuario/:id', async (req, res) => {
     let id = Number(req.params.id)
 
     let userData = await getBuscarCliente(id)
@@ -195,27 +196,27 @@ route.get('/profissional/:id', async (req, res) => {
 })
 
 /****************************************************DISPONIBILIDADE****************************************************/
- route.post ('/disponibilidade', async (req, res) => {
-    const contentType = req.header('content-type') 
+route.post('/disponibilidade', async (req, res) => {
+    const contentType = req.header('content-type')
 
-   const disponibilidade: TAvailability = {
-    dia_semana: req.body.dia_semana,
-    horario_inicio: req.body.horario_inicio,
-    horario_fim: req.body.horario_fim
-   }
+    const disponibilidade: TAvailability = {
+        dia_semana: req.body.dia_semana,
+        horario_inicio: req.body.horario_inicio,
+        horario_fim: req.body.horario_fim
+    }
 
-   let rsDisponilidade = await setInserirDisponibilidade(disponibilidade, contentType)
+    let rsDisponilidade = await setInserirDisponibilidade(disponibilidade, contentType)
 
-   console.log(disponibilidade);
-   
-   res.status(rsDisponilidade.status_code)
-   res.json(rsDisponilidade)
+    console.log(disponibilidade);
+
+    res.status(rsDisponilidade.status_code)
+    res.json(rsDisponilidade)
 })
 
-route.post ('/disponibilidade/psicologo/:id', async (req, res) => {
+route.post('/disponibilidade/psicologo/:id', async (req, res) => {
     let id = Number(req.params.id)
 
-    const availability: TProfessionalAvailability =  {
+    const availability: TProfessionalAvailability = {
         disponibilidade_id: req.body.disponibilidade,
         status: req.body.status,
         id_psicologo: id
@@ -229,7 +230,7 @@ route.post ('/disponibilidade/psicologo/:id', async (req, res) => {
     res.json(rsDisponilidade)
 })
 
-route.get('/disponibilidade/psicologo/:id', async (req, res) =>{
+route.get('/disponibilidade/psicologo/:id', async (req, res) => {
     let id = Number(req.params.id)
 
     const professionalAvailbility = await getListarDisponibilidadesProfissional(id)
@@ -246,7 +247,7 @@ route.delete('/disponibilidade/psicologo/:id', async (req, res) => {
     const availabilityData = await setDeletarDisponibilidade(diaSemana, id)
 
     console.log(availabilityData);
-    
+
 
     res.status(availabilityData.status_code)
     res.json(availabilityData)
@@ -264,33 +265,33 @@ route.get('/disponibilidade/:id', async (req, res) => {
 route.put('/disponibilidade/:id', async (req, res) => {
     const id = Number(req.params.id)
 
-    const availabilityData:TAvailability = {
+    const availabilityData: TAvailability = {
         dia_semana: req.body.dia_semana,
         horario_inicio: req.body.horario_inicio,
         horario_fim: req.body.horario_fim
     }
 
     const contentType = req.header('content-type')
-    
+
     let updateAvaibility = await setAtualizarDisponibilidade(availabilityData, contentType, id)
 
     console.log(availabilityData, id);
-    
+
 
     res.status(updateAvaibility.status_code)
     res.json(updateAvaibility)
 })
 
 route.put('/psicologo/disponibilidade', async (req, res) => {
-    
-    const availabilityData:TProfessionalAvailability = {
+
+    const availabilityData: TProfessionalAvailability = {
         id_psicologo: req.body.id_psicologo,
         disponibilidade_id: req.body.disponibilidade_id,
         status: req.body.status
     }
 
     let contentType = req.header('content-type')
-    
+
     let updateProfessionalAvailbility = await setAtualizarDisponibilidadeProfissional(availabilityData, contentType)
 
     res.status(updateProfessionalAvailbility.status_code)
@@ -298,19 +299,19 @@ route.put('/psicologo/disponibilidade', async (req, res) => {
 })
 
 /****************************************************PREFERÊNCIAS****************************************************/
-route.get('/preferencias', async (req, res) =>{
+route.get('/preferencias', async (req, res) => {
     let preferenceData = await getListarPreferencias()
 
     console.log(preferenceData)
 
     res.status(preferenceData.status_code)
     res.json(preferenceData)
-    
+
 })
 
-route.get('/preferencias/:id', async (req, res) =>{
+route.get('/preferencias/:id', async (req, res) => {
     console.log("g");
-    
+
     let id = Number(req.params.id)
 
     let preferenceData = await getBuscarPreferencia(id)
@@ -320,14 +321,14 @@ route.get('/preferencias/:id', async (req, res) =>{
 })
 
 /****************************************************PAGAMENTO****************************************************/
-route.post('/create-checkout-session', async (req, res) =>{
+route.post('/create-checkout-session', async (req, res) => {
 
     let idConsulta = Number(req.body.id_consulta)
 
     let idCliente = Number(req.body.id_cliente)
 
     const result = await createPaymentIntent(idConsulta, idCliente)
-   
+
     res.status(result.status_code)
     res.json(result)
 
@@ -335,7 +336,7 @@ route.post('/create-checkout-session', async (req, res) =>{
 
 /*****************************************************CARTOES*************************************************/
 route.post('/cartao', async (req, res) => {
-    const cardData : TCard = {
+    const cardData: TCard = {
         modalidade: req.body.modalidade,
         numero_cartao: req.body.numero_cartao,
         nome: req.body.nome,
@@ -372,15 +373,3 @@ route.delete('/cartao/:id', async (req, res) => {
     res.status(deleteCard.status_code)
     res.json(deleteCard)
 })
-
-/**************************************CONFIG****************************************/
-// Configurações do CORS
-const corsOptions = {
-    origin: ['http://localhost:5173', 'http://127.0.0.1:5173', '*'],
-    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Métodos permitidos
-    allowedHeaders: ['Content-Type', 'Authorization'], // Cabeçalhos permitidos
-    optionsSuccessStatus: 200
-  };
-  
-app.use(cors(corsOptions));
-

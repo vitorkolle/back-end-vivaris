@@ -73,7 +73,7 @@ export async function listarDisponibilidadesPorProfissional(profissionalId: numb
           },
         },
       },
-    });
+    });    
 
     const response = {
       id: usuario.id,
@@ -81,11 +81,14 @@ export async function listarDisponibilidadesPorProfissional(profissionalId: numb
       email: usuario.email,
       telefone: usuario.telefone,
       disponibilidades: disponibilidades.map((disp: any | string) => ({
-        id: disp.tbl_disponibilidade?.id,
-        dia_semana: disp.tbl_preferencias?.d,
-        hexcolor: disp.tbl_preferencias?.cor
+        id: disp.tbl_disponibilidade.id,
+        dia_semana: disp.tbl_disponibilidade.dia_semana,
+        horario_inicio: disp.tbl_disponibilidade.horario_inicio,
+        horario_fim: disp.tbl_disponibilidade.horario_fim
       })),
     };
+
+    
 
     return response;
 
