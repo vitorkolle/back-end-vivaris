@@ -8,18 +8,23 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.makePayment = void 0;
 exports.handlePayment = handlePayment;
 const cartao_1 = require("./model/DAO/cartao/cartao");
 const usuario_1 = require("./model/DAO/cliente/usuario");
-const Stripe = require("stripe");
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+const dotenv_1 = __importDefault(require("dotenv"));
+dotenv_1.default.config();
+const stripe_1 = require("stripe");
+const stripe = new stripe_1.Stripe(process.env.STRIPE_SECRET_KEY, {
     apiVersion: "2024-09-30.acacia",
 });
-function handlePayment(event, sig) {
+function handlePayment(eventData, sig) {
     return __awaiter(this, void 0, void 0, function* () {
-        event = stripe.webhooks.constructEvent(event, sig, process.env.STRIPE_ENDPOINT_KEY);
+        const event = stripe.webhooks.constructEvent(eventData, sig, process.env.STRIPE_ENDPOINT_KEY);
         console.log("evento: ", event);
         switch (event.type) {
             case "checkout.session.completed":

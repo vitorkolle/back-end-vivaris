@@ -36,11 +36,8 @@ const confirmPayment = (order, sig) => __awaiter(void 0, void 0, void 0, functio
     try {
         console.log("confirmPayment");
         const event = yield (0, stripe_1.handlePayment)(order, sig);
-<<<<<<< Updated upstream
         console.log(event);
-=======
         console.log('event: ', event);
->>>>>>> Stashed changes
         if (!event)
             return;
         const { consultaId, paymentMethod, currentDateTimeFormatted } = extractPaymentInfo(event);
