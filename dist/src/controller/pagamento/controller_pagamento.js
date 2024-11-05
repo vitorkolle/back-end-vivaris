@@ -18,7 +18,6 @@ const createPaymentIntent = (idConsulta, id_cliente) => __awaiter(void 0, void 0
     try {
         const dadosConsulta = yield (0, consulta_1.selectAppointment)(idConsulta);
         const result = yield (0, stripe_1.makePayment)(dadosConsulta, id_cliente);
-        console.log(result);
         return {
             result: result,
             status_code: 200
@@ -35,7 +34,13 @@ const createPaymentIntent = (idConsulta, id_cliente) => __awaiter(void 0, void 0
 exports.createPaymentIntent = createPaymentIntent;
 const confirmPayment = (order, sig) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        console.log("confirmPayment");
         const event = yield (0, stripe_1.handlePayment)(order, sig);
+<<<<<<< Updated upstream
+        console.log(event);
+=======
+        console.log('event: ', event);
+>>>>>>> Stashed changes
         if (!event)
             return;
         const { consultaId, paymentMethod, currentDateTimeFormatted } = extractPaymentInfo(event);
@@ -49,7 +54,8 @@ const confirmPayment = (order, sig) => __awaiter(void 0, void 0, void 0, functio
         else {
             event.forma_pagamento_id = paymentMethodId;
         }
-        const payment = yield (0, pagamento_1.createPayment)(event, event.paymentIntentSucceeded.payment_intent);
+        const payment = yield (0, pagamento_1.createPayment)(event, event.paymentIntentSucceeded.payment_intent, consultaId);
+        console.log(payment);
         return { received: true, pagamento: payment };
     }
     catch (error) {

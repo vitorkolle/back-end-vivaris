@@ -7,15 +7,15 @@ export declare function setInserirPsicologo(user: TProfessional, contentType: st
     user: {
         id: number;
         nome: string;
-        data_nascimento: Date;
-        cip: string;
-        cpf: string;
         email: string;
+        data_nascimento: Date;
+        cpf: string;
         senha: string;
-        telefone: string;
         foto_perfil: string | null;
+        telefone: string;
         link_instagram: string | null;
         id_sexo: number;
+        cip: string;
     };
     status_code: number;
     message: string;
@@ -32,16 +32,16 @@ export declare function getLogarPsicologo(email: string | null, senha: string | 
     } | {
         id: number;
         nome: string;
-        data_nascimento: Date;
-        cip: string;
         email: string;
-        telefone: string;
+        data_nascimento: Date;
         foto_perfil: string | null;
+        telefone: string;
         link_instagram: string | null;
         tbl_sexo: {
             id: number;
             sexo: string | null;
         };
+        cip: string;
     };
     status_code: number;
 }>;
@@ -64,15 +64,15 @@ export declare function getBuscarPsicologo(id: number): Promise<{
         } & {
             id: number;
             nome: string;
-            data_nascimento: Date;
-            cip: string;
-            cpf: string;
             email: string;
+            data_nascimento: Date;
+            cpf: string;
             senha: string;
-            telefone: string;
             foto_perfil: string | null;
+            telefone: string;
             link_instagram: string | null;
             id_sexo: number;
+            cip: string;
         };
         status_code: number;
     } | {
