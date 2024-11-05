@@ -27,8 +27,14 @@ export const createPaymentIntent = async (idConsulta:number, id_cliente:number) 
 
 export const confirmPayment = async (order:TWebhookEvent, sig:string|string[]|undefined) => {
     try {
+        console.log("confirmPayment");
+        
         const event = await handlePayment(order, sig);
+<<<<<<< Updated upstream
         console.log(event);
+=======
+        console.log('event: ' , event);
+>>>>>>> Stashed changes
         
         if (!event) return;
 
@@ -45,7 +51,11 @@ export const confirmPayment = async (order:TWebhookEvent, sig:string|string[]|un
             event.forma_pagamento_id = paymentMethodId
         }
 
+<<<<<<< Updated upstream
         const payment = await createPayment(event, event.paymentIntentSucceeded.payment_intent, consultaId );
+=======
+        const payment = await createPayment(event, event.paymentIntentSucceeded.payment_intent, consultaId);
+>>>>>>> Stashed changes
         console.log(payment);
         
         return { received: true, pagamento: payment };

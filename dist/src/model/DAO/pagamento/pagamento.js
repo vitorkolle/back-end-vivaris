@@ -18,12 +18,22 @@ function createPayment(dados, intent_payment_id, consultaId) {
     return __awaiter(this, void 0, void 0, function* () {
         console.log("objeto event: ", dados.object.customer);
         try {
+<<<<<<< Updated upstream
             const payment = yield prisma.tbl_pagamentos.create({
                 data: {
                     intent_payment_id: intent_payment_id,
                     id_consulta: consultaId,
                     id_cartao: dados.object.customer.metadata.cartaoId,
                     is_paid: true,
+=======
+            console.log("pagandoo");
+            const payment = yield prisma.tbl_pagamento.create({
+                data: {
+                    intent_payment_id: intent_payment_id,
+                    id_consulta: consultaId,
+                    id_cartao: 1,
+                    is_paid: true
+>>>>>>> Stashed changes
                 },
             });
             return payment;

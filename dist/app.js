@@ -35,12 +35,31 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+<<<<<<< Updated upstream
 //Import pacotes express
 const express_1 = __importStar(require("express"));
 //Criação das configurações das rotas para endpoint 
 const route = (0, express_1.Router)();
 //Import pacotes cors 
 const cors_1 = __importDefault(require("cors"));
+=======
+const express_1 = __importDefault(require("express"));
+const route = express_1.default.Router();
+const app = (0, express_1.default)();
+app.use(express_1.default.json());
+const cors_1 = __importDefault(require("cors"));
+const corsOptions = {
+    origin: ['http://localhost:5173', 'http://127.0.0.1:5173', '*'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Métodos permitidos
+    allowedHeaders: ['Content-Type', 'Authorization'], // Cabeçalhos permitidos
+    optionsSuccessStatus: 200
+};
+app.use((0, cors_1.default)(corsOptions));
+app.use('/v1/vivaris', route);
+app.listen('8080', () => {
+    console.log("API funcionando na porta 8080");
+});
+>>>>>>> Stashed changes
 //Import Controller 
 const controller_disponibilidade_1 = require("./src/controller/disponibilidade/controller_disponibilidade");
 const controller_preferencia_1 = require("./src/controller/preferencia/controller_preferencia");
@@ -48,6 +67,7 @@ const controller_psicologo_1 = require("./src/controller/usuario/controller_psic
 const controller_usuario_1 = require("./src/controller/usuario/controller_usuario");
 const controller_pagamento_1 = require("./src/controller/pagamento/controller_pagamento");
 const controller_cartao_1 = require("./src/controller/cartao/controller_cartao");
+<<<<<<< Updated upstream
 const body_parser_1 = __importDefault(require("body-parser"));
 //Criação do app
 const app = (0, express_1.default)();
@@ -58,6 +78,8 @@ app.use((request, response, next) => {
     app.use((0, cors_1.default)());
     next();
 });
+=======
+>>>>>>> Stashed changes
 /****************************************************USUARIO-CLIENTE****************************************************/
 //post de clientes
 route.post('/cliente', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -276,6 +298,11 @@ route.post('/webhook', body_parser_1.default.raw({ type: 'application/json' }), 
             console.log(`Unhandled event type ${event.type}`);
     }
     res.status(200).send(result);
+}));
+route.post('/webhook', express_1.default.raw({ type: 'application/json' }), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const event = req.body;
+    const result = (0, controller_pagamento_1.confirmPayment)(event, req.headers['stripe-signature']);
+    res.json(result);
 }));
 /*****************************************************CARTOES*************************************************/
 route.post('/cartao', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
