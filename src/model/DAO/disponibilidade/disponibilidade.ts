@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { TAvailability } from "../../../domain/entities/availability-entity";
-import { ERROR_CONTENT_TYPE, ERROR_INVALID_ID, ERROR_NOT_FOUND } from "../../../../module/config";
+import { ERROR_CONTENT_TYPE, ERROR_INVALID_ID, ERROR_NOT_FOUND, ERROR_NOT_FOUND_AVAILBILITY, ERROR_NOT_FOUND_PROFESSIONAL } from "../../../../module/config";
 import { isValidId } from "../../../infra/zod-validations";
 import { TProfessionalAvailability } from "../../../domain/entities/professional-availability";
 const prisma = new PrismaClient()
@@ -54,9 +54,15 @@ export async function listarDisponibilidadesPorProfissional(profissionalId: numb
     });
 
     if (!usuario) {
-      return{
-        id: false
+      const response = {
+        id: null,
+        nome: null,
+        email: null,
+        telefone: null,
+        disponibilidades: ERROR_NOT_FOUND_AVAILBILITY.message,
+        message: ERROR_NOT_FOUND_PROFESSIONAL.message
       };
+      return response;
     }
 
     const disponibilidades = await prisma.tbl_psicologo_disponibilidade.findMany({
@@ -73,24 +79,36 @@ export async function listarDisponibilidadesPorProfissional(profissionalId: numb
           },
         },
       },
-    });    
-
-    const response = {
-      id: usuario.id,
-      nome: usuario.nome,
-      email: usuario.email,
-      telefone: usuario.telefone,
-      disponibilidades: disponibilidades.map((disp: any | string) => ({
-        id: disp.tbl_disponibilidade.id,
-        dia_semana: disp.tbl_disponibilidade.dia_semana,
-        horario_inicio: disp.tbl_disponibilidade.horario_inicio,
-        horario_fim: disp.tbl_disponibilidade.horario_fim
-      })),
-    };
-
+    });   
     
+    if(disponibilidades.length < 1){
+      const response = {
+        id: usuario.id,
+        nome: usuario.nome,
+        email: usuario.email,
+        telefone: usuario.telefone,
+        disponibilidades: ERROR_NOT_FOUND_AVAILBILITY.message
+      };
 
-    return response;
+      return response;
+    }
+
+    else{
+      const response = {
+        id: usuario.id,
+        nome: usuario.nome,
+        email: usuario.email,
+        telefone: usuario.telefone,
+        disponibilidades: disponibilidades.map((disp: any | string) => ({
+          id: disp.tbl_disponibilidade.id,
+          dia_semana: disp.tbl_disponibilidade.dia_semana,
+          horario_inicio: disp.tbl_disponibilidade.horario_inicio,
+          horario_fim: disp.tbl_disponibilidade.horario_fim
+        })),
+      };
+
+      return response;
+    }
 
   } catch (error) {
     console.error("Erro ao obter o usuário com as preferências:", error);
@@ -234,12 +252,10 @@ export async function buscarDisponibilidade(id: number){
 
 export async function deletarDisponibilidade(diaSemana:string, idPsicologo: number) {
   try {
-    let user = await prisma.$queryRaw`CALL deleteDisp(${diaSemana}, ${idPsicologo})`
-
-    console.log(user);
+    let sql = `CALL deleteDisp("${diaSemana}", ${idPsicologo})`
+    let user = await prisma.$queryRawUnsafe(sql)
     
-
-    if(String(user).length < 1){
+    if(!user){
       return false
     }
 

@@ -7,15 +7,15 @@ export declare function setInserirPsicologo(user: TProfessional, contentType: st
     user: {
         id: number;
         nome: string;
-        data_nascimento: Date;
-        cip: string;
-        cpf: string;
         email: string;
+        data_nascimento: Date;
+        cpf: string;
         senha: string;
-        telefone: string;
         foto_perfil: string | null;
+        telefone: string;
         link_instagram: string | null;
         id_sexo: number;
+        cip: string;
     };
     status_code: number;
     message: string;
@@ -32,16 +32,16 @@ export declare function getLogarPsicologo(email: string | null, senha: string | 
     } | {
         id: number;
         nome: string;
-        data_nascimento: Date;
-        cip: string;
         email: string;
-        telefone: string;
+        data_nascimento: Date;
         foto_perfil: string | null;
+        telefone: string;
         link_instagram: string | null;
         tbl_sexo: {
             id: number;
             sexo: string | null;
         };
+        cip: string;
     };
     status_code: number;
 }>;
@@ -64,19 +64,56 @@ export declare function getBuscarPsicologo(id: number): Promise<{
         } & {
             id: number;
             nome: string;
-            data_nascimento: Date;
-            cip: string;
-            cpf: string;
             email: string;
+            data_nascimento: Date;
+            cpf: string;
             senha: string;
-            telefone: string;
             foto_perfil: string | null;
+            telefone: string;
             link_instagram: string | null;
             id_sexo: number;
+            cip: string;
         };
         status_code: number;
     } | {
         professional: string;
+        status_code: number;
+    };
+    status_code: number;
+    status: boolean;
+} | {
+    data: string;
+    status_code: number;
+    status: boolean;
+}>;
+export declare function getListarPsicologos(): Promise<{
+    data: {
+        data: string;
+        status_code: number;
+    } | {
+        data: {
+            id: number;
+            nome: string;
+            email: string;
+            data_nascimento: Date;
+            cpf: string;
+            foto_perfil: string | null;
+            telefone: string;
+            link_instagram: string | null;
+            tbl_sexo: {
+                sexo: string | null;
+            };
+            tbl_psicologo_disponibilidade: {
+                id: number;
+                tbl_disponibilidade: {
+                    id: number;
+                    dia_semana: import(".prisma/client").$Enums.tbl_disponibilidade_dia_semana;
+                    horario_inicio: Date;
+                    horario_fim: Date;
+                };
+            }[];
+            cip: string;
+        }[];
         status_code: number;
     };
     status_code: number;

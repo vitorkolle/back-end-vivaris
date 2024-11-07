@@ -41,8 +41,8 @@ export declare function getLogarCliente(email: string | undefined, senha: string
             id: number;
             nome: string;
             data_nascimento: Date;
-            telefone: string;
             foto_perfil: string | null;
+            telefone: string;
         };
         status: number;
         message: string;
@@ -51,8 +51,8 @@ export declare function getLogarCliente(email: string | undefined, senha: string
             id: number;
             nome: string;
             data_nascimento: Date;
-            telefone: string;
             foto_perfil: string | null;
+            telefone: string;
         };
         preferencias_usuario: {
             id: number;
@@ -74,12 +74,12 @@ export declare function getBuscarCliente(id: number): Promise<{
     data: {
         id: number;
         nome: string;
+        email: string;
         data_nascimento: Date;
         cpf: string;
-        email: string;
         senha: string;
-        telefone: string;
         foto_perfil: string | null;
+        telefone: string;
         link_instagram: string | null;
         id_sexo: number | null;
     };

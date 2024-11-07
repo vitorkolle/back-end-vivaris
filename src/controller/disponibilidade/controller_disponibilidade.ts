@@ -165,7 +165,7 @@ export async function getListarDisponibilidadesProfissional(idProfessional: numb
 
         let availabilityProfessionalData = await listarDisponibilidadesPorProfissional(idProfessional)
 
-        if (availabilityProfessionalData.id !== false) {
+        if (availabilityProfessionalData.id !== null) {
             return {
                 data: availabilityProfessionalData,
                 status_code: 200
@@ -190,11 +190,15 @@ export async function setDeletarDisponibilidade(diaSemana: string, idPsicologo: 
         ) {
             return ERROR_REQUIRED_FIELDS
         }
+        let existsAvailbility = await listarDisponibilidadesPorProfissional(idPsicologo)
+        
+        if (existsAvailbility.id === null || existsAvailbility.disponibilidades == "Não foram encontradas disponibilidades na requisição!!") {
+            return ERROR_NOT_FOUND
+        }
 
         let deleteAvailbility = await deletarDisponibilidade(diaSemana, idPsicologo)
 
         console.log(deleteAvailbility);
-
 
         if (deleteAvailbility === false) {
             return ERROR_NOT_DELETED

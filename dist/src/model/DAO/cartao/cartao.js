@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.cadastrarCartao = cadastrarCartao;
 exports.buscarCartao = buscarCartao;
 exports.deletarCartao = deletarCartao;
+exports.buscarCartaoPorCliente = buscarCartaoPorCliente;
 const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
 function cadastrarCartao(cardData) {
@@ -65,6 +66,29 @@ function deletarCartao(cardId) {
         }
         catch (error) {
             console.error("Erro ao deletar cartao", error);
+            throw new Error("Não foi possível buscar o cartao");
+        }
+    });
+}
+function buscarCartaoPorCliente(cardId) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const card = yield prisma.tbl_cliente_cartao.findMany({
+                where: {
+                    id: cardId
+                },
+                select: {
+                    id_cartao: true,
+                    tbl_cartoes: true,
+                    id_cliente: true,
+                    tbl_clientes: true
+                }
+            });
+            if (card)
+                return card;
+        }
+        catch (error) {
+            console.error("Erro ao buscar cartao por cliente:", error);
             throw new Error("Não foi possível buscar o cartao");
         }
     });

@@ -11,6 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.setCadastrarCartao = setCadastrarCartao;
 exports.getBuscarCartao = getBuscarCartao;
+exports.getBuscarCartaoPorCliente = getBuscarCartaoPorCliente;
 exports.setDeletarCartao = setDeletarCartao;
 const config_1 = require("../../../module/config");
 const card_data_validations_1 = require("../../infra/card-data-validations");
@@ -91,6 +92,24 @@ function getBuscarCartao(cardId) {
         }
         return {
             card: config_1.ERROR_NOT_FOUND.message,
+            status_code: config_1.ERROR_NOT_FOUND.status_code
+        };
+    });
+}
+function getBuscarCartaoPorCliente(clientId) {
+    return __awaiter(this, void 0, void 0, function* () {
+        if (!(0, zod_validations_1.isValidId)(clientId)) {
+            return config_1.ERROR_INVALID_ID;
+        }
+        const cards = yield (0, cartao_1.buscarCartaoPorCliente)(clientId);
+        if (cards) {
+            return {
+                cards: cards,
+                status_code: 200
+            };
+        }
+        return {
+            cards: config_1.ERROR_NOT_FOUND.message,
             status_code: config_1.ERROR_NOT_FOUND.status_code
         };
     });

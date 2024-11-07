@@ -1,17 +1,25 @@
 import { TAppointment } from "./domain/entities/appointment-entity";
 import { TWebhookEvent } from "./domain/entities/stripe-event-entity";
+import { buscarCartaoPorCliente } from "./model/DAO/cartao/cartao";
+import { buscarCliente } from "./model/DAO/cliente/usuario";
+import dotenv from 'dotenv';
+dotenv.config();
 
-const Stripe = require("stripe");
+import {Stripe } from "stripe";
+
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
   apiVersion: "2024-09-30.acacia",
 });
 
-export async function handlePayment(event:TWebhookEvent, sig:string|string[]|undefined){
-  event =  stripe.webhooks.constructEvent(
-    event,
+export async function handlePayment(eventData:TWebhookEvent, sig:string|string[]|undefined){
+  const event =  stripe.webhooks.constructEvent(
+    eventData,
     sig,
-    process.env.STRIPE_ENDPOINT_SECRET
+    process.env.STRIPE_ENDPOINT_KEY
   );
+
+  console.log("evento: ", event);
+  
 
   switch (event.type) {
     case "checkout.session.completed":
@@ -31,13 +39,15 @@ export async function handlePayment(event:TWebhookEvent, sig:string|string[]|und
 
 export const  makePayment = async (data: TAppointment, id_cliente:number) => {
   try {
-    let usuario = id_cliente
+    let usuario = await buscarCliente(id_cliente)
 
+    let cartao = await buscarCartaoPorCliente(id_cliente)
     
     const customer = await stripe.customers.create({
       metadata:{
-        userId: String(usuario),
-        consultaId: String(data.id)
+        userId: String(usuario?.id),
+        consultaId: String(data.id),
+        cartaoId: String(cartao?.[0]?.id_cartao ?? 1)
       }
     })
 
@@ -45,7 +55,7 @@ export const  makePayment = async (data: TAppointment, id_cliente:number) => {
     const session = await stripe.checkout.sessions.create({
       line_items: [
         {
-          price: 'price_1QFLpvDSzwYL8uNxEgBISYdF',
+          price: 'price_1QFyxxDPGGolWeU070Q7dIan',
           quantity: 1,
         },
       ],
@@ -55,7 +65,6 @@ export const  makePayment = async (data: TAppointment, id_cliente:number) => {
       success_url: `http://localhost:5501/success.html`,
       cancel_url: `http://localhost:5501/canceled.html`,
     });
-  console.log(session);
   
     return {url: session.url}
     

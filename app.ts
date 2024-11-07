@@ -1,21 +1,16 @@
 import { TUser } from './src/domain/entities/user-entity'
 import { TUserPreferences } from './src/domain/entities/user-preferences'
 
-//Import pacotes express
 import express, { Router } from 'express'
 
-//Criação das configurações das rotas para endpoint 
 const route: Router = express.Router()
 
-//Criação do app
 const app = express()
 
 app.use(express.json())
 
-//Import pacotes cors 
 import cors from 'cors'
 
-// Configurações do CORS
 const corsOptions = {
     origin: ['http://localhost:5173', 'http://127.0.0.1:5173', '*'],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Métodos permitidos
@@ -25,10 +20,8 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-//Ativação das rotas
 app.use('/v1/vivaris', route)
 
-//Ativação na porta 8080
 app.listen('8080', () => {
     console.log("API funcionando na porta 8080");
 })
@@ -37,7 +30,7 @@ app.listen('8080', () => {
 //Import Controller 
 import { criarDisponibilidadePsicologo, getBuscarDisponibilidade, getListarDisponibilidadesProfissional, setAtualizarDisponibilidade, setAtualizarDisponibilidadeProfissional, setDeletarDisponibilidade, setInserirDisponibilidade } from './src/controller/disponibilidade/controller_disponibilidade'
 import { getBuscarPreferencia, getListarPreferencias, setInserirPreferencias } from './src/controller/preferencia/controller_preferencia'
-import { getBuscarPsicologo, getLogarPsicologo, setInserirPsicologo } from './src/controller/usuario/controller_psicologo'
+import { getBuscarPsicologo, getListarPsicologos, getLogarPsicologo, setInserirPsicologo } from './src/controller/usuario/controller_psicologo'
 import { getBuscarCliente, getBuscarClientePreferencias, getBuscarSexo, getListarSexo, getLogarCliente, setInserirUsuario } from './src/controller/usuario/controller_usuario'
 import { TAvailability } from './src/domain/entities/availability-entity'
 import { TProfessionalAvailability } from './src/domain/entities/professional-availability'
@@ -46,12 +39,6 @@ import { TProfessional } from './src/domain/entities/professional-entity'
 import { confirmPayment, createPaymentIntent } from './src/controller/pagamento/controller_pagamento'
 import { TCard } from './src/domain/entities/card-entity'
 import { getBuscarCartao, setCadastrarCartao, setDeletarCartao } from './src/controller/cartao/controller_cartao'
-
-route.post('/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
-    const result = confirmPayment(req.body, req.headers['stripe-signature'])
-
-    res.send(result)
-})
 
 /****************************************************USUARIO-CLIENTE****************************************************/
 //post de clientes
@@ -195,6 +182,13 @@ route.get('/profissional/:id', async (req, res) => {
     res.json(getUser)
 })
 
+route.get('/profissionais', async (req, res) => {
+    const getProfissionais = await getListarPsicologos()
+
+    res.status(getProfissionais.status_code)
+    res.json(getProfissionais)
+})
+
 /****************************************************DISPONIBILIDADE****************************************************/
 route.post('/disponibilidade', async (req, res) => {
     const contentType = req.header('content-type')
@@ -332,6 +326,17 @@ route.post('/create-checkout-session', async (req, res) => {
     res.status(result.status_code)
     res.json(result)
 
+})
+
+route.post('/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
+
+    const event = req.body
+    
+
+    const result = confirmPayment(event, req.headers['stripe-signature'])
+
+
+    res.json(result)
 })
 
 /*****************************************************CARTOES*************************************************/

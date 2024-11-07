@@ -161,7 +161,7 @@ function getListarDisponibilidadesProfissional(idProfessional) {
                 return config_1.ERROR_REQUIRED_FIELDS;
             }
             let availabilityProfessionalData = yield (0, disponibilidade_1.listarDisponibilidadesPorProfissional)(idProfessional);
-            if (availabilityProfessionalData.id !== false) {
+            if (availabilityProfessionalData.id !== null) {
                 return {
                     data: availabilityProfessionalData,
                     status_code: 200
@@ -184,6 +184,10 @@ function setDeletarDisponibilidade(diaSemana, idPsicologo) {
         try {
             if (!(0, zod_validations_1.isValidWeekDay)(diaSemana) || !(0, zod_validations_1.isValidId)(idPsicologo)) {
                 return config_1.ERROR_REQUIRED_FIELDS;
+            }
+            let existsAvailbility = yield (0, disponibilidade_1.listarDisponibilidadesPorProfissional)(idPsicologo);
+            if (existsAvailbility.id === null || existsAvailbility.disponibilidades == "Não foram encontradas disponibilidades na requisição!!") {
+                return config_1.ERROR_NOT_FOUND;
             }
             let deleteAvailbility = yield (0, disponibilidade_1.deletarDisponibilidade)(diaSemana, idPsicologo);
             console.log(deleteAvailbility);

@@ -12,17 +12,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-//Import pacotes express
 const express_1 = __importDefault(require("express"));
-//Criação das configurações das rotas para endpoint 
 const route = express_1.default.Router();
-//Criação do app
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
-//Import pacotes cors 
 const cors_1 = __importDefault(require("cors"));
-/**************************************CONFIG****************************************/
-// Configurações do CORS
 const corsOptions = {
     origin: ['http://localhost:5173', 'http://127.0.0.1:5173', '*'],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Métodos permitidos
@@ -30,9 +24,7 @@ const corsOptions = {
     optionsSuccessStatus: 200
 };
 app.use((0, cors_1.default)(corsOptions));
-//Ativação das rotas
 app.use('/v1/vivaris', route);
-//Ativação na porta 8080
 app.listen('8080', () => {
     console.log("API funcionando na porta 8080");
 });
@@ -43,10 +35,6 @@ const controller_psicologo_1 = require("./src/controller/usuario/controller_psic
 const controller_usuario_1 = require("./src/controller/usuario/controller_usuario");
 const controller_pagamento_1 = require("./src/controller/pagamento/controller_pagamento");
 const controller_cartao_1 = require("./src/controller/cartao/controller_cartao");
-route.post('/webhook', express_1.default.raw({ type: 'application/json' }), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = (0, controller_pagamento_1.confirmPayment)(req.body, req.headers['stripe-signature']);
-    res.send(result);
-}));
 /****************************************************USUARIO-CLIENTE****************************************************/
 //post de clientes
 route.post('/cliente', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -143,6 +131,11 @@ route.get('/profissional/:id', (req, res) => __awaiter(void 0, void 0, void 0, f
     res.status(getUser.status_code);
     res.json(getUser);
 }));
+route.get('/profissionais', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const getProfissionais = yield (0, controller_psicologo_1.getListarPsicologos)();
+    res.status(getProfissionais.status_code);
+    res.json(getProfissionais);
+}));
 /****************************************************DISPONIBILIDADE****************************************************/
 route.post('/disponibilidade', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const contentType = req.header('content-type');
@@ -232,6 +225,11 @@ route.post('/create-checkout-session', (req, res) => __awaiter(void 0, void 0, v
     let idCliente = Number(req.body.id_cliente);
     const result = yield (0, controller_pagamento_1.createPaymentIntent)(idConsulta, idCliente);
     res.status(result.status_code);
+    res.json(result);
+}));
+route.post('/webhook', express_1.default.raw({ type: 'application/json' }), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const event = req.body;
+    const result = (0, controller_pagamento_1.confirmPayment)(event, req.headers['stripe-signature']);
     res.json(result);
 }));
 /*****************************************************CARTOES*************************************************/

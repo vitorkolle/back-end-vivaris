@@ -19,6 +19,7 @@ exports.atualizarDisponibilidade = atualizarDisponibilidade;
 exports.atualizarDisponibilidadeProfissional = atualizarDisponibilidadeProfissional;
 exports.buscarDisponibilidadePsicologoById = buscarDisponibilidadePsicologoById;
 const client_1 = require("@prisma/client");
+const config_1 = require("../../../../module/config");
 const prisma = new client_1.PrismaClient();
 function criarDisponibilidade(disponibilidade) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -66,9 +67,15 @@ function listarDisponibilidadesPorProfissional(profissionalId) {
                 },
             });
             if (!usuario) {
-                return {
-                    id: false
+                const response = {
+                    id: null,
+                    nome: null,
+                    email: null,
+                    telefone: null,
+                    disponibilidades: config_1.ERROR_NOT_FOUND_AVAILBILITY.message,
+                    message: config_1.ERROR_NOT_FOUND_PROFESSIONAL.message
                 };
+                return response;
             }
             const disponibilidades = yield prisma.tbl_psicologo_disponibilidade.findMany({
                 where: {
@@ -85,19 +92,31 @@ function listarDisponibilidadesPorProfissional(profissionalId) {
                     },
                 },
             });
-            const response = {
-                id: usuario.id,
-                nome: usuario.nome,
-                email: usuario.email,
-                telefone: usuario.telefone,
-                disponibilidades: disponibilidades.map((disp) => ({
-                    id: disp.tbl_disponibilidade.id,
-                    dia_semana: disp.tbl_disponibilidade.dia_semana,
-                    horario_inicio: disp.tbl_disponibilidade.horario_inicio,
-                    horario_fim: disp.tbl_disponibilidade.horario_fim
-                })),
-            };
-            return response;
+            if (disponibilidades.length < 1) {
+                const response = {
+                    id: usuario.id,
+                    nome: usuario.nome,
+                    email: usuario.email,
+                    telefone: usuario.telefone,
+                    disponibilidades: config_1.ERROR_NOT_FOUND_AVAILBILITY.message
+                };
+                return response;
+            }
+            else {
+                const response = {
+                    id: usuario.id,
+                    nome: usuario.nome,
+                    email: usuario.email,
+                    telefone: usuario.telefone,
+                    disponibilidades: disponibilidades.map((disp) => ({
+                        id: disp.tbl_disponibilidade.id,
+                        dia_semana: disp.tbl_disponibilidade.dia_semana,
+                        horario_inicio: disp.tbl_disponibilidade.horario_inicio,
+                        horario_fim: disp.tbl_disponibilidade.horario_fim
+                    })),
+                };
+                return response;
+            }
         }
         catch (error) {
             console.error("Erro ao obter o usuário com as preferências:", error);
@@ -236,9 +255,9 @@ function buscarDisponibilidade(id) {
 function deletarDisponibilidade(diaSemana, idPsicologo) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            let user = yield prisma.$queryRaw `CALL deleteDisp(${diaSemana}, ${idPsicologo})`;
-            console.log(user);
-            if (String(user).length < 1) {
+            let sql = `CALL deleteDisp("${diaSemana}", ${idPsicologo})`;
+            let user = yield prisma.$queryRawUnsafe(sql);
+            if (!user) {
                 return false;
             }
             return true;
