@@ -30,7 +30,7 @@ app.listen('8080', () => {
 //Import Controller 
 import { criarDisponibilidadePsicologo, getBuscarDisponibilidade, getListarDisponibilidadesProfissional, setAtualizarDisponibilidade, setAtualizarDisponibilidadeProfissional, setDeletarDisponibilidade, setInserirDisponibilidade } from './src/controller/disponibilidade/controller_disponibilidade'
 import { getBuscarPreferencia, getListarPreferencias, setInserirPreferencias } from './src/controller/preferencia/controller_preferencia'
-import { getBuscarPsicologo, getLogarPsicologo, setInserirPsicologo } from './src/controller/usuario/controller_psicologo'
+import { getBuscarPsicologo, getListarPsicologos, getLogarPsicologo, setInserirPsicologo } from './src/controller/usuario/controller_psicologo'
 import { getBuscarCliente, getBuscarClientePreferencias, getBuscarSexo, getListarSexo, getLogarCliente, setInserirUsuario } from './src/controller/usuario/controller_usuario'
 import { TAvailability } from './src/domain/entities/availability-entity'
 import { TProfessionalAvailability } from './src/domain/entities/professional-availability'
@@ -180,6 +180,13 @@ route.get('/profissional/:id', async (req, res) => {
 
     res.status(getUser.status_code)
     res.json(getUser)
+})
+
+route.get('/profissionais', async (req, res) => {
+    const getProfissionais = await getListarPsicologos()
+
+    res.status(getProfissionais.status_code)
+    res.json(getProfissionais)
 })
 
 /****************************************************DISPONIBILIDADE****************************************************/

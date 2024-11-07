@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.criarNovoPsicologo = criarNovoPsicologo;
 exports.logarPsicologo = logarPsicologo;
 exports.buscarPsicologo = buscarPsicologo;
+exports.listarPsicologos = listarPsicologos;
 const client_1 = require("@prisma/client");
 const config_1 = require("../../../../module/config");
 const prisma = new client_1.PrismaClient();
@@ -106,6 +107,58 @@ function buscarPsicologo(id) {
             return {
                 professional: config_1.ERROR_NOT_FOUND.message,
                 status_code: config_1.ERROR_NOT_FOUND.status_code
+            };
+        }
+        catch (error) {
+            console.error("Erro ao obter o usuário", error);
+            throw new Error("Não foi possível obter o usuário");
+        }
+    });
+}
+function listarPsicologos() {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            let user = yield prisma.tbl_psicologos.findMany({
+                select: {
+                    id: true,
+                    nome: true,
+                    email: true,
+                    cip: true,
+                    cpf: true,
+                    data_nascimento: true,
+                    link_instagram: true,
+                    tbl_sexo: {
+                        select: {
+                            sexo: true
+                        }
+                    },
+                    foto_perfil: true,
+                    telefone: true,
+                    tbl_psicologo_disponibilidade: {
+                        select: {
+                            id: true,
+                            tbl_disponibilidade: {
+                                select: {
+                                    dia_semana: true,
+                                    horario_inicio: true,
+                                    horario_fim: true,
+                                    id: true
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            console.log(user);
+            if (!user) {
+                return {
+                    data: config_1.ERROR_NOT_FOUND.message,
+                    status_code: config_1.ERROR_NOT_FOUND.status_code
+                };
+            }
+            return {
+                data: user,
+                status_code: 200
             };
         }
         catch (error) {

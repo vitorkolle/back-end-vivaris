@@ -131,6 +131,11 @@ route.get('/profissional/:id', (req, res) => __awaiter(void 0, void 0, void 0, f
     res.status(getUser.status_code);
     res.json(getUser);
 }));
+route.get('/profissionais', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const getProfissionais = yield (0, controller_psicologo_1.getListarPsicologos)();
+    res.status(getProfissionais.status_code);
+    res.json(getProfissionais);
+}));
 /****************************************************DISPONIBILIDADE****************************************************/
 route.post('/disponibilidade', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const contentType = req.header('content-type');

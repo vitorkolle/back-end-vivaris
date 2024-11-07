@@ -2,7 +2,7 @@ import { ERROR_AGE_NOT_VALID, ERROR_ALREADY_EXISTS_ACCOUNT_CIP, ERROR_ALREADY_EX
 import { TProfessional } from "../../domain/entities/professional-entity";
 import { verificacaoProfissionais } from "../../infra/professional-data-validation";
 import { isValidEmail, isValidId, isValidName, isValidPassword } from "../../infra/zod-validations";
-import { buscarPsicologo, criarNovoPsicologo, logarPsicologo } from "../../model/DAO/psicologo/usuario";
+import { buscarPsicologo, criarNovoPsicologo, listarPsicologos, logarPsicologo } from "../../model/DAO/psicologo/usuario";
 
 export async function setInserirPsicologo(user: TProfessional, contentType: string | undefined) {
     try {
@@ -171,6 +171,25 @@ export async function getBuscarPsicologo(id: number) {
                 status_code: ERROR_NOT_FOUND.status_code,
                 status: ERROR_NOT_FOUND.status
             }
+        }
+    }
+}
+
+export async function getListarPsicologos() {
+    let professionalData = await listarPsicologos()
+
+    if(professionalData.status_code === 200){
+        return {
+            data: professionalData,
+            status_code: 200,
+            status: true
+        }
+    }
+    else{
+        return{
+            data: ERROR_NOT_FOUND.message,
+            status_code: ERROR_NOT_FOUND.status_code,
+            status: ERROR_NOT_FOUND.status
         }
     }
 }

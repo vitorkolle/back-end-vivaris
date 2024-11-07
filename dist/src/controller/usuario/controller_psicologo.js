@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.setInserirPsicologo = setInserirPsicologo;
 exports.getLogarPsicologo = getLogarPsicologo;
 exports.getBuscarPsicologo = getBuscarPsicologo;
+exports.getListarPsicologos = getListarPsicologos;
 const config_1 = require("../../../module/config");
 const professional_data_validation_1 = require("../../infra/professional-data-validation");
 const zod_validations_1 = require("../../infra/zod-validations");
@@ -159,6 +160,25 @@ function getBuscarPsicologo(id) {
                     status: config_1.ERROR_NOT_FOUND.status
                 };
             }
+        }
+    });
+}
+function getListarPsicologos() {
+    return __awaiter(this, void 0, void 0, function* () {
+        let professionalData = yield (0, usuario_1.listarPsicologos)();
+        if (professionalData.status_code === 200) {
+            return {
+                data: professionalData,
+                status_code: 200,
+                status: true
+            };
+        }
+        else {
+            return {
+                data: config_1.ERROR_NOT_FOUND.message,
+                status_code: config_1.ERROR_NOT_FOUND.status_code,
+                status: config_1.ERROR_NOT_FOUND.status
+            };
         }
     });
 }
