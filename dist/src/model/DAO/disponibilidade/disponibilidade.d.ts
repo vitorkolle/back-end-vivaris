@@ -7,6 +7,19 @@ export declare function criarDisponibilidade(disponibilidade: TAvailability): Pr
     horario_fim: Date;
 }>;
 export declare function listarDisponibilidadesPorProfissional(profissionalId: number): Promise<{
+    id: null;
+    nome: null;
+    email: null;
+    telefone: null;
+    disponibilidades: string;
+    message: string;
+} | {
+    id: number;
+    nome: string;
+    email: string;
+    telefone: string;
+    disponibilidades: string;
+} | {
     id: number;
     nome: string;
     email: string;
@@ -17,8 +30,6 @@ export declare function listarDisponibilidadesPorProfissional(profissionalId: nu
         horario_inicio: any;
         horario_fim: any;
     }[];
-} | {
-    id: boolean;
 }>;
 export declare function criarDisponibilidadeProfissional(profissionalId: number, disponibilidade: number, status: string): Promise<{
     id: number;

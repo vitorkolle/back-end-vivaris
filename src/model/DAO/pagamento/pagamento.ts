@@ -7,17 +7,6 @@ const selectAllPayments = async () => {
 };
 
 export async function createPayment(dados:TWebhookEvent, intent_payment_id:string, consultaId:number){
-<<<<<<< Updated upstream
-    console.log("objeto event: ",dados.object.customer);
-    
-    try {
-        const payment = await prisma.tbl_pagamentos.create({
-            data: {
-                intent_payment_id: intent_payment_id,
-                id_consulta:consultaId ,
-                id_cartao:dados.object.customer.metadata.cartaoId,
-                is_paid:true,
-=======
     try {
         console.log("pagandoo");
         
@@ -27,7 +16,6 @@ export async function createPayment(dados:TWebhookEvent, intent_payment_id:strin
                 id_consulta: consultaId,
                 id_cartao: 1,
                 is_paid: true
->>>>>>> Stashed changes
             },
         });
 

@@ -73,14 +73,18 @@ export declare function getListarDisponibilidadesProfissional(idProfessional: nu
         nome: string;
         email: string;
         telefone: string;
+        disponibilidades: string;
+    } | {
+        id: number;
+        nome: string;
+        email: string;
+        telefone: string;
         disponibilidades: {
             id: any;
             dia_semana: any;
             horario_inicio: any;
             horario_fim: any;
         }[];
-    } | {
-        id: boolean;
     };
     status_code: number;
 } | {
