@@ -1,10 +1,18 @@
 import { TAppointment } from "./domain/entities/appointment-entity";
-import { TWebhookEvent } from "./domain/entities/stripe-event-entity";
 import { Stripe } from "stripe";
-export declare function handlePayment(eventData: TWebhookEvent, sig: string | string[] | undefined): Promise<{
-    paymentIntentSucceeded: Stripe.Checkout.Session;
-    customer: {
-        deleted: any;
+export declare function handlePayment(eventData: any): Promise<{
+    checkoutSession: any;
+    customer: Stripe.Customer & {
+        lastResponse: {
+            headers: {
+                [key: string]: string;
+            };
+            requestId: string;
+            statusCode: number;
+            apiVersion?: string;
+            idempotencyKey?: string;
+            stripeAccount?: string;
+        };
     };
-} | undefined>;
+} | null | undefined>;
 export declare const makePayment: (data: TAppointment, id_cliente: number) => Promise<unknown>;

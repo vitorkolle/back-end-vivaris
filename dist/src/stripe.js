@@ -14,7 +14,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.makePayment = void 0;
 exports.handlePayment = handlePayment;
-const cartao_1 = require("./model/DAO/cartao/cartao");
 const usuario_1 = require("./model/DAO/cliente/usuario");
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
@@ -22,39 +21,55 @@ const stripe_1 = require("stripe");
 const stripe = new stripe_1.Stripe(process.env.STRIPE_SECRET_KEY, {
     apiVersion: "2024-09-30.acacia",
 });
-function handlePayment(eventData, sig) {
+function handlePayment(eventData) {
     return __awaiter(this, void 0, void 0, function* () {
-        const event = stripe.webhooks.constructEvent(eventData, sig, process.env.STRIPE_ENDPOINT_KEY);
-        console.log("evento: ", event);
-        switch (event.type) {
+        const checkoutSession = eventData.data.object;
+        switch (eventData.type) {
             case "checkout.session.completed":
-                const paymentIntentSucceeded = event.data.object;
-                const data = yield stripe.customers.retrieve(paymentIntentSucceeded.customer).then((customer) => __awaiter(this, void 0, void 0, function* () {
-                    if (typeof customer.deleted != 'boolean') {
-                        return { paymentIntentSucceeded, customer };
-                    }
-                }));
-                return data;
+                if (checkoutSession.customer === null) {
+                    const data = yield stripe.customers.retrieve(checkoutSession.customer).then((customerResponse) => {
+                        if (!('deleted' in customerResponse)) {
+                            return { checkoutSession, customer: customerResponse };
+                        }
+                        else {
+                            console.error('O cliente foi deletado');
+                            return null;
+                        }
+                    });
+                    console.log(data);
+                    return data;
+                }
+                else {
+                    console.error('O customer ID não é uma string válida ou está ausente.');
+                }
+                break;
+            default:
+                console.log('Tipo de evento não tratado:', eventData.type);
+                break;
         }
     });
 }
 ;
 const makePayment = (data, id_cliente) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b;
     try {
         let usuario = yield (0, usuario_1.buscarCliente)(id_cliente);
-        let cartao = yield (0, cartao_1.buscarCartaoPorCliente)(id_cliente);
+        // let cartao = await buscarCartaoPorCliente(id_cliente)
         const customer = yield stripe.customers.create({
             metadata: {
                 userId: String(usuario === null || usuario === void 0 ? void 0 : usuario.id),
-                consultaId: String(data.id),
-                cartaoId: String((_b = (_a = cartao === null || cartao === void 0 ? void 0 : cartao[0]) === null || _a === void 0 ? void 0 : _a.id_cartao) !== null && _b !== void 0 ? _b : 1)
+                consultaId: String(data.id)
             }
         });
         const session = yield stripe.checkout.sessions.create({
             line_items: [
                 {
-                    price: 'price_1QFyxxDPGGolWeU070Q7dIan',
+                    price_data: {
+                        currency: 'brl',
+                        product_data: {
+                            name: 'Consulta Terapêutica - Individual',
+                        },
+                        unit_amount: data.valor * 100,
+                    },
                     quantity: 1,
                 },
             ],
@@ -63,6 +78,10 @@ const makePayment = (data, id_cliente) => __awaiter(void 0, void 0, void 0, func
             customer: customer.id,
             success_url: `http://localhost:5501/success.html`,
             cancel_url: `http://localhost:5501/canceled.html`,
+            metadata: {
+                userId: String(usuario === null || usuario === void 0 ? void 0 : usuario.id),
+                consultaId: String(data.id)
+            },
         });
         return { url: session.url };
     }

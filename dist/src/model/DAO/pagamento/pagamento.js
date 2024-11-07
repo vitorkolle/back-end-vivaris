@@ -14,11 +14,10 @@ const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
 const selectAllPayments = () => __awaiter(void 0, void 0, void 0, function* () {
 });
-function createPayment(dados, intent_payment_id, consultaId) {
+function createPayment(intent_payment_id, consultaId) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            console.log("pagandoo");
-            const payment = yield prisma.tbl_pagamento.create({
+            const payment = yield prisma.tbl_pagamentos.create({
                 data: {
                     intent_payment_id: intent_payment_id,
                     id_consulta: consultaId,
