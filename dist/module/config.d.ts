@@ -94,6 +94,11 @@ export declare const ERROR_INVALID_CARD: {
     status_code: number;
     message: string;
 };
+export declare const ERROR_INVALID_PAYMENT_METHOD_ID: {
+    status: boolean;
+    status_code: number;
+    message: string;
+};
 /****************** Mensagens de Sucesso *********/
 export declare const SUCCESS_CREATED_ITEM: {
     status: boolean;

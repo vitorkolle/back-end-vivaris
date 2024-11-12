@@ -1,8 +1,7 @@
-const message = require('../../../module/config')
-import { TWebhookEvent } from "../../domain/entities/stripe-event-entity";
+import { ERROR_REQUIRED_FIELDS, ERROR_INVALID_PAYMENT_METHOD_ID } from "../../../module/config";
 import { selectAppointment } from "../../model/DAO/consulta/consulta";
 import { createPayment } from "../../model/DAO/pagamento/pagamento";
-import { handlePayment, makePayment } from "../../stripe";
+import { makePayment } from "../../stripe";
 
 export const createPaymentIntent = async (idConsulta:number, id_cliente:number) => {
 
@@ -25,31 +24,25 @@ export const createPaymentIntent = async (idConsulta:number, id_cliente:number) 
     }
 };
 
-export const confirmPayment = async (order:TWebhookEvent, sig:string|string[]|undefined) => {
+export const confirmPayment = async (order:any) => {
     try {
-        console.log("confirmPayment");
-        
-        const event = await handlePayment(order, sig);
-        console.log(event);
-        console.log('event: ' , event);
-        
-        if (!event) return;
+    
+        if (!order) return;
 
-        const { consultaId, paymentMethod, currentDateTimeFormatted } = extractPaymentInfo(event);
-
+        const { consultaId, paymentMethod, currentDateTimeFormatted } = extractPaymentInfo(order);
+        
+        
         if (isMissingRequiredFields(consultaId, paymentMethod, currentDateTimeFormatted )) {
-            return message.ERROR_REQUIRED_FIELDS;
+            return ERROR_REQUIRED_FIELDS;
         }
 
-        const paymentMethodId = getPaymentMethodId(paymentMethod);
+        let paymentMethodId = getPaymentMethodId(paymentMethod);
+        
         if (paymentMethodId === null) {
-            return message.ERROR_INVALID_PAYMENT_METHOD_ID;
-        } else{
-            event.forma_pagamento_id = paymentMethodId
-        }
-
-        const payment = await createPayment(event, event.paymentIntentSucceeded.payment_intent, consultaId );
-        console.log(payment);
+            return ERROR_INVALID_PAYMENT_METHOD_ID;
+        } 
+        
+        const payment = await createPayment(order.payment_intent, consultaId );
         
         return { received: true, pagamento: payment };
     } catch (error) {
@@ -58,9 +51,9 @@ export const confirmPayment = async (order:TWebhookEvent, sig:string|string[]|un
     }
 };
 
-const extractPaymentInfo = (event:TWebhookEvent) => {
-    const consultaId = Number(event.data.object.metadata.consultaId);
-    const paymentMethod = event.data.object.payment_method_types[0];
+const extractPaymentInfo = (event:any) => {
+    const consultaId = isNaN(Number(event.metadata.consultaId)) ? 1 : Number(event.metadata.consultaId);
+    const paymentMethod = event.payment_method_types[0];
     const currentDateTime = new Date();
     const currentDateTimeFormatted = currentDateTime.toISOString().replace('T',' ').slice(0, 19);
 
