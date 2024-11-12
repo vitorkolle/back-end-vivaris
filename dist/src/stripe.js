@@ -13,7 +13,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.makePayment = void 0;
-exports.handlePayment = handlePayment;
 const usuario_1 = require("./model/DAO/cliente/usuario");
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
@@ -21,39 +20,9 @@ const stripe_1 = require("stripe");
 const stripe = new stripe_1.Stripe(process.env.STRIPE_SECRET_KEY, {
     apiVersion: "2024-09-30.acacia",
 });
-function handlePayment(eventData) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const checkoutSession = eventData.data.object;
-        switch (eventData.type) {
-            case "checkout.session.completed":
-                if (checkoutSession.customer === null) {
-                    const data = yield stripe.customers.retrieve(checkoutSession.customer).then((customerResponse) => {
-                        if (!('deleted' in customerResponse)) {
-                            return { checkoutSession, customer: customerResponse };
-                        }
-                        else {
-                            console.error('O cliente foi deletado');
-                            return null;
-                        }
-                    });
-                    console.log(data);
-                    return data;
-                }
-                else {
-                    console.error('O customer ID não é uma string válida ou está ausente.');
-                }
-                break;
-            default:
-                console.log('Tipo de evento não tratado:', eventData.type);
-                break;
-        }
-    });
-}
-;
 const makePayment = (data, id_cliente) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         let usuario = yield (0, usuario_1.buscarCliente)(id_cliente);
-        // let cartao = await buscarCartaoPorCliente(id_cliente)
         const customer = yield stripe.customers.create({
             metadata: {
                 userId: String(usuario === null || usuario === void 0 ? void 0 : usuario.id),

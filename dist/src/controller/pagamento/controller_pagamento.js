@@ -34,7 +34,6 @@ const createPaymentIntent = (idConsulta, id_cliente) => __awaiter(void 0, void 0
 exports.createPaymentIntent = createPaymentIntent;
 const confirmPayment = (order) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        //const event = await handlePayment(order);
         if (!order)
             return;
         const { consultaId, paymentMethod, currentDateTimeFormatted } = extractPaymentInfo(order);

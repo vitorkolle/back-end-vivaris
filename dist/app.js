@@ -33,7 +33,6 @@ const controller_preferencia_1 = require("./src/controller/preferencia/controlle
 const controller_psicologo_1 = require("./src/controller/usuario/controller_psicologo");
 const controller_usuario_1 = require("./src/controller/usuario/controller_usuario");
 const controller_pagamento_1 = require("./src/controller/pagamento/controller_pagamento");
-const controller_cartao_1 = require("./src/controller/cartao/controller_cartao");
 const stripe_1 = __importDefault(require("stripe"));
 route.post('/webhook', express_1.default.raw({ type: 'application/json' }), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const signature = req.headers['stripe-signature'];
@@ -46,17 +45,6 @@ route.post('/webhook', express_1.default.raw({ type: 'application/json' }), (req
             const session = event.data.object;
             yield (0, controller_pagamento_1.confirmPayment)(session);
             break;
-        case 'payment_intent.succeeded':
-            const paymentIntent = event.data.object;
-            // Then define and call a method to handle the successful payment intent.
-            // handlePaymentIntentSucceeded(paymentIntent);
-            break;
-        case 'payment_method.attached':
-            const paymentMethod = event.data.object;
-            // Then define and call a method to handle the successful attachment of a PaymentMethod.
-            // handlePaymentMethodAttached(paymentMethod);
-            break;
-        // ... handle other event types
         default:
             console.log(`Unhandled event type ${event.type}`);
     }
@@ -253,32 +241,5 @@ route.post('/create-checkout-session', (req, res) => __awaiter(void 0, void 0, v
     let idCliente = Number(req.body.id_cliente);
     const result = yield (0, controller_pagamento_1.createPaymentIntent)(idConsulta, idCliente);
     res.status(result.status_code);
-    res.json(result);
-}));
-/*****************************************************CARTOES*************************************************/
-route.post('/cartao', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const cardData = {
-        modalidade: req.body.modalidade,
-        numero_cartao: req.body.numero_cartao,
-        nome: req.body.nome,
-        validade: req.body.validade,
-        cvc: req.body.cvc
-    };
-    let contentType = req.header('Content-Type');
-    let newCard = yield (0, controller_cartao_1.setCadastrarCartao)(cardData, contentType);
-    res.status(newCard.status_code);
-    res.json(newCard);
-}));
-route.get('/cartao/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log(req.params.id);
-    let id = Number(req.params.id);
-    let card = yield (0, controller_cartao_1.getBuscarCartao)(id);
-    res.status(card.status_code);
-    res.json(card);
-}));
-route.delete('/cartao/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    let id = Number(req.params.id);
-    let deleteCard = yield (0, controller_cartao_1.setDeletarCartao)(id);
-    res.status(deleteCard.status_code);
-    res.json(deleteCard);
+    res.redirect(result, 303);
 }));

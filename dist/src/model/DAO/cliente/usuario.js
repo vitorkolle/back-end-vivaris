@@ -65,10 +65,10 @@ function obterUsuarioComPreferencias(userId) {
                         select: {
                             id: true,
                             nome: true,
-                            cor: true
+                            cor: true,
                         },
                     },
-                },
+                }
             });
             const response = {
                 id: usuario.id,

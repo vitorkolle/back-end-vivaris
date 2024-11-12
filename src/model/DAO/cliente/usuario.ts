@@ -50,14 +50,14 @@ export async function obterUsuarioComPreferencias(userId: number) {
          id_clientes: userId, 
        }, 
        include: {
-        tbl_preferencias: {
+        tbl_preferencias:{
            select: {
              id: true,
              nome: true,
-             cor: true
-          },
+             cor: true,
+           },
          },
-       },
+        }
      });
 
     const response = {

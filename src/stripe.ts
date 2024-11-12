@@ -1,5 +1,4 @@
 import { TAppointment } from "./domain/entities/appointment-entity";
-import { buscarCartaoPorCliente } from "./model/DAO/cartao/cartao";
 import { buscarCliente } from "./model/DAO/cliente/usuario";
 import dotenv from 'dotenv';
 dotenv.config();
@@ -14,7 +13,6 @@ export const  makePayment = async (data: TAppointment, id_cliente:number) => {
   try {
     let usuario = await buscarCliente(id_cliente)
 
-   // let cartao = await buscarCartaoPorCliente(id_cliente)
     
     const customer = await stripe.customers.create({
       metadata:{
