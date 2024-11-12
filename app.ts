@@ -6,7 +6,7 @@ import express, { Router } from 'express'
 const route: Router = express.Router()
 
 const app = express()
-app.use(express.json());
+app.use(express.json())
 
 import cors from 'cors'
 
