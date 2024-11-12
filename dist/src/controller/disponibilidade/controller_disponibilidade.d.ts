@@ -1,4 +1,4 @@
-import { TAvailability } from "../../domain/entities/availability-entity";
+import { TAvailability, WeekDay } from "../../domain/entities/availability-entity";
 import { TProfessionalAvailability } from "../../domain/entities/professional-availability";
 export declare function transformarHorario(horario: string): Date;
 export declare function setInserirDisponibilidade(disponibilidade: TAvailability, contentType: string | undefined): Promise<{
@@ -131,4 +131,12 @@ export declare function setAtualizarDisponibilidadeProfissional(availabilityData
     };
     status_code: number;
     message?: undefined;
+}>;
+export declare function setDeletarDisponibilidadeByHour(dia_semana: WeekDay, horario_inicio: string, id_psicologo: number, contentType: string | undefined): Promise<{
+    status: boolean;
+    status_code: number;
+    message: string;
+} | {
+    data: string;
+    status_code: number;
 }>;

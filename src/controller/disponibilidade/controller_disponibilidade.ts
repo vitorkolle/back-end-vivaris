@@ -1,8 +1,9 @@
-import { ERROR_ALREADY_EXISTS_PREFRENCE, ERROR_ALREADY_EXISTS_PROFESSIONAL_AVAILBILITY, ERROR_CONTENT_TYPE, ERROR_INTERNAL_SERVER, ERROR_INTERNAL_SERVER_DB, ERROR_INVALID_ID, ERROR_NOT_CREATED, ERROR_NOT_DELETED, ERROR_NOT_FOUND, ERROR_NOT_FOUND_AVAILBILITY, ERROR_NOT_FOUND_PROFESSIONAL, ERROR_REQUIRED_FIELDS, SUCCESS_CREATED_ITEM, SUCCESS_DELETED_ITEM } from "../../../module/config";
-import { TAvailability } from "../../domain/entities/availability-entity";
+import { ERROR_ALREADY_EXISTS_PREFRENCE, ERROR_ALREADY_EXISTS_PROFESSIONAL_AVAILBILITY, ERROR_CONTENT_TYPE, ERROR_DATE_NOT_VALID, ERROR_INTERNAL_SERVER, ERROR_INTERNAL_SERVER_DB, ERROR_INVALID_ID, ERROR_NOT_CREATED, ERROR_NOT_DELETED, ERROR_NOT_FOUND, ERROR_NOT_FOUND_AVAILBILITY, ERROR_NOT_FOUND_PROFESSIONAL, ERROR_REQUIRED_FIELDS, SUCCESS_CREATED_ITEM, SUCCESS_DELETED_ITEM } from "../../../module/config";
+import { TAvailability, WeekDay } from "../../domain/entities/availability-entity";
 import { TProfessionalAvailability } from "../../domain/entities/professional-availability";
 import { isValidWeekDay, isValidId, isValidHour, isValidAvailbilityStatus } from "../../infra/zod-validations";
-import { atualizarDisponibilidade, atualizarDisponibilidadeProfissional, buscarDisponibilidade, buscarDisponibilidadePsicologo, criarDisponibilidade, criarDisponibilidadeProfissional, deletarDisponibilidade, listarDisponibilidadesPorProfissional } from "../../model/DAO/disponibilidade/disponibilidade";
+import { atualizarDisponibilidade, atualizarDisponibilidadeProfissional, buscarDisponibilidade, buscarDisponibilidadeByHourAndWeekDay, buscarDisponibilidadePsicologo, criarDisponibilidade, criarDisponibilidadeProfissional, deletarDisponibilidade, deletarDisponibilidadeByHour, listarDisponibilidadesPorProfissional } from "../../model/DAO/disponibilidade/disponibilidade";
+import { buscarPsicologo } from "../../model/DAO/psicologo/usuario";
 import { getBuscarPsicologo } from "../usuario/controller_psicologo";
 
 
@@ -312,6 +313,58 @@ export async function setAtualizarDisponibilidadeProfissional(availabilityData: 
 
     } catch (error) {
         console.error('Erro ao tentar atualizar as disponibilidades do profissional:', error);
+        return ERROR_INTERNAL_SERVER;
+    }
+}
+
+export async function setDeletarDisponibilidadeByHour(dia_semana : WeekDay, horario_inicio : string, id_psicologo : number, contentType : string | undefined) {
+    try {
+        if (String(contentType).toLowerCase() !== 'application/json') {
+            return ERROR_CONTENT_TYPE
+        }
+        
+        if(
+            !dia_semana || !isValidWeekDay(dia_semana) ||
+            !horario_inicio || !isValidHour(horario_inicio) ||
+            !id_psicologo || !isValidId(id_psicologo)
+        ) {
+            return ERROR_REQUIRED_FIELDS
+        }
+
+        let validateProfessional = await buscarPsicologo(id_psicologo)
+
+        if(!validateProfessional){
+            return ERROR_NOT_FOUND_PROFESSIONAL
+        }
+
+        let formatHour = transformarHorario(horario_inicio.toString())
+
+        if (!formatHour) {
+            return ERROR_DATE_NOT_VALID
+        }
+
+        let validateAvailbility = await buscarDisponibilidadeByHourAndWeekDay(dia_semana, formatHour, id_psicologo)
+        
+
+        if(!validateAvailbility){
+            return ERROR_NOT_FOUND_AVAILBILITY
+        }
+
+        let deleteAvailbility = await deletarDisponibilidadeByHour(id_psicologo, dia_semana, formatHour)
+
+        if(deleteAvailbility){
+            return{
+                data: SUCCESS_DELETED_ITEM.message,
+                status_code: SUCCESS_DELETED_ITEM.status_code
+            }
+        }
+
+        return{
+            data: ERROR_NOT_DELETED.message,
+            status_code: ERROR_NOT_DELETED.status_code
+        }
+    } catch (error) {
+        console.error('Erro ao tentar deletar as disponibilidades do profissional:', error);
         return ERROR_INTERNAL_SERVER;
     }
 }

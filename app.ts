@@ -6,6 +6,7 @@ import express, { Router } from 'express'
 const route: Router = express.Router()
 
 const app = express()
+app.use(express.json());
 
 import cors from 'cors'
 
@@ -26,7 +27,7 @@ app.listen('8080', () => {
 
 
 //Import Controller 
-import { criarDisponibilidadePsicologo, getBuscarDisponibilidade, getListarDisponibilidadesProfissional, setAtualizarDisponibilidade, setAtualizarDisponibilidadeProfissional, setDeletarDisponibilidade, setInserirDisponibilidade } from './src/controller/disponibilidade/controller_disponibilidade'
+import { criarDisponibilidadePsicologo, getBuscarDisponibilidade, getListarDisponibilidadesProfissional, setAtualizarDisponibilidade, setAtualizarDisponibilidadeProfissional, setDeletarDisponibilidade, setDeletarDisponibilidadeByHour, setInserirDisponibilidade } from './src/controller/disponibilidade/controller_disponibilidade'
 import { getBuscarPreferencia, getListarPreferencias, setInserirPreferencias } from './src/controller/preferencia/controller_preferencia'
 import { getBuscarPsicologo, getListarPsicologos, getLogarPsicologo, setInserirPsicologo } from './src/controller/usuario/controller_psicologo'
 import { getBuscarCliente, getBuscarClientePreferencias, getBuscarSexo, getListarSexo, getLogarCliente, setInserirUsuario } from './src/controller/usuario/controller_usuario'
@@ -38,6 +39,8 @@ import { confirmPayment, createPaymentIntent } from './src/controller/pagamento/
 import { TCard } from './src/domain/entities/card-entity'
 import { getBuscarCartao, setCadastrarCartao, setDeletarCartao } from './src/controller/cartao/controller_cartao'
 import stripe from 'stripe'
+
+/*************************************************************************************************************/
 
 route.post('/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
 
@@ -62,8 +65,6 @@ route.post('/webhook', express.raw({ type: 'application/json' }), async (req, re
 
     res.json({ received: true });
 })
-
-app.use(express.json())
 
 /****************************************************USUARIO-CLIENTE****************************************************/
 //post de clientes
@@ -259,7 +260,7 @@ route.get('/disponibilidade/psicologo/:id', async (req, res) => {
 })
 
 
-route.delete('/disponibilidade/psicologo/:id', async (req, res) => {
+route.delete('/disponibilidades/psicologo/:id', async (req, res) => {
     let id = Number(req.params.id)
     let diaSemana = String(req.body.dia_semana)
 
@@ -317,6 +318,19 @@ route.put('/psicologo/disponibilidade', async (req, res) => {
     res.json(updateProfessionalAvailbility)
 })
 
+route.delete('/disponibilidade/psicologo/:id', async (req, res) => {
+    let contentType = req.header("Content-Type")
+    let professionalId = Number(req.params.id)
+    let weekDay = req.body.dia_semana
+    let intialHour = req.body.horario_inicio
+
+    let deleteAvailbility = await setDeletarDisponibilidadeByHour(weekDay, intialHour, professionalId, contentType)
+
+    res.status(deleteAvailbility.status_code)
+    res.json(deleteAvailbility)
+
+})
+
 /****************************************************PREFERÊNCIAS****************************************************/
 route.get('/preferencias', async (req, res) => {
     let preferenceData = await getListarPreferencias()
@@ -341,18 +355,16 @@ route.get('/preferencias/:id', async (req, res) => {
 
 /****************************************************PAGAMENTO****************************************************/
 route.post('/create-checkout-session', async (req, res) => {
+    let idConsulta = req.body.id_consulta
+    
+    let idCliente = req.body.id_cliente
 
-    let idConsulta = Number(req.body.id_consulta)
-
-    let idCliente = Number(req.body.id_cliente)
-
-    const result = await createPaymentIntent(idConsulta, idCliente)
+   const result = await createPaymentIntent(idConsulta, idCliente)
 
     res.status(result.status_code)
     res.json(result)
 
 })
-
 
 /*****************************************************CARTOES*************************************************/
 route.post('/cartao', async (req, res) => {

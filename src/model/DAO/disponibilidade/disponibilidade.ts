@@ -1,8 +1,8 @@
 import { PrismaClient } from "@prisma/client";
-import { TAvailability } from "../../../domain/entities/availability-entity";
+import { WeekDay, TAvailability } from "../../../domain/entities/availability-entity";
 import { ERROR_CONTENT_TYPE, ERROR_INVALID_ID, ERROR_NOT_FOUND, ERROR_NOT_FOUND_AVAILBILITY, ERROR_NOT_FOUND_PROFESSIONAL } from "../../../../module/config";
-import { isValidId } from "../../../infra/zod-validations";
 import { TProfessionalAvailability } from "../../../domain/entities/professional-availability";
+import { transformarHorario } from "../../../controller/disponibilidade/controller_disponibilidade";
 const prisma = new PrismaClient()
 
 
@@ -339,6 +339,57 @@ export async function buscarDisponibilidadePsicologoById(availabilityId:number) 
       status_code: 200
     }
   } catch (error) {
-    
+    console.error("Erro ao obter disponibilidade do profissional:", error);
+    throw new Error("Não foi possível obter a disponibilidade do profissional");
+  }
+}
+
+export async function deletarDisponibilidadeByHour(id_psicologo: number, dia_semana: WeekDay, horario_inicio: Date){
+  try {
+    let sql = `CALL deleteDispByHour("${dia_semana}", '${horario_inicio.getUTCDate()+ ":00:00"}', ${id_psicologo})`
+    let availability = await prisma.$queryRawUnsafe(sql)    
+
+    if (!availability) {
+      return false
+    }
+
+    return true
+  } catch (error) {
+    console.error("Erro ao deletar disponibilidade do profissional:", error);
+    throw new Error("Não foi possível deletar a disponibilidade do profissional");
+  }
+}
+
+export async function buscarDisponibilidadeByHourAndWeekDay(dia_semana : WeekDay, horario_inicio : Date, id_psicologo : number) {
+  try {
+    let availability = await prisma.tbl_psicologo_disponibilidade.findMany({
+      where:{
+        psicologo_id: id_psicologo
+      },
+      select: {
+        tbl_disponibilidade:{
+          select: {
+            dia_semana: true,
+            horario_inicio: true
+          }
+        }
+      }
+    })
+   
+    if(availability.length < 1){
+      return false
+    }
+    let existsAvailbility : boolean = false || true
+
+    availability.forEach(avail => {      
+      if(avail.tbl_disponibilidade.dia_semana === dia_semana && avail.tbl_disponibilidade.horario_inicio === new Date(horario_inicio)){
+        existsAvailbility = true
+      }
+    });
+
+    return existsAvailbility === true
+  } catch (error) {
+    console.error("Erro ao obter disponibilidade do profissional:", error);
+    throw new Error("Não foi possível obter a disponibilidade do profissional");
   }
 }

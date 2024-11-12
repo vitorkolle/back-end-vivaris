@@ -15,7 +15,6 @@ model tbl_cartoes {
   cvc                String                 @unique(map: "cvc") @db.VarChar(4)
   validade           DateTime               @db.Date
   tbl_cliente_cartao tbl_cliente_cartao[]
-  tbl_pagamentos     tbl_pagamentos[]
 }
 
 model tbl_clientes {
@@ -38,11 +37,10 @@ model tbl_clientes {
 }
 
 model tbl_clientes_preferencias {
-  id               Int               @id @default(autoincrement())
-  id_clientes      Int?
-  id_preferencias  Int?
-  tbl_clientes     tbl_clientes?     @relation(fields: [id_clientes], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "CLIENTES_CLIENTES_PREFERENCIAS")
-  tbl_preferencias tbl_preferencias? @relation(fields: [id_preferencias], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "PREFERENCIAS_CLIENTES_PREFERENCIAS")
+  id              Int           @id @default(autoincrement())
+  id_clientes     Int?
+  id_preferencias Int?
+  tbl_clientes    tbl_clientes? @relation(fields: [id_clientes], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "CLIENTES_CLIENTES_PREFERENCIAS")
 
   @@index([id_clientes], map: "CLIENTES_CLIENTES_PREFERENCIAS")
   @@index([id_preferencias], map: "PREFERENCIAS_CLIENTES_PREFERENCIAS")
@@ -76,19 +74,15 @@ model tbl_pagamentos {
   is_paid           Boolean
   intent_payment_id String?       @db.VarChar(250)
   id_consulta       Int
-  id_cartao         Int
-  tbl_cartoes       tbl_cartoes   @relation(fields: [id_cartao], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "CARTAO_PAGAMENTO")
   tbl_consultas     tbl_consultas @relation(fields: [id_consulta], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "CONSULTA_PAGAMENTO")
 
-  @@index([id_cartao], map: "CARTAO_PAGAMENTO")
   @@index([id_consulta], map: "CONSULTA_PAGAMENTO")
 }
 
 model tbl_preferencias {
-  id                        Int                         @id @default(autoincrement())
-  nome                      String                      @unique(map: "nome") @db.VarChar(15)
-  cor                       String                      @unique(map: "cor") @db.VarChar(7)
-  tbl_clientes_preferencias tbl_clientes_preferencias[]
+  id   Int    @id @default(autoincrement())
+  nome String @unique(map: "nome") @db.VarChar(15)
+  cor  String @unique(map: "cor") @db.VarChar(7)
 }
 
 model tbl_psicologo_disponibilidade {

@@ -69,7 +69,6 @@ export function isValidHour(hour: string) : boolean{
 
     const validateHour = hourSchema.safeParse(hour)  
     
-
     return validateHour.success
 }
 

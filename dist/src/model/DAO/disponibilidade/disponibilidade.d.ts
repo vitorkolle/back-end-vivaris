@@ -1,4 +1,4 @@
-import { TAvailability } from "../../../domain/entities/availability-entity";
+import { WeekDay, TAvailability } from "../../../domain/entities/availability-entity";
 import { TProfessionalAvailability } from "../../../domain/entities/professional-availability";
 export declare function criarDisponibilidade(disponibilidade: TAvailability): Promise<{
     id: number;
@@ -79,4 +79,6 @@ export declare function buscarDisponibilidadePsicologoById(availabilityId: numbe
     };
     status_code: number;
     message?: undefined;
-} | undefined>;
+}>;
+export declare function deletarDisponibilidadeByHour(id_psicologo: number, dia_semana: WeekDay, horario_inicio: Date): Promise<boolean>;
+export declare function buscarDisponibilidadeByHourAndWeekDay(dia_semana: WeekDay, horario_inicio: Date, id_psicologo: number): Promise<boolean>;

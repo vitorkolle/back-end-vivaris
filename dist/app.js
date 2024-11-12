@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const route = express_1.default.Router();
 const app = (0, express_1.default)();
+app.use(express_1.default.json());
 const cors_1 = __importDefault(require("cors"));
 const corsOptions = {
     origin: ['http://localhost:5173', 'http://127.0.0.1:5173', '*'],
@@ -35,6 +36,7 @@ const controller_usuario_1 = require("./src/controller/usuario/controller_usuari
 const controller_pagamento_1 = require("./src/controller/pagamento/controller_pagamento");
 const controller_cartao_1 = require("./src/controller/cartao/controller_cartao");
 const stripe_1 = __importDefault(require("stripe"));
+/*************************************************************************************************************/
 route.post('/webhook', express_1.default.raw({ type: 'application/json' }), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const signature = req.headers['stripe-signature'];
     if (!signature || typeof signature !== 'string') {
@@ -46,23 +48,11 @@ route.post('/webhook', express_1.default.raw({ type: 'application/json' }), (req
             const session = event.data.object;
             yield (0, controller_pagamento_1.confirmPayment)(session);
             break;
-        case 'payment_intent.succeeded':
-            const paymentIntent = event.data.object;
-            // Then define and call a method to handle the successful payment intent.
-            // handlePaymentIntentSucceeded(paymentIntent);
-            break;
-        case 'payment_method.attached':
-            const paymentMethod = event.data.object;
-            // Then define and call a method to handle the successful attachment of a PaymentMethod.
-            // handlePaymentMethodAttached(paymentMethod);
-            break;
-        // ... handle other event types
         default:
             console.log(`Unhandled event type ${event.type}`);
     }
     res.json({ received: true });
 }));
-app.use(express_1.default.json());
 /****************************************************USUARIO-CLIENTE****************************************************/
 //post de clientes
 route.post('/cliente', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -195,7 +185,7 @@ route.get('/disponibilidade/psicologo/:id', (req, res) => __awaiter(void 0, void
     res.status(professionalAvailbility.status_code);
     res.json(professionalAvailbility);
 }));
-route.delete('/disponibilidade/psicologo/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+route.delete('/disponibilidades/psicologo/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let id = Number(req.params.id);
     let diaSemana = String(req.body.dia_semana);
     const availabilityData = yield (0, controller_disponibilidade_1.setDeletarDisponibilidade)(diaSemana, id);
@@ -233,6 +223,15 @@ route.put('/psicologo/disponibilidade', (req, res) => __awaiter(void 0, void 0, 
     res.status(updateProfessionalAvailbility.status_code);
     res.json(updateProfessionalAvailbility);
 }));
+route.delete('/disponibilidade/psicologo/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    let contentType = req.header("Content-Type");
+    let professionalId = Number(req.params.id);
+    let weekDay = req.body.dia_semana;
+    let intialHour = req.body.horario_inicio;
+    let deleteAvailbility = yield (0, controller_disponibilidade_1.setDeletarDisponibilidadeByHour)(weekDay, intialHour, professionalId, contentType);
+    res.status(deleteAvailbility.status_code);
+    res.json(deleteAvailbility);
+}));
 /****************************************************PREFERÊNCIAS****************************************************/
 route.get('/preferencias', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let preferenceData = yield (0, controller_preferencia_1.getListarPreferencias)();
@@ -249,8 +248,8 @@ route.get('/preferencias/:id', (req, res) => __awaiter(void 0, void 0, void 0, f
 }));
 /****************************************************PAGAMENTO****************************************************/
 route.post('/create-checkout-session', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    let idConsulta = Number(req.body.id_consulta);
-    let idCliente = Number(req.body.id_cliente);
+    let idConsulta = req.body.id_consulta;
+    let idCliente = req.body.id_cliente;
     const result = yield (0, controller_pagamento_1.createPaymentIntent)(idConsulta, idCliente);
     res.status(result.status_code);
     res.json(result);
