@@ -37,7 +37,6 @@ import { TProfessional } from './src/domain/entities/professional-entity'
 
 import { confirmPayment, createPaymentIntent } from './src/controller/pagamento/controller_pagamento'
 import { TCard } from './src/domain/entities/card-entity'
-import { getBuscarCartao, setCadastrarCartao, setDeletarCartao } from './src/controller/cartao/controller_cartao'
 import stripe from 'stripe'
 
 /*************************************************************************************************************/
@@ -364,44 +363,4 @@ route.post('/create-checkout-session', async (req, res) => {
     res.status(result.status_code)
     res.json(result)
 
-})
-
-/*****************************************************CARTOES*************************************************/
-route.post('/cartao', async (req, res) => {
-    const cardData: TCard = {
-        modalidade: req.body.modalidade,
-        numero_cartao: req.body.numero_cartao,
-        nome: req.body.nome,
-        validade: req.body.validade,
-        cvc: req.body.cvc
-    }
-
-    let contentType = req.header('Content-Type')
-
-    let newCard = await setCadastrarCartao(cardData, contentType)
-
-    res.status(newCard.status_code)
-    res.json(newCard)
-})
-
-
-route.get('/cartao/:id', async (req, res) => {
-
-    console.log(req.params.id);
-    let id = Number(req.params.id)
-
-    let card = await getBuscarCartao(id)
-
-    res.status(card.status_code)
-    res.json(card)
-})
-
-
-route.delete('/cartao/:id', async (req, res) => {
-    let id = Number(req.params.id)
-
-    let deleteCard = await setDeletarCartao(id)
-
-    res.status(deleteCard.status_code)
-    res.json(deleteCard)
 })
