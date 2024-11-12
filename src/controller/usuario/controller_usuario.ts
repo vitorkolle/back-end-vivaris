@@ -3,6 +3,7 @@ import { TUser } from "../../domain/entities/user-entity"
 import { buscarCliente, criarNovoCliente, logarCliente, obterUsuarioComPreferencias } from "../../model/DAO/cliente/usuario"
 import { getAllSexos, getSexoById } from "../../model/DAO/cliente/sexo";
 import { verificacao } from "../../infra/client-data-validation";
+import {createJWT} from '../../../middleware/middlewareJWT'
 import { isValidEmail, isValidId, isValidName, isValidPassword } from "../../infra/zod-validations";
 
 export async function setInserirUsuario(user: TUser, contentType: string | undefined) {
@@ -145,8 +146,10 @@ export async function getLogarCliente(email: string | undefined, senha: string |
     
 
     if(clientData.status == 200){
+        let clientToken = await createJWT(clientData.id)
         return {
             cliente: clientData,
+            token: clientToken,
             status_code: clientData.status
         }
     }
