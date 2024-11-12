@@ -346,7 +346,7 @@ export async function buscarDisponibilidadePsicologoById(availabilityId:number) 
 
 export async function deletarDisponibilidadeByHour(id_psicologo: number, dia_semana: WeekDay, horario_inicio: Date){
   try {
-    let sql = `CALL deleteDispByHour("${dia_semana}", '${horario_inicio.getUTCDate()+ ":00:00"}', ${id_psicologo})`
+    let sql = `CALL deleteDispByWeekDayAndHour("${dia_semana}", '${horario_inicio.getUTCDate()+ ":00:00"}', ${id_psicologo})`
     let availability = await prisma.$queryRawUnsafe(sql)    
 
     if (!availability) {

@@ -349,7 +349,7 @@ function buscarDisponibilidadePsicologoById(availabilityId) {
 function deletarDisponibilidadeByHour(id_psicologo, dia_semana, horario_inicio) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            let sql = `CALL deleteDispByHour("${dia_semana}", '${horario_inicio.getUTCDate() + ":00:00"}', ${id_psicologo})`;
+            let sql = `CALL deleteDispByWeekDayAndHour("${dia_semana}", '${horario_inicio.getUTCDate() + ":00:00"}', ${id_psicologo})`;
             let availability = yield prisma.$queryRawUnsafe(sql);
             if (!availability) {
                 return false;

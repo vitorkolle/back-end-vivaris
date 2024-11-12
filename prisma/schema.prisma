@@ -15,6 +15,7 @@ model tbl_cartoes {
   cvc                String                 @unique(map: "cvc") @db.VarChar(4)
   validade           DateTime               @db.Date
   tbl_cliente_cartao tbl_cliente_cartao[]
+  tbl_pagamentos     tbl_pagamentos[]
 }
 
 model tbl_clientes {
@@ -75,9 +76,12 @@ model tbl_pagamentos {
   is_paid           Boolean
   intent_payment_id String?       @db.VarChar(250)
   id_consulta       Int
+  id_cartao         Int
+  tbl_cartoes       tbl_cartoes   @relation(fields: [id_cartao], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "CARTAO_PAGAMENTO")
   tbl_consultas     tbl_consultas @relation(fields: [id_consulta], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "CONSULTA_PAGAMENTO")
 
   @@index([id_consulta], map: "CONSULTA_PAGAMENTO")
+  @@index([id_cartao], map: "CARTAO_PAGAMENTO")
 }
 
 model tbl_preferencias {

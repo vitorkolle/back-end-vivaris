@@ -10,6 +10,7 @@ export declare const confirmPayment: (order: any) => Promise<false | {
     received: boolean;
     pagamento: {
         id: number;
+        id_cartao: number;
         is_paid: boolean;
         intent_payment_id: string | null;
         id_consulta: number;
