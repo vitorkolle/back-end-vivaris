@@ -15,7 +15,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const route = express_1.default.Router();
 const app = (0, express_1.default)();
-app.use(express_1.default.json());
 const cors_1 = __importDefault(require("cors"));
 const corsOptions = {
     origin: ['http://localhost:5173', 'http://127.0.0.1:5173', '*'],
@@ -35,6 +34,35 @@ const controller_psicologo_1 = require("./src/controller/usuario/controller_psic
 const controller_usuario_1 = require("./src/controller/usuario/controller_usuario");
 const controller_pagamento_1 = require("./src/controller/pagamento/controller_pagamento");
 const controller_cartao_1 = require("./src/controller/cartao/controller_cartao");
+const stripe_1 = __importDefault(require("stripe"));
+route.post('/webhook', express_1.default.raw({ type: 'application/json' }), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const signature = req.headers['stripe-signature'];
+    if (!signature || typeof signature !== 'string') {
+        return res.status(400).json({ error: 'Invalid or missing Stripe signature' });
+    }
+    const event = stripe_1.default.webhooks.constructEvent(req.body, signature, process.env.STRIPE_ENDPOINT_SECRET);
+    switch (event.type) {
+        case 'checkout.session.completed':
+            const session = event.data.object;
+            yield (0, controller_pagamento_1.confirmPayment)(session);
+            break;
+        case 'payment_intent.succeeded':
+            const paymentIntent = event.data.object;
+            // Then define and call a method to handle the successful payment intent.
+            // handlePaymentIntentSucceeded(paymentIntent);
+            break;
+        case 'payment_method.attached':
+            const paymentMethod = event.data.object;
+            // Then define and call a method to handle the successful attachment of a PaymentMethod.
+            // handlePaymentMethodAttached(paymentMethod);
+            break;
+        // ... handle other event types
+        default:
+            console.log(`Unhandled event type ${event.type}`);
+    }
+    res.json({ received: true });
+}));
+app.use(express_1.default.json());
 /****************************************************USUARIO-CLIENTE****************************************************/
 //post de clientes
 route.post('/cliente', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -225,11 +253,6 @@ route.post('/create-checkout-session', (req, res) => __awaiter(void 0, void 0, v
     let idCliente = Number(req.body.id_cliente);
     const result = yield (0, controller_pagamento_1.createPaymentIntent)(idConsulta, idCliente);
     res.status(result.status_code);
-    res.json(result);
-}));
-route.post('/webhook', express_1.default.raw({ type: 'application/json' }), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const event = req.body;
-    const result = (0, controller_pagamento_1.confirmPayment)(event, req.headers['stripe-signature']);
     res.json(result);
 }));
 /*****************************************************CARTOES*************************************************/

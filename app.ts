@@ -7,8 +7,6 @@ const route: Router = express.Router()
 
 const app = express()
 
-app.use(express.json())
-
 import cors from 'cors'
 
 const corsOptions = {
@@ -39,6 +37,33 @@ import { TProfessional } from './src/domain/entities/professional-entity'
 import { confirmPayment, createPaymentIntent } from './src/controller/pagamento/controller_pagamento'
 import { TCard } from './src/domain/entities/card-entity'
 import { getBuscarCartao, setCadastrarCartao, setDeletarCartao } from './src/controller/cartao/controller_cartao'
+import stripe from 'stripe'
+
+route.post('/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
+
+    const signature = req.headers['stripe-signature'];
+    
+    if (!signature || typeof signature !== 'string') {
+        return res.status(400).json({ error: 'Invalid or missing Stripe signature' });
+    }
+
+    const event = stripe.webhooks.constructEvent(req.body, signature, process.env.STRIPE_ENDPOINT_SECRET);
+
+    switch (event.type) {
+        case 'checkout.session.completed':
+            const session = event.data.object;
+
+            await confirmPayment(session)
+
+            break;
+        default:
+            console.log(`Unhandled event type ${event.type}`);
+    }
+
+    res.json({ received: true });
+})
+
+app.use(express.json())
 
 /****************************************************USUARIO-CLIENTE****************************************************/
 //post de clientes
@@ -328,16 +353,6 @@ route.post('/create-checkout-session', async (req, res) => {
 
 })
 
-route.post('/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
-
-    const event = req.body
-    
-
-    const result = confirmPayment(event, req.headers['stripe-signature'])
-
-
-    res.json(result)
-})
 
 /*****************************************************CARTOES*************************************************/
 route.post('/cartao', async (req, res) => {

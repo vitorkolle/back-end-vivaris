@@ -10,7 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.confirmPayment = exports.createPaymentIntent = void 0;
-const message = require('../../../module/config');
+const config_1 = require("../../../module/config");
 const consulta_1 = require("../../model/DAO/consulta/consulta");
 const pagamento_1 = require("../../model/DAO/pagamento/pagamento");
 const stripe_1 = require("../../stripe");
@@ -32,27 +32,20 @@ const createPaymentIntent = (idConsulta, id_cliente) => __awaiter(void 0, void 0
     }
 });
 exports.createPaymentIntent = createPaymentIntent;
-const confirmPayment = (order, sig) => __awaiter(void 0, void 0, void 0, function* () {
+const confirmPayment = (order) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        console.log("confirmPayment");
-        const event = yield (0, stripe_1.handlePayment)(order, sig);
-        console.log(event);
-        console.log('event: ', event);
-        if (!event)
+        //const event = await handlePayment(order);
+        if (!order)
             return;
-        const { consultaId, paymentMethod, currentDateTimeFormatted } = extractPaymentInfo(event);
+        const { consultaId, paymentMethod, currentDateTimeFormatted } = extractPaymentInfo(order);
         if (isMissingRequiredFields(consultaId, paymentMethod, currentDateTimeFormatted)) {
-            return message.ERROR_REQUIRED_FIELDS;
+            return config_1.ERROR_REQUIRED_FIELDS;
         }
-        const paymentMethodId = getPaymentMethodId(paymentMethod);
+        let paymentMethodId = getPaymentMethodId(paymentMethod);
         if (paymentMethodId === null) {
-            return message.ERROR_INVALID_PAYMENT_METHOD_ID;
+            return config_1.ERROR_INVALID_PAYMENT_METHOD_ID;
         }
-        else {
-            event.forma_pagamento_id = paymentMethodId;
-        }
-        const payment = yield (0, pagamento_1.createPayment)(event, event.paymentIntentSucceeded.payment_intent, consultaId);
-        console.log(payment);
+        const payment = yield (0, pagamento_1.createPayment)(order.payment_intent, consultaId);
         return { received: true, pagamento: payment };
     }
     catch (error) {
@@ -61,8 +54,8 @@ const confirmPayment = (order, sig) => __awaiter(void 0, void 0, void 0, functio
 });
 exports.confirmPayment = confirmPayment;
 const extractPaymentInfo = (event) => {
-    const consultaId = Number(event.data.object.metadata.consultaId);
-    const paymentMethod = event.data.object.payment_method_types[0];
+    const consultaId = isNaN(Number(event.metadata.consultaId)) ? 1 : Number(event.metadata.consultaId);
+    const paymentMethod = event.payment_method_types[0];
     const currentDateTime = new Date();
     const currentDateTimeFormatted = currentDateTime.toISOString().replace('T', ' ').slice(0, 19);
     return { consultaId, paymentMethod, currentDateTimeFormatted };

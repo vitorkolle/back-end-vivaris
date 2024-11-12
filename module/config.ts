@@ -18,6 +18,7 @@ export const ERROR_AGE_NOT_VALID = {status: false, status_code:400, message:'Ess
 export const ERROR_ALREADY_EXISTS_PROFESSIONAL_AVAILBILITY = {status: false, status_code:400, message:'Essa disponibilidade já está ocupada'}
 export const ERROR_NOT_DELETED = {status: false, status_code:400, message:'Não foi possível deletar a disponibilidade'}
 export const ERROR_INVALID_CARD = {status: false, status_code:400, message:'Os dados do cartão não são válidos, revise-os e tente novamente'}
+export const ERROR_INVALID_PAYMENT_METHOD_ID = {status: false, status_code:400, message:'Este ID de forma de pagamento não existe!'}
 /****************** Mensagens de Sucesso *********/
 export const SUCCESS_CREATED_ITEM = {status: true, status_code: 201, message: 'Item criado com sucesso!!'}
 export const SUCCESS_DELETED_ITEM = {status: true, status_code: 200, message: 'Item deletado com sucesso!!'}
