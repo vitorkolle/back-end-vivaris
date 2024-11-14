@@ -158,7 +158,6 @@ export async function getBuscarPsicologo(id: number) {
     else{
         let professionalData = await buscarPsicologo(id)
 
-        console.log(professionalData);
         
 
         if(professionalData.status_code === 200){

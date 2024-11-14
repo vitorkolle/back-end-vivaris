@@ -69,8 +69,6 @@ export async function criarDisponibilidadePsicologo(
 
         const validateProfessional = await getBuscarPsicologo(availability.id_psicologo)     
         
-        console.log(availability.id_psicologo, await getBuscarPsicologo(availability.id_psicologo));
-        
         if (validateProfessional.status_code === 404) {
             return ERROR_NOT_FOUND_PROFESSIONAL
         }
@@ -103,7 +101,6 @@ export async function criarDisponibilidadePsicologo(
             searchProfessionalAvailbility.forEach(async (searchAvailability) => { 
                 if (searchAvailability.psicologo_id == availability.id_psicologo && searchAvailability.disponibilidade_id == availability.disponibilidade_id) {
                     novaDisponibilidade = await criarDisponibilidadeProfissional(availability.id_psicologo, availability.disponibilidade_id, availability.status)
-                    console.log(novaDisponibilidade);
                 }
                 else {
                     return ERROR_ALREADY_EXISTS_PREFRENCE
@@ -199,8 +196,6 @@ export async function setDeletarDisponibilidade(diaSemana: string, idPsicologo: 
 
         let deleteAvailbility = await deletarDisponibilidade(diaSemana, idPsicologo)
 
-        console.log(deleteAvailbility);
-
         if (deleteAvailbility === false) {
             return ERROR_NOT_DELETED
         }
@@ -267,10 +262,7 @@ export async function setAtualizarDisponibilidadeProfissional(availabilityData: 
     try {
         if(String(contentType).toLowerCase() !== 'application/json'){
             return ERROR_CONTENT_TYPE
-        }
-
-        console.log(availabilityData);
-        
+        }        
         
         if(!isValidId(availabilityData.disponibilidade_id)){
             return ERROR_INVALID_ID

@@ -143,7 +143,6 @@ export async function getLogarCliente(email: string | undefined, senha: string |
     
         let clientData = await logarCliente(email, senha)
     
-        console.log(clientData);
         
     
         if(clientData.status == 200){

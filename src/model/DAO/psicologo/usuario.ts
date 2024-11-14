@@ -143,8 +143,6 @@ export async function listarPsicologos() {
       }
     })
 
-    console.log(user);
-
     if (!user) {
       return{
         data: ERROR_NOT_FOUND.message,

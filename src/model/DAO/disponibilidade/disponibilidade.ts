@@ -116,11 +116,7 @@ export async function listarDisponibilidadesPorProfissional(profissionalId: numb
   }
 }
 
-export async function criarDisponibilidadeProfissional(profissionalId: number, disponibilidade: number, status:string){
-
-  console.log(profissionalId, disponibilidade, status);
-  
-  
+export async function criarDisponibilidadeProfissional(profissionalId: number, disponibilidade: number, status:string){  
   try {
     await prisma.tbl_psicologo_disponibilidade.create({
       data: {
@@ -173,9 +169,8 @@ export async function criarDisponibilidadeProfissional(profissionalId: number, d
       },
     });
 
-    if (!disponibilidades) {
-      console.log('oi');
-      
+    if (!disponibilidades) {      
+      throw new Error('Nenhuma disponibilidade encontrada.');
     }
 
     const response = {
@@ -184,10 +179,10 @@ export async function criarDisponibilidadeProfissional(profissionalId: number, d
       email: usuario.email,
       telefone: usuario.telefone,
       disponibilidades: disponibilidades.map((disp: any | string) => ({
-        id: disp.tbl_disponibilidade?.id,
-        dia_semana: disp.tbl_disponibilidade?.dia_semana,
-        from: disp.tbl_disponibilidade?.horario_inicio,
-        to: disp.tbl_disponibilidade?.horario_fim,
+        id: disp.tbl_disponibilidade.id,
+        dia_semana: disp.tbl_disponibilidade.dia_semana,
+        from: disp.tbl_disponibilidade.horario_inicio,
+        to: disp.tbl_disponibilidade.horario_fim,
         status: disp.status_disponibilidade,
       })),
     };
