@@ -1,3 +1,4 @@
+import { createJWT } from "../../../middleware/middlewareJWT";
 import { ERROR_AGE_NOT_VALID, ERROR_ALREADY_EXISTS_ACCOUNT_CIP, ERROR_ALREADY_EXISTS_ACCOUNT_CPF, ERROR_ALREADY_EXISTS_ACCOUNT_EMAIL, ERROR_CONTENT_TYPE, ERROR_DATE_NOT_VALID, ERROR_INTERNAL_SERVER, ERROR_INTERNAL_SERVER_DB, ERROR_NOT_CREATED, ERROR_NOT_FOUND, ERROR_REQUIRED_FIELDS, SUCCESS_CREATED_ITEM } from "../../../module/config";
 import { TProfessional } from "../../domain/entities/professional-entity";
 import { verificacaoProfissionais } from "../../infra/professional-data-validation";
@@ -136,8 +137,10 @@ export async function getLogarPsicologo(email: string | null, senha: string | nu
     let clientData = await logarPsicologo(email, senha)
 
     if(clientData){
+        let professionalToken = await createJWT(clientData.id)
         return {
             data: clientData,
+            token: professionalToken,
             status_code: 200
         }
     }
