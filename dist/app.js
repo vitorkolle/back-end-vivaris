@@ -18,16 +18,26 @@ const app = (0, express_1.default)();
 const middlewareJWT_1 = require("./middleware/middlewareJWT");
 /*****************************Autenticação/JWT****************************************************/
 const verifyJWT = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    let token = req.header('x-access-token');
-    if (!token) {
-        return res.status(401).json("É necessário um token de autorização").end();
+    try {
+        let token = req.header('x-access-token');
+        if (!token) {
+            return res.status(401).json("É necessário um token de autorização").end();
+        }
+        let role = yield (0, middlewareJWT_1.getRole)(token.toString());
+        if (role === 'Função Inválida') {
+            return res.status(401).json("Função Inválida").end();
+        }
+        const authToken = yield (0, middlewareJWT_1.validateJWT)(token.toString(), role);
+        if (authToken) {
+            next();
+        }
+        else {
+            return res.status(401).end();
+        }
     }
-    const authToken = yield (0, middlewareJWT_1.validateJWT)(token.toString());
-    if (authToken) {
-        next();
-    }
-    else {
-        return res.status(401).end();
+    catch (error) {
+        console.error('Erro ao tentar autenticar usuário:', error);
+        return res.status(401).json(config_1.ERROR_INVALID_AUTH_TOKEN.message).end();
     }
 });
 const cors_1 = __importDefault(require("cors"));
@@ -50,8 +60,9 @@ const controller_psicologo_1 = require("./src/controller/usuario/controller_psic
 const controller_usuario_1 = require("./src/controller/usuario/controller_usuario");
 const controller_pagamento_1 = require("./src/controller/pagamento/controller_pagamento");
 const stripe_1 = __importDefault(require("stripe"));
+const config_1 = require("./module/config");
 /**********************************************STRIPE***************************************************************/
-route.post('/webhook', verifyJWT, express_1.default.raw({ type: 'application/json' }), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+route.post('/webhook', express_1.default.raw({ type: 'application/json' }), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const signature = req.headers['stripe-signature'];
     if (!signature || typeof signature !== 'string') {
         return res.status(400).json({ error: 'Invalid or missing Stripe signature' });
@@ -69,7 +80,7 @@ route.post('/webhook', verifyJWT, express_1.default.raw({ type: 'application/jso
 }));
 /****************************************************USUARIO-CLIENTE****************************************************/
 //post de clientes
-route.post('/cliente', verifyJWT, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+route.post('/cliente', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const contentType = req.header('content-type');
     const userData = {
         nome: req.body.nome,
@@ -86,7 +97,7 @@ route.post('/cliente', verifyJWT, (req, res) => __awaiter(void 0, void 0, void 0
     res.json(newUser);
 }));
 //post de Preferências de Usuário
-route.post('/cliente/preferencias', verifyJWT, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+route.post('/cliente/preferencias', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const contentType = req.header('content-type');
     const userData = {
         id_cliente: req.body.id_cliente,

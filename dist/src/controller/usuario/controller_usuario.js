@@ -139,7 +139,7 @@ function getLogarCliente(email, senha) {
             let clientData = yield (0, usuario_1.logarCliente)(email, senha);
             console.log(clientData);
             if (clientData.status == 200) {
-                let clientToken = yield (0, middlewareJWT_1.createJWT)(clientData.id);
+                let clientToken = yield (0, middlewareJWT_1.createJWT)({ id: clientData.id, role: 'client' });
                 return {
                     cliente: clientData,
                     token: clientToken,

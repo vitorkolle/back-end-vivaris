@@ -147,7 +147,7 @@ export async function getLogarCliente(email: string | undefined, senha: string |
         
     
         if(clientData.status == 200){
-            let clientToken = await createJWT(clientData.id)
+            let clientToken = await createJWT({id:clientData.id, role:'client'})
             return {
                 cliente: clientData,
                 token: clientToken,

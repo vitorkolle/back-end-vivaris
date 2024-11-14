@@ -43,7 +43,7 @@ export declare function getLogarPsicologo(email: string | null, senha: string | 
         message: string;
         status_code: number;
     };
-    token: string;
+    token: string | boolean;
     status_code: number;
 }>;
 export declare function getBuscarPsicologo(id: number): Promise<{

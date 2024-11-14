@@ -67,7 +67,7 @@ export declare function getLogarCliente(email: string | undefined, senha: string
         status: number;
         message: string;
     };
-    token: string;
+    token: string | boolean;
     status_code: number;
 }>;
 export declare function getBuscarCliente(id: number): Promise<{

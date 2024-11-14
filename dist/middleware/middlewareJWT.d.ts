@@ -1,2 +1,8 @@
-export declare const createJWT: (payload: number) => Promise<string>;
-export declare const validateJWT: (token: string) => Promise<boolean>;
+interface payload {
+    id: number;
+    role: 'client' | 'professional';
+}
+export declare function createJWT(payload: payload): Promise<boolean | string>;
+export declare function getRole(token: string): Promise<string>;
+export declare function validateJWT(token: string, user: string): Promise<boolean>;
+export {};

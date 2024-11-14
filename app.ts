@@ -1,27 +1,39 @@
 import { TUser } from './src/domain/entities/user-entity'
 import { TUserPreferences } from './src/domain/entities/user-preferences'
 
-import express, { Router } from 'express'
+import express, { Router} from 'express'
 const route: Router = express.Router()
 const app = express()
 
 
-import { validateJWT } from './middleware/middlewareJWT'
+import { getRole, validateJWT } from './middleware/middlewareJWT'
+
 /*****************************Autenticação/JWT****************************************************/
-const verifyJWT = async (req : express.Request, res : express.Response, next : express.NextFunction) => {
+const verifyJWT = async (req : express.Request, res : express.Response, next : express.NextFunction)  => {
+    try {
     let token = req.header('x-access-token')    
     
     if(!token){
         return res.status(401).json("É necessário um token de autorização").end()
     }
-        
-    const authToken = await validateJWT(token.toString())    
+
+    let role = await getRole(token.toString())
+
+    if(role === 'Função Inválida'){
+        return res.status(401).json("Função Inválida").end()
+    }
+
+    const authToken = await validateJWT(token.toString(), role)
 
     if (authToken) {
         next()
     }
     else{
         return res.status(401).end()
+    }   
+    } catch (error) {
+        console.error('Erro ao tentar autenticar usuário:', error);
+        return res.status(401).json(ERROR_INVALID_AUTH_TOKEN.message).end()
     }
 }
 
@@ -55,10 +67,11 @@ import { TProfessionalAvailability } from './src/domain/entities/professional-av
 import { TProfessional } from './src/domain/entities/professional-entity'
 import { confirmPayment, createPaymentIntent } from './src/controller/pagamento/controller_pagamento'
 import stripe from 'stripe'
+import { ERROR_INVALID_AUTH_TOKEN } from './module/config'
 
 
 /**********************************************STRIPE***************************************************************/
-route.post('/webhook', verifyJWT, express.raw({ type: 'application/json' }), async (req, res) => {
+route.post('/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
 
     const signature = req.headers['stripe-signature'];
     
@@ -83,7 +96,7 @@ route.post('/webhook', verifyJWT, express.raw({ type: 'application/json' }), asy
 })
 /****************************************************USUARIO-CLIENTE****************************************************/
 //post de clientes
-route.post('/cliente', verifyJWT, async (req, res) => {
+route.post('/cliente', async (req, res) =>{
 
     const contentType = req.header('content-type')
 
@@ -106,7 +119,7 @@ route.post('/cliente', verifyJWT, async (req, res) => {
 })
 
 //post de Preferências de Usuário
-route.post('/cliente/preferencias', verifyJWT, async (req, res) => {
+route.post('/cliente/preferencias', async (req, res) => {
     const contentType = req.header('content-type')
 
     const userData: TUserPreferences = {

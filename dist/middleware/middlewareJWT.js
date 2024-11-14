@@ -12,27 +12,36 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.validateJWT = exports.createJWT = void 0;
+exports.createJWT = createJWT;
+exports.getRole = getRole;
+exports.validateJWT = validateJWT;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const secret = 'abc123';
 const EXPIRES = 60;
-const createJWT = function (payload) {
+function createJWT(payload) {
     return __awaiter(this, void 0, void 0, function* () {
-        const token = jsonwebtoken_1.default.sign({ userId: payload }, secret, { expiresIn: EXPIRES });
-        return token;
-    });
-};
-exports.createJWT = createJWT;
-const validateJWT = function (token) {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            jsonwebtoken_1.default.verify(token, secret);
-            return true;
-        }
-        catch (error) {
-            console.error('Erro ao validar o token:', error);
+        const token = jsonwebtoken_1.default.sign({ userId: payload.id, role: payload.role }, secret, { expiresIn: EXPIRES });
+        if (!token) {
             return false;
         }
+        return token;
     });
-};
-exports.validateJWT = validateJWT;
+}
+function getRole(token) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const verify = jsonwebtoken_1.default.verify(token, secret);
+        if (!verify) {
+            return 'Função Inválida';
+        }
+        return verify.role;
+    });
+}
+function validateJWT(token, user) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const verify = jsonwebtoken_1.default.verify(token, secret);
+        if (verify.role !== user) {
+            return false;
+        }
+        return verify ? true : false;
+    });
+}
