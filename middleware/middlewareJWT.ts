@@ -33,3 +33,13 @@ export async function validateJWT(token: string): Promise<boolean> {
 
     return verify ? true : false
 }
+
+export async function validateJWTRole(token: string, user: string): Promise<boolean> {
+    const verify = jwt.verify(token, secret) as {userId: number, role: string}
+
+    if(verify.role !== user){
+        return false
+    }
+
+    return verify ? true : false
+}

@@ -6,10 +6,32 @@ const route: Router = express.Router()
 const app = express()
 
 
-import { getRole, validateJWT } from './middleware/middlewareJWT'
+import { getRole, validateJWT, validateJWTRole } from './middleware/middlewareJWT'
 
 /*****************************Autenticação/JWT****************************************************/
 const verifyJWT = async (req : express.Request, res : express.Response, next : express.NextFunction)  => {
+    try {
+    let token = req.header('x-access-token')    
+    
+    if(!token){
+        return res.status(401).json("É necessário um token de autorização").end()
+    }
+
+    const authToken = await validateJWT(token.toString())
+
+    if (authToken) {
+        next()
+    }
+    else{
+        return res.status(401).end()
+    }   
+    } catch (error) {
+        console.error('Erro ao tentar autenticar usuário:', error);
+        return res.status(401).json(ERROR_INVALID_AUTH_TOKEN.message).end()
+    }
+}
+ 
+const verifyJWTRole = async (req : express.Request, res : express.Response, next : express.NextFunction)  => {
     try {
     let token = req.header('x-access-token')    
     
@@ -23,7 +45,7 @@ const verifyJWT = async (req : express.Request, res : express.Response, next : e
         return res.status(401).json("Função Inválida").end()
     }
 
-    const authToken = await validateJWT(token.toString())
+    const authToken = await validateJWTRole(token.toString(), role)
 
     if (authToken) {
         next()
