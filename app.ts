@@ -2,31 +2,50 @@ import { TUser } from './src/domain/entities/user-entity'
 import { TUserPreferences } from './src/domain/entities/user-preferences'
 
 import express, { Router } from 'express'
-
 const route: Router = express.Router()
-
 const app = express()
-app.use(express.json())
+
+
+import { validateJWT } from './middleware/middlewareJWT'
+/*****************************Autenticação/JWT****************************************************/
+const verifyJWT = async (req : express.Request, res : express.Response, next : express.NextFunction) => {
+    let token = req.header('x-access-token')    
+    
+    if(!token){
+        return res.status(401).json("É necessário um token de autorização").end()
+    }
+        
+    const authToken = await validateJWT(token.toString())    
+
+    if (authToken) {
+        next()
+    }
+    else{
+        return res.status(401).end()
+    }
+}
+
 
 import cors from 'cors'
-
 const corsOptions = {
     origin: ['http://localhost:5173', 'http://127.0.0.1:5173', '*'],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Métodos permitidos
     allowedHeaders: ['Content-Type', 'Authorization'], // Cabeçalhos permitidos
     optionsSuccessStatus: 200
 };
-
 app.use(cors(corsOptions));
 
-app.use('/v1/vivaris', route)
 
+app.use(express.json())
+
+
+app.use('/v1/vivaris', route)
 app.listen('8080', () => {
     console.log("API funcionando na porta 8080");
 })
 
 
-//Import Controller 
+//Import 
 import { criarDisponibilidadePsicologo, getBuscarDisponibilidade, getListarDisponibilidadesProfissional, setAtualizarDisponibilidade, setAtualizarDisponibilidadeProfissional, setDeletarDisponibilidade, setDeletarDisponibilidadeByHour, setInserirDisponibilidade } from './src/controller/disponibilidade/controller_disponibilidade'
 import { getBuscarPreferencia, getListarPreferencias, setInserirPreferencias } from './src/controller/preferencia/controller_preferencia'
 import { getBuscarPsicologo, getListarPsicologos, getLogarPsicologo, setInserirPsicologo } from './src/controller/usuario/controller_psicologo'
@@ -34,14 +53,12 @@ import { getBuscarCliente, getBuscarClientePreferencias, getBuscarSexo, getLista
 import { TAvailability } from './src/domain/entities/availability-entity'
 import { TProfessionalAvailability } from './src/domain/entities/professional-availability'
 import { TProfessional } from './src/domain/entities/professional-entity'
-
 import { confirmPayment, createPaymentIntent } from './src/controller/pagamento/controller_pagamento'
-import { TCard } from './src/domain/entities/card-entity'
 import stripe from 'stripe'
 
-/*************************************************************************************************************/
 
-route.post('/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
+/**********************************************STRIPE***************************************************************/
+route.post('/webhook', verifyJWT, express.raw({ type: 'application/json' }), async (req, res) => {
 
     const signature = req.headers['stripe-signature'];
     
@@ -64,10 +81,9 @@ route.post('/webhook', express.raw({ type: 'application/json' }), async (req, re
 
     res.json({ received: true });
 })
-
 /****************************************************USUARIO-CLIENTE****************************************************/
 //post de clientes
-route.post('/cliente', async (req, res) => {
+route.post('/cliente', verifyJWT, async (req, res) => {
 
     const contentType = req.header('content-type')
 
@@ -90,7 +106,7 @@ route.post('/cliente', async (req, res) => {
 })
 
 //post de Preferências de Usuário
-route.post('/cliente/preferencias', async (req, res) => {
+route.post('/cliente/preferencias', verifyJWT, async (req, res) => {
     const contentType = req.header('content-type')
 
     const userData: TUserPreferences = {
@@ -121,8 +137,8 @@ route.post('/login/usuario', async (req, res) => {
 })
 
 
-route.get('/usuario/:id', async (req, res) => {
-    let id = Number(req.params.id)
+route.get('/usuario/:id', verifyJWT, async (req, res) => {
+    let id = Number(req.params.id)    
 
     let userData = await getBuscarCliente(id)
 
@@ -130,7 +146,7 @@ route.get('/usuario/:id', async (req, res) => {
     res.json(userData)
 })
 
-route.get('/usuario/preferencias/:id', async (req, res) => {
+route.get('/usuario/preferencias/:id', verifyJWT, async (req, res) => {
     let id = Number(req.params.id)
 
     let userData = await getBuscarClientePreferencias(id)
@@ -141,7 +157,7 @@ route.get('/usuario/preferencias/:id', async (req, res) => {
 
 
 /****************************************************GÊNERO****************************************************/
-route.get('/sexo', async (req, res) => {
+route.get('/sexo', verifyJWT, async (req, res) => {
     let allSex = await getListarSexo()
 
     res.status(allSex.status_code)
@@ -149,7 +165,7 @@ route.get('/sexo', async (req, res) => {
 
 })
 
-route.get('/usuario/sexo/:id', async (req, res) => {
+route.get('/usuario/sexo/:id', verifyJWT,  async (req, res) => {
     let id = req.params.id
     let idFormat = Number(id)
 
@@ -163,7 +179,7 @@ route.get('/usuario/sexo/:id', async (req, res) => {
 /****************************************************PSICÓLOGO****************************************************/
 
 //post de psicólogos
-route.post('/psicologo', async (req, res) => {
+route.post('/psicologo', verifyJWT,  async (req, res) => {
     const contentType = req.header('Content-Type')
 
     const professionalData: TProfessional = {
@@ -185,7 +201,7 @@ route.post('/psicologo', async (req, res) => {
     res.json(newProfesional)
 })
 
-route.post('/profissional/login', async (req, res) => {
+route.post('/profissional/login', verifyJWT, async (req, res) => {
     let email = req.body.email
     let senha = req.body.senha
 
@@ -198,7 +214,7 @@ route.post('/profissional/login', async (req, res) => {
 
 })
 
-route.get('/profissional/:id', async (req, res) => {
+route.get('/profissional/:id', verifyJWT, async (req, res) => {
     const id = Number(req.params.id)
 
     const getUser = await getBuscarPsicologo(id)
@@ -207,7 +223,7 @@ route.get('/profissional/:id', async (req, res) => {
     res.json(getUser)
 })
 
-route.get('/profissionais', async (req, res) => {
+route.get('/profissionais', verifyJWT, async (req, res) => {
     const getProfissionais = await getListarPsicologos()
 
     res.status(getProfissionais.status_code)
@@ -215,7 +231,7 @@ route.get('/profissionais', async (req, res) => {
 })
 
 /****************************************************DISPONIBILIDADE****************************************************/
-route.post('/disponibilidade', async (req, res) => {
+route.post('/disponibilidade', verifyJWT, async (req, res) => {
     const contentType = req.header('content-type')
 
     const disponibilidade: TAvailability = {
@@ -232,7 +248,7 @@ route.post('/disponibilidade', async (req, res) => {
     res.json(rsDisponilidade)
 })
 
-route.post('/disponibilidade/psicologo/:id', async (req, res) => {
+route.post('/disponibilidade/psicologo/:id', verifyJWT, async (req, res) => {
     let id = Number(req.params.id)
 
     const availability: TProfessionalAvailability = {
@@ -249,7 +265,7 @@ route.post('/disponibilidade/psicologo/:id', async (req, res) => {
     res.json(rsDisponilidade)
 })
 
-route.get('/disponibilidade/psicologo/:id', async (req, res) => {
+route.get('/disponibilidade/psicologo/:id', verifyJWT, async (req, res) => {
     let id = Number(req.params.id)
 
     const professionalAvailbility = await getListarDisponibilidadesProfissional(id)
@@ -259,7 +275,7 @@ route.get('/disponibilidade/psicologo/:id', async (req, res) => {
 })
 
 
-route.delete('/disponibilidades/psicologo/:id', async (req, res) => {
+route.delete('/disponibilidades/psicologo/:id', verifyJWT, async (req, res) => {
     let id = Number(req.params.id)
     let diaSemana = String(req.body.dia_semana)
 
@@ -272,7 +288,7 @@ route.delete('/disponibilidades/psicologo/:id', async (req, res) => {
     res.json(availabilityData)
 })
 
-route.get('/disponibilidade/:id', async (req, res) => {
+route.get('/disponibilidade/:id', verifyJWT, async (req, res) => {
     let id = Number(req.params.id)
 
     const buscarDisponibilidade = await getBuscarDisponibilidade(id)
@@ -281,7 +297,7 @@ route.get('/disponibilidade/:id', async (req, res) => {
     res.json(buscarDisponibilidade)
 })
 
-route.put('/disponibilidade/:id', async (req, res) => {
+route.put('/disponibilidade/:id', verifyJWT, async (req, res) => {
     const id = Number(req.params.id)
 
     const availabilityData: TAvailability = {
@@ -301,7 +317,7 @@ route.put('/disponibilidade/:id', async (req, res) => {
     res.json(updateAvaibility)
 })
 
-route.put('/psicologo/disponibilidade', async (req, res) => {
+route.put('/psicologo/disponibilidade', verifyJWT, async (req, res) => {
 
     const availabilityData: TProfessionalAvailability = {
         id_psicologo: req.body.id_psicologo,
@@ -317,7 +333,7 @@ route.put('/psicologo/disponibilidade', async (req, res) => {
     res.json(updateProfessionalAvailbility)
 })
 
-route.delete('/disponibilidade/psicologo/:id', async (req, res) => {
+route.delete('/disponibilidade/psicologo/:id', verifyJWT, async (req, res) => {
     let contentType = req.header("Content-Type")
     let professionalId = Number(req.params.id)
     let weekDay = req.body.dia_semana
@@ -331,7 +347,7 @@ route.delete('/disponibilidade/psicologo/:id', async (req, res) => {
 })
 
 /****************************************************PREFERÊNCIAS****************************************************/
-route.get('/preferencias', async (req, res) => {
+route.get('/preferencias', verifyJWT, async (req, res) => {
     let preferenceData = await getListarPreferencias()
 
     console.log(preferenceData)
@@ -341,7 +357,7 @@ route.get('/preferencias', async (req, res) => {
 
 })
 
-route.get('/preferencias/:id', async (req, res) => {
+route.get('/preferencias/:id', verifyJWT, async (req, res) => {
     console.log("g");
 
     let id = Number(req.params.id)
@@ -353,7 +369,7 @@ route.get('/preferencias/:id', async (req, res) => {
 })
 
 /****************************************************PAGAMENTO****************************************************/
-route.post('/create-checkout-session', async (req, res) => {
+route.post('/create-checkout-session', verifyJWT, async (req, res) => {
     let idConsulta = req.body.id_consulta
     
     let idCliente = req.body.id_cliente

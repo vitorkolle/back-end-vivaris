@@ -157,11 +157,10 @@ export async function logarCliente(email: string, senha: string) {
         foto_perfil: true
       }
     })
-
-    console.log(usuario);
     
     if (!usuario) {
       return {
+        id: 0,
         status: ERROR_NOT_FOUND.status_code,
         message: ERROR_NOT_FOUND.message
       }    
@@ -179,6 +178,7 @@ export async function logarCliente(email: string, senha: string) {
 
     if(!preferencias_usuario){
       const response = {
+        id: usuario.id,
         usuario: usuario,
         status: 200,
         message: ERROR_NOT_FOUND_PREFERENCE.message
@@ -208,6 +208,7 @@ export async function logarCliente(email: string, senha: string) {
 
     if(preferenciasArray.length < 1){
       const response = {
+        id: usuario.id,
         usuario: usuario,
         status: 200,
         message: ERROR_NOT_FOUND_PREFERENCE.message
@@ -217,6 +218,7 @@ export async function logarCliente(email: string, senha: string) {
     }
 
     const response = {
+      id: usuario.id,
       usuario: usuario,
       preferencias_usuario: preferenciasArray,
       status: 200

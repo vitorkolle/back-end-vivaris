@@ -13,6 +13,7 @@ exports.setInserirPsicologo = setInserirPsicologo;
 exports.getLogarPsicologo = getLogarPsicologo;
 exports.getBuscarPsicologo = getBuscarPsicologo;
 exports.getListarPsicologos = getListarPsicologos;
+const middlewareJWT_1 = require("../../../middleware/middlewareJWT");
 const config_1 = require("../../../module/config");
 const professional_data_validation_1 = require("../../infra/professional-data-validation");
 const zod_validations_1 = require("../../infra/zod-validations");
@@ -128,8 +129,10 @@ function getLogarPsicologo(email, senha) {
         }
         let clientData = yield (0, usuario_1.logarPsicologo)(email, senha);
         if (clientData) {
+            let professionalToken = yield (0, middlewareJWT_1.createJWT)(clientData.id);
             return {
                 data: clientData,
+                token: professionalToken,
                 status_code: 200
             };
         }

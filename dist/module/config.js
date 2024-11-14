@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SUCCESS_UPDATED_ITEM = exports.SUCCESS_DELETED_ITEM = exports.SUCCESS_CREATED_ITEM = exports.ERROR_INVALID_PAYMENT_METHOD_ID = exports.ERROR_INVALID_CARD = exports.ERROR_NOT_DELETED = exports.ERROR_ALREADY_EXISTS_PROFESSIONAL_AVAILBILITY = exports.ERROR_AGE_NOT_VALID = exports.ERROR_DATE_NOT_VALID = exports.ERROR_ALREADY_EXISTS_ACCOUNT_CIP = exports.ERROR_ALREADY_EXISTS_ACCOUNT_CPF = exports.ERROR_ALREADY_EXISTS_ACCOUNT_EMAIL = exports.ERROR_NOT_CREATED = exports.ERROR_INTERNAL_SERVER = exports.ERROR_CONTENT_TYPE = exports.ERROR_INTERNAL_SERVER_DB = exports.ERROR_ALREADY_EXISTS_PREFRENCE = exports.ERROR_NOT_FOUND_AVAILBILITY = exports.ERROR_NOT_FOUND_PREFERENCE = exports.ERROR_NOT_FOUND_PROFESSIONAL = exports.ERROR_NOT_FOUND = exports.ERROR_REQUIRED_FIELDS = exports.ERROR_INVALID_ID = void 0;
+exports.SUCCESS_UPDATED_ITEM = exports.SUCCESS_DELETED_ITEM = exports.SUCCESS_CREATED_ITEM = exports.ERROR_INVALID_AUTH_TOKEN = exports.ERROR_INVALID_PAYMENT_METHOD_ID = exports.ERROR_INVALID_CARD = exports.ERROR_NOT_DELETED = exports.ERROR_ALREADY_EXISTS_PROFESSIONAL_AVAILBILITY = exports.ERROR_AGE_NOT_VALID = exports.ERROR_DATE_NOT_VALID = exports.ERROR_ALREADY_EXISTS_ACCOUNT_CIP = exports.ERROR_ALREADY_EXISTS_ACCOUNT_CPF = exports.ERROR_ALREADY_EXISTS_ACCOUNT_EMAIL = exports.ERROR_NOT_CREATED = exports.ERROR_INTERNAL_SERVER = exports.ERROR_CONTENT_TYPE = exports.ERROR_INTERNAL_SERVER_DB = exports.ERROR_ALREADY_EXISTS_PREFRENCE = exports.ERROR_NOT_FOUND_AVAILBILITY = exports.ERROR_NOT_FOUND_PREFERENCE = exports.ERROR_NOT_FOUND_PROFESSIONAL = exports.ERROR_NOT_FOUND = exports.ERROR_REQUIRED_FIELDS = exports.ERROR_INVALID_ID = void 0;
 /*************** Mensagens de Erro ***************/
 exports.ERROR_INVALID_ID = { status: false, status_code: 400, message: 'O ID encaminhado na requisição não é válido!!' };
 exports.ERROR_REQUIRED_FIELDS = { status: false, status_code: 400, message: 'Existem campos requeridos que não foram preenchidos, ou não atendem aos critérios de digitação!!' };
@@ -22,6 +22,7 @@ exports.ERROR_ALREADY_EXISTS_PROFESSIONAL_AVAILBILITY = { status: false, status_
 exports.ERROR_NOT_DELETED = { status: false, status_code: 400, message: 'Não foi possível deletar a disponibilidade' };
 exports.ERROR_INVALID_CARD = { status: false, status_code: 400, message: 'Os dados do cartão não são válidos, revise-os e tente novamente' };
 exports.ERROR_INVALID_PAYMENT_METHOD_ID = { status: false, status_code: 400, message: 'Este ID de forma de pagamento não existe!' };
+exports.ERROR_INVALID_AUTH_TOKEN = { status: false, status_code: 401, message: 'O token de autenticação enviado na requisição é inválido!!' };
 /****************** Mensagens de Sucesso *********/
 exports.SUCCESS_CREATED_ITEM = { status: true, status_code: 201, message: 'Item criado com sucesso!!' };
 exports.SUCCESS_DELETED_ITEM = { status: true, status_code: 200, message: 'Item deletado com sucesso!!' };

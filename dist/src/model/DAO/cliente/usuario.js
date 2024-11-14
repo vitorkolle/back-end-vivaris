@@ -168,9 +168,9 @@ function logarCliente(email, senha) {
                     foto_perfil: true
                 }
             });
-            console.log(usuario);
             if (!usuario) {
                 return {
+                    id: 0,
                     status: config_1.ERROR_NOT_FOUND.status_code,
                     message: config_1.ERROR_NOT_FOUND.message
                 };
@@ -186,6 +186,7 @@ function logarCliente(email, senha) {
             });
             if (!preferencias_usuario) {
                 const response = {
+                    id: usuario.id,
                     usuario: usuario,
                     status: 200,
                     message: config_1.ERROR_NOT_FOUND_PREFERENCE.message
@@ -209,6 +210,7 @@ function logarCliente(email, senha) {
             }
             if (preferenciasArray.length < 1) {
                 const response = {
+                    id: usuario.id,
                     usuario: usuario,
                     status: 200,
                     message: config_1.ERROR_NOT_FOUND_PREFERENCE.message
@@ -216,6 +218,7 @@ function logarCliente(email, senha) {
                 return response;
             }
             const response = {
+                id: usuario.id,
                 usuario: usuario,
                 preferencias_usuario: preferenciasArray,
                 status: 200

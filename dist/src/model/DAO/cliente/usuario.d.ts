@@ -23,6 +23,7 @@ export declare function criarPreferenciasUsuario(userId: number, preference: num
     }[];
 }>;
 export declare function logarCliente(email: string, senha: string): Promise<{
+    id: number;
     usuario: {
         id: number;
         nome: string;
@@ -33,6 +34,7 @@ export declare function logarCliente(email: string, senha: string): Promise<{
     status: number;
     message: string;
 } | {
+    id: number;
     usuario: {
         id: number;
         nome: string;
@@ -47,6 +49,7 @@ export declare function logarCliente(email: string, senha: string): Promise<{
     }[][];
     status: number;
 } | {
+    id: number;
     status: number;
     message: string;
 }>;

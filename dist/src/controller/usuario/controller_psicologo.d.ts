@@ -26,10 +26,6 @@ export declare function getLogarPsicologo(email: string | null, senha: string | 
     message: string;
 } | {
     data: {
-        status: boolean;
-        status_code: number;
-        message: string;
-    } | {
         id: number;
         nome: string;
         email: string;
@@ -42,7 +38,12 @@ export declare function getLogarPsicologo(email: string | null, senha: string | 
             sexo: string | null;
         };
         cip: string;
+    } | {
+        id: number;
+        message: string;
+        status_code: number;
     };
+    token: string;
     status_code: number;
 }>;
 export declare function getBuscarPsicologo(id: number): Promise<{

@@ -65,7 +65,11 @@ function logarPsicologo(email, senha) {
                 }
             });
             if (!user) {
-                return Promise.resolve(config_1.ERROR_NOT_FOUND);
+                return {
+                    id: 0,
+                    message: config_1.ERROR_NOT_FOUND.message,
+                    status_code: config_1.ERROR_NOT_FOUND.status_code
+                };
             }
             return user;
         }

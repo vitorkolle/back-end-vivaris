@@ -37,6 +37,7 @@ export declare function getLogarCliente(email: string | undefined, senha: string
     message: string;
 } | {
     cliente: {
+        id: number;
         usuario: {
             id: number;
             nome: string;
@@ -47,6 +48,7 @@ export declare function getLogarCliente(email: string | undefined, senha: string
         status: number;
         message: string;
     } | {
+        id: number;
         usuario: {
             id: number;
             nome: string;
@@ -61,9 +63,11 @@ export declare function getLogarCliente(email: string | undefined, senha: string
         }[][];
         status: number;
     } | {
+        id: number;
         status: number;
         message: string;
     };
+    token: string;
     status_code: number;
 }>;
 export declare function getBuscarCliente(id: number): Promise<{
