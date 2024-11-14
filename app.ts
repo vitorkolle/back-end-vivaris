@@ -23,7 +23,7 @@ const verifyJWT = async (req : express.Request, res : express.Response, next : e
         return res.status(401).json("Função Inválida").end()
     }
 
-    const authToken = await validateJWT(token.toString(), role)
+    const authToken = await validateJWT(token.toString())
 
     if (authToken) {
         next()
@@ -192,7 +192,7 @@ route.get('/usuario/sexo/:id', verifyJWT,  async (req, res) => {
 /****************************************************PSICÓLOGO****************************************************/
 
 //post de psicólogos
-route.post('/psicologo', verifyJWT,  async (req, res) => {
+route.post('/psicologo',  async (req, res) => {
     const contentType = req.header('Content-Type')
 
     const professionalData: TProfessional = {
@@ -214,7 +214,7 @@ route.post('/psicologo', verifyJWT,  async (req, res) => {
     res.json(newProfesional)
 })
 
-route.post('/profissional/login', verifyJWT, async (req, res) => {
+route.post('/profissional/login', async (req, res) => {
     let email = req.body.email
     let senha = req.body.senha
 
@@ -244,7 +244,7 @@ route.get('/profissionais', verifyJWT, async (req, res) => {
 })
 
 /****************************************************DISPONIBILIDADE****************************************************/
-route.post('/disponibilidade', verifyJWT, async (req, res) => {
+route.post('/disponibilidade', async (req, res) => {
     const contentType = req.header('content-type')
 
     const disponibilidade: TAvailability = {
@@ -261,7 +261,7 @@ route.post('/disponibilidade', verifyJWT, async (req, res) => {
     res.json(rsDisponilidade)
 })
 
-route.post('/disponibilidade/psicologo/:id', verifyJWT, async (req, res) => {
+route.post('/disponibilidade/psicologo/:id', async (req, res) => {
     let id = Number(req.params.id)
 
     const availability: TProfessionalAvailability = {
@@ -371,8 +371,6 @@ route.get('/preferencias', verifyJWT, async (req, res) => {
 })
 
 route.get('/preferencias/:id', verifyJWT, async (req, res) => {
-    console.log("g");
-
     let id = Number(req.params.id)
 
     let preferenceData = await getBuscarPreferencia(id)

@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 
 const secret = 'abc123';
-const EXPIRES = 60;
+const EXPIRES = 60 * 60;
 
 interface payload {
     id: number,
@@ -28,12 +28,8 @@ export async function getRole(token : string) : Promise<string> {
     return verify.role
 }
 
-export async function validateJWT(token: string, user: string): Promise<boolean> {
+export async function validateJWT(token: string): Promise<boolean> {
     const verify = jwt.verify(token, secret) as {userId: number, role: string}
-
-    if (verify.role !== user) {
-        return false
-    }
 
     return verify ? true : false
 }
