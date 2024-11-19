@@ -113,3 +113,32 @@ export declare function getBuscarClientePreferencias(id: number): Promise<{
     };
     status_code: number;
 }>;
+export declare function getListarClientes(): Promise<{
+    data: string;
+    status_code: number;
+} | {
+    data: {
+        id: number;
+        nome: string;
+        email: string;
+        data_nascimento: Date;
+        cpf: string;
+        senha: string;
+        foto_perfil: string | null;
+        telefone: string;
+        link_instagram: string | null;
+        id_sexo: number | null;
+        tbl_sexo: {
+            sexo: string | null;
+        } | null;
+        tbl_clientes_preferencias: {
+            id_clientes: number | null;
+            tbl_preferencias: {
+                id: number;
+                nome: string;
+                cor: string;
+            } | null;
+        }[];
+    }[];
+    status_code: number;
+}>;

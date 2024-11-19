@@ -83,7 +83,7 @@ app.listen('8080', () => {
 import { criarDisponibilidadePsicologo, getBuscarDisponibilidade, getListarDisponibilidadesProfissional, setAtualizarDisponibilidade, setAtualizarDisponibilidadeProfissional, setDeletarDisponibilidade, setDeletarDisponibilidadeByHour, setInserirDisponibilidade } from './src/controller/disponibilidade/controller_disponibilidade'
 import { getBuscarPreferencia, getListarPreferencias, setInserirPreferencias } from './src/controller/preferencia/controller_preferencia'
 import { getBuscarPsicologo, getListarPsicologos, getLogarPsicologo, setInserirPsicologo } from './src/controller/usuario/controller_psicologo'
-import { getBuscarCliente, getBuscarClientePreferencias, getBuscarSexo, getListarSexo, getLogarCliente, setInserirUsuario } from './src/controller/usuario/controller_usuario'
+import { getBuscarCliente, getBuscarClientePreferencias, getBuscarSexo, getListarClientes, getListarSexo, getLogarCliente, setInserirUsuario } from './src/controller/usuario/controller_usuario'
 import { TAvailability } from './src/domain/entities/availability-entity'
 import { TProfessionalAvailability } from './src/domain/entities/professional-availability'
 import { TProfessional } from './src/domain/entities/professional-entity'
@@ -188,6 +188,14 @@ route.get('/usuario/preferencias/:id', verifyJWT, async (req, res) => {
 
     res.status(userData.status_code)
     res.json(userData)
+})
+
+route.get('/usuarios', verifyJWT, async (req, res) => {
+    let allUsers = await getListarClientes()
+
+    res.status(allUsers.status_code)
+    res.json(allUsers)
+
 })
 
 

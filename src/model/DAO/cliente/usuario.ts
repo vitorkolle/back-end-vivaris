@@ -259,3 +259,48 @@ export async function buscarCliente(id:number) {
     throw new Error("Não foi possível obter o usuário");
   }
 }
+
+export async function listarUsuarios() {
+  try {
+    let clientData = await prisma.tbl_clientes.findMany({
+      select: {
+        id: true,
+        nome: true,
+        email: true,
+        senha: true,
+        telefone: true,
+        cpf: true,
+        data_nascimento: true,
+        foto_perfil: true,
+        link_instagram: true,
+        id_sexo: true,
+        tbl_clientes_preferencias: {
+          select: {
+            id_clientes: true,
+            tbl_preferencias: {
+              select: {
+                id: true,
+                nome: true,
+                cor: true
+              }
+            }
+          }
+        },
+        tbl_sexo: {
+          select: {
+            sexo: true
+          }
+        }
+      }
+    })
+
+    if (!clientData) {
+      return false
+    }
+
+    return clientData
+  } catch (error) {
+    console.error("Erro ao obter o usuário", error);
+    throw new Error("Não foi possível obter os usuários");
+  }
+}

@@ -63,7 +63,7 @@ const cors_1 = __importDefault(require("cors"));
 const corsOptions = {
     origin: ['http://localhost:5173', 'http://127.0.0.1:5173', '*'],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Métodos permitidos
-    allowedHeaders: ['Content-Type', 'Authorization'], // Cabeçalhos permitidos
+    allowedHeaders: ['Content-Type', 'Authorization', 'x-acccess-token'], // Cabeçalhos permitidos
     optionsSuccessStatus: 200
 };
 app.use((0, cors_1.default)(corsOptions));
@@ -146,6 +146,11 @@ route.get('/usuario/preferencias/:id', verifyJWT, (req, res) => __awaiter(void 0
     let userData = yield (0, controller_usuario_1.getBuscarClientePreferencias)(id);
     res.status(userData.status_code);
     res.json(userData);
+}));
+route.get('/usuarios', verifyJWT, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    let allUsers = yield (0, controller_usuario_1.getListarClientes)();
+    res.status(allUsers.status_code);
+    res.json(allUsers);
 }));
 /****************************************************GÊNERO****************************************************/
 route.get('/sexo', verifyJWT, (req, res) => __awaiter(void 0, void 0, void 0, function* () {

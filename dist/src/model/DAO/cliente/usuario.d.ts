@@ -65,3 +65,26 @@ export declare function buscarCliente(id: number): Promise<{
     link_instagram: string | null;
     id_sexo: number | null;
 } | null>;
+export declare function listarUsuarios(): Promise<false | {
+    id: number;
+    nome: string;
+    email: string;
+    data_nascimento: Date;
+    cpf: string;
+    senha: string;
+    foto_perfil: string | null;
+    telefone: string;
+    link_instagram: string | null;
+    id_sexo: number | null;
+    tbl_sexo: {
+        sexo: string | null;
+    } | null;
+    tbl_clientes_preferencias: {
+        id_clientes: number | null;
+        tbl_preferencias: {
+            id: number;
+            nome: string;
+            cor: string;
+        } | null;
+    }[];
+}[]>;
