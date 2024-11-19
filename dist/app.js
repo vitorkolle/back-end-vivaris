@@ -15,6 +15,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const route = express_1.default.Router();
 const app = (0, express_1.default)();
+const socket_io_1 = require("socket.io");
+const http_1 = __importDefault(require("http"));
 const middlewareJWT_1 = require("./middleware/middlewareJWT");
 /*****************************Autenticação/JWT****************************************************/
 const verifyJWT = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -63,7 +65,7 @@ const cors_1 = __importDefault(require("cors"));
 const corsOptions = {
     origin: ['http://localhost:5173', 'http://127.0.0.1:5173', '*'],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Métodos permitidos
-    allowedHeaders: ['Content-Type', 'Authorization', 'x-acccess-token'], // Cabeçalhos permitidos
+    allowedHeaders: ['Content-Type', 'Authorization', 'x-access-token'], // Cabeçalhos permitidos
     optionsSuccessStatus: 200
 };
 app.use((0, cors_1.default)(corsOptions));
@@ -71,6 +73,28 @@ app.use(express_1.default.json());
 app.use('/v1/vivaris', route);
 app.listen('8080', () => {
     console.log("API funcionando na porta 8080");
+});
+/*****************************VideoChamada****************************************************/
+route.get('/video-room', verifyJWT, (req, res) => {
+    const server = http_1.default.createServer(app);
+    console.log('oiii');
+    const io = new socket_io_1.Server(server, {
+        cors: {
+            methods: ["GET", "POST"],
+            origin: "*",
+        },
+    });
+    let roomId;
+    io.on("connection", (socket) => __awaiter(void 0, void 0, void 0, function* () {
+        roomId = yield (0, room_1.createRoom)(socket);
+        console.log(roomId);
+        console.log("a user connected");
+        (0, room_1.roomHandler)(socket, roomId);
+        socket.on("disconnect", () => {
+            console.log("user disconnected");
+        });
+    }));
+    res.json(roomId).status(200);
 });
 //Import 
 const controller_disponibilidade_1 = require("./src/controller/disponibilidade/controller_disponibilidade");
@@ -80,6 +104,7 @@ const controller_usuario_1 = require("./src/controller/usuario/controller_usuari
 const controller_pagamento_1 = require("./src/controller/pagamento/controller_pagamento");
 const stripe_1 = __importDefault(require("stripe"));
 const config_1 = require("./module/config");
+const room_1 = require("./src/room");
 /**********************************************STRIPE***************************************************************/
 route.post('/webhook', express_1.default.raw({ type: 'application/json' }), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const signature = req.headers['stripe-signature'];

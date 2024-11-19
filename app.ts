@@ -1,58 +1,59 @@
 import { TUser } from './src/domain/entities/user-entity'
 import { TUserPreferences } from './src/domain/entities/user-preferences'
 
-import express, { Router} from 'express'
+import express, { Router } from 'express'
 const route: Router = express.Router()
 const app = express()
 
-
+import { Server, Socket } from "socket.io";
+import http from "http";
 import { getRole, validateJWT, validateJWTRole } from './middleware/middlewareJWT'
 
 /*****************************Autenticação/JWT****************************************************/
-const verifyJWT = async (req : express.Request, res : express.Response, next : express.NextFunction)  => {
+const verifyJWT = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     try {
-    let token = req.header('x-access-token')    
-    
-    if(!token){
-        return res.status(401).json("É necessário um token de autorização").end()
-    }
+        let token = req.header('x-access-token')
 
-    const authToken = await validateJWT(token.toString())
+        if (!token) {
+            return res.status(401).json("É necessário um token de autorização").end()
+        }
 
-    if (authToken) {
-        next()
-    }
-    else{
-        return res.status(401).end()
-    }   
+        const authToken = await validateJWT(token.toString())
+
+        if (authToken) {
+            next()
+        }
+        else {
+            return res.status(401).end()
+        }
     } catch (error) {
         console.error('Erro ao tentar autenticar usuário:', error);
         return res.status(401).json(ERROR_INVALID_AUTH_TOKEN.message).end()
     }
 }
- 
-const verifyJWTRole = async (req : express.Request, res : express.Response, next : express.NextFunction)  => {
+
+const verifyJWTRole = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     try {
-    let token = req.header('x-access-token')    
-    
-    if(!token){
-        return res.status(401).json("É necessário um token de autorização").end()
-    }
+        let token = req.header('x-access-token')
 
-    let role = await getRole(token.toString())
+        if (!token) {
+            return res.status(401).json("É necessário um token de autorização").end()
+        }
 
-    if(role === 'Função Inválida'){
-        return res.status(401).json("Função Inválida").end()
-    }
+        let role = await getRole(token.toString())
 
-    const authToken = await validateJWTRole(token.toString(), role)
+        if (role === 'Função Inválida') {
+            return res.status(401).json("Função Inválida").end()
+        }
 
-    if (authToken) {
-        next()
-    }
-    else{
-        return res.status(401).end()
-    }   
+        const authToken = await validateJWTRole(token.toString(), role)
+
+        if (authToken) {
+            next()
+        }
+        else {
+            return res.status(401).end()
+        }
     } catch (error) {
         console.error('Erro ao tentar autenticar usuário:', error);
         return res.status(401).json(ERROR_INVALID_AUTH_TOKEN.message).end()
@@ -64,7 +65,7 @@ import cors from 'cors'
 const corsOptions = {
     origin: ['http://localhost:5173', 'http://127.0.0.1:5173', '*'],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Métodos permitidos
-    allowedHeaders: ['Content-Type', 'Authorization', 'x-acccess-token'], // Cabeçalhos permitidos
+    allowedHeaders: ['Content-Type', 'Authorization', 'x-access-token'], // Cabeçalhos permitidos
     optionsSuccessStatus: 200
 };
 app.use(cors(corsOptions));
@@ -78,6 +79,35 @@ app.listen('8080', () => {
     console.log("API funcionando na porta 8080");
 })
 
+/*****************************VideoChamada****************************************************/
+route.get('/video-room', verifyJWT, (req, res) => {
+
+    const server = http.createServer(app);
+
+    console.log('oiii');
+    const io = new Server(server, {
+        cors: {
+            methods: ["GET", "POST"],
+            origin: "*",
+        },
+    });
+
+    let roomId
+
+    io.on("connection", async (socket) =>  {
+         roomId = await createRoom(socket)
+        console.log(roomId);
+        
+        console.log("a user connected");
+        roomHandler(socket, roomId);
+
+        socket.on("disconnect", () => {
+            console.log("user disconnected");
+        });
+    });
+
+    res.json(roomId).status(200)
+})
 
 //Import 
 import { criarDisponibilidadePsicologo, getBuscarDisponibilidade, getListarDisponibilidadesProfissional, setAtualizarDisponibilidade, setAtualizarDisponibilidadeProfissional, setDeletarDisponibilidade, setDeletarDisponibilidadeByHour, setInserirDisponibilidade } from './src/controller/disponibilidade/controller_disponibilidade'
@@ -90,13 +120,14 @@ import { TProfessional } from './src/domain/entities/professional-entity'
 import { confirmPayment, createPaymentIntent } from './src/controller/pagamento/controller_pagamento'
 import stripe from 'stripe'
 import { ERROR_INVALID_AUTH_TOKEN } from './module/config'
+import { createRoom, roomHandler } from './src/room'
 
 
 /**********************************************STRIPE***************************************************************/
 route.post('/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
 
     const signature = req.headers['stripe-signature'];
-    
+
     if (!signature || typeof signature !== 'string') {
         return res.status(400).json({ error: 'Invalid or missing Stripe signature' });
     }
@@ -118,7 +149,7 @@ route.post('/webhook', express.raw({ type: 'application/json' }), async (req, re
 })
 /****************************************************USUARIO-CLIENTE****************************************************/
 //post de clientes
-route.post('/cliente', async (req, res) =>{
+route.post('/cliente', async (req, res) => {
 
     const contentType = req.header('content-type')
 
@@ -173,7 +204,7 @@ route.post('/login/usuario', async (req, res) => {
 
 
 route.get('/usuario/:id', verifyJWT, async (req, res) => {
-    let id = Number(req.params.id)    
+    let id = Number(req.params.id)
 
     let userData = await getBuscarCliente(id)
 
@@ -208,7 +239,7 @@ route.get('/sexo', verifyJWT, async (req, res) => {
 
 })
 
-route.get('/usuario/sexo/:id', verifyJWT,  async (req, res) => {
+route.get('/usuario/sexo/:id', verifyJWT, async (req, res) => {
     let id = req.params.id
     let idFormat = Number(id)
 
@@ -222,7 +253,7 @@ route.get('/usuario/sexo/:id', verifyJWT,  async (req, res) => {
 /****************************************************PSICÓLOGO****************************************************/
 
 //post de psicólogos
-route.post('/psicologo',  async (req, res) => {
+route.post('/psicologo', async (req, res) => {
     const contentType = req.header('Content-Type')
 
     const professionalData: TProfessional = {
@@ -412,10 +443,10 @@ route.get('/preferencias/:id', verifyJWT, async (req, res) => {
 /****************************************************PAGAMENTO****************************************************/
 route.post('/create-checkout-session', verifyJWT, async (req, res) => {
     let idConsulta = req.body.id_consulta
-    
+
     let idCliente = req.body.id_cliente
 
-   const result = await createPaymentIntent(idConsulta, idCliente)
+    const result = await createPaymentIntent(idConsulta, idCliente)
 
     res.status(result.status_code)
     res.json(result)

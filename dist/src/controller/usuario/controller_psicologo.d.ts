@@ -16,6 +16,7 @@ export declare function setInserirPsicologo(user: TProfessional, contentType: st
         link_instagram: string | null;
         id_sexo: number;
         cip: string;
+        descricao: string | null;
     };
     status_code: number;
     message: string;
@@ -74,6 +75,7 @@ export declare function getBuscarPsicologo(id: number): Promise<{
             link_instagram: string | null;
             id_sexo: number;
             cip: string;
+            descricao: string | null;
         };
         status_code: number;
     } | {

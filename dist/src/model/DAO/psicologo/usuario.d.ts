@@ -11,6 +11,7 @@ export declare function criarNovoPsicologo(userInput: TProfessional): Promise<{
     link_instagram: string | null;
     id_sexo: number;
     cip: string;
+    descricao: string | null;
 }>;
 export declare function logarPsicologo(email: string, senha: string): Promise<{
     id: number;
@@ -53,6 +54,7 @@ export declare function buscarPsicologo(id: number): Promise<{
         link_instagram: string | null;
         id_sexo: number;
         cip: string;
+        descricao: string | null;
     };
     status_code: number;
 } | {
