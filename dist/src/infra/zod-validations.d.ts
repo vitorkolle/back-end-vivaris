@@ -12,3 +12,4 @@ export declare function isValidAvailbilityStatus(availabilityStatus: string): bo
 export declare function isValidCardNumber(cardNumber: number): boolean;
 export declare function isValidModality(modality: string): boolean;
 export declare function isValidCvc(cvc: number): boolean;
+export declare function isValidAssessment(avaliacao: string): Promise<boolean>;

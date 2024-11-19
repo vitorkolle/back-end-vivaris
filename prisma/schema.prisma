@@ -7,6 +7,19 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model tbl_avaliacoes {
+  id             Int                       @id @default(autoincrement())
+  texto          String?                   @db.VarChar(250)
+  avaliacao      tbl_avaliacoes_avaliacao?
+  id_cliente     Int
+  id_psicologo   Int
+  tbl_clientes   tbl_clientes              @relation(fields: [id_cliente], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "CLIENTE_AVALIACAO")
+  tbl_psicologos tbl_psicologos            @relation(fields: [id_psicologo], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "PSICOLOGO_AVALIACAO")
+
+  @@index([id_cliente], map: "CLIENTE_AVALIACAO")
+  @@index([id_psicologo], map: "PSICOLOGO_AVALIACAO")
+}
+
 model tbl_clientes {
   id                        Int                         @id @default(autoincrement())
   nome                      String                      @db.VarChar(50)
@@ -18,6 +31,7 @@ model tbl_clientes {
   telefone                  String                      @db.VarChar(11)
   link_instagram            String?                     @db.VarChar(56)
   id_sexo                   Int?
+  tbl_avaliacoes            tbl_avaliacoes[]
   tbl_sexo                  tbl_sexo?                   @relation(fields: [id_sexo], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "SEXO_CLIENTE")
   tbl_clientes_preferencias tbl_clientes_preferencias[]
   tbl_consultas             tbl_consultas[]
@@ -99,7 +113,9 @@ model tbl_psicologos {
   telefone                      String                          @db.VarChar(11)
   foto_perfil                   String?                         @db.VarChar(300)
   link_instagram                String?                         @db.VarChar(56)
+  descricao                     String?                         @db.VarChar(350)
   id_sexo                       Int
+  tbl_avaliacoes                tbl_avaliacoes[]
   tbl_consultas                 tbl_consultas[]
   tbl_psicologo_disponibilidade tbl_psicologo_disponibilidade[]
   tbl_sexo                      tbl_sexo                        @relation(fields: [id_sexo], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "SEXO_PSICOLOGOS")
@@ -122,6 +138,14 @@ enum tbl_disponibilidade_dia_semana {
   Quinta
   Sexta
   Sabado
+}
+
+enum tbl_avaliacoes_avaliacao {
+  Um     @map("1")
+  Dois   @map("2")
+  Tres   @map("3")
+  Quatro @map("4")
+  Cinco  @map("5")
 }
 
 enum tbl_consultas_avaliacao {

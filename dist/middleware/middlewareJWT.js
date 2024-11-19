@@ -18,7 +18,7 @@ exports.validateJWT = validateJWT;
 exports.validateJWTRole = validateJWTRole;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const secret = 'abc123';
-const EXPIRES = 60 * 60;
+const EXPIRES = 60 * 60 * 24;
 function createJWT(payload) {
     return __awaiter(this, void 0, void 0, function* () {
         const token = jsonwebtoken_1.default.sign({ userId: payload.id, role: payload.role }, secret, { expiresIn: EXPIRES });

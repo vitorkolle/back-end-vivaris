@@ -63,7 +63,7 @@ const cors_1 = __importDefault(require("cors"));
 const corsOptions = {
     origin: ['http://localhost:5173', 'http://127.0.0.1:5173', '*'],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Métodos permitidos
-    allowedHeaders: ['Content-Type', 'Authorization', 'x-acccess-token'], // Cabeçalhos permitidos
+    allowedHeaders: ['Content-Type', 'Authorization', 'x-access-token'], // Cabeçalhos permitidos
     optionsSuccessStatus: 200
 };
 app.use((0, cors_1.default)(corsOptions));
@@ -80,6 +80,7 @@ const controller_usuario_1 = require("./src/controller/usuario/controller_usuari
 const controller_pagamento_1 = require("./src/controller/pagamento/controller_pagamento");
 const stripe_1 = __importDefault(require("stripe"));
 const config_1 = require("./module/config");
+const controller_avaliacao_1 = require("./src/controller/avaliacao/controller_avaliacao");
 /**********************************************STRIPE***************************************************************/
 route.post('/webhook', express_1.default.raw({ type: 'application/json' }), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const signature = req.headers['stripe-signature'];
@@ -301,4 +302,17 @@ route.post('/create-checkout-session', verifyJWT, (req, res) => __awaiter(void 0
     const result = yield (0, controller_pagamento_1.createPaymentIntent)(idConsulta, idCliente);
     res.status(result.status_code);
     res.json(result);
+}));
+/*********************************Avaliação************************************/
+route.post("/avaliacao", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    let contentType = req.header('content-type');
+    let inputData = {
+        texto: req.body.texto,
+        avaliacao: req.body.avaliacao,
+        id_psicologo: req.body.id_psicologo,
+        id_cliente: req.body.id_cliente,
+    };
+    let assessment = yield (0, controller_avaliacao_1.setCadastrarAvaliacao)(inputData, contentType);
+    res.status(assessment.status_code);
+    res.json(assessment);
 }));

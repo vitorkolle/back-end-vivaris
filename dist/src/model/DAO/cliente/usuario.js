@@ -294,7 +294,7 @@ function listarUsuarios() {
                     }
                 }
             });
-            if (!clientData) {
+            if (!clientData || clientData.length < 1) {
                 return false;
             }
             return clientData;

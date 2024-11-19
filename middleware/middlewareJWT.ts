@@ -1,14 +1,14 @@
 import jwt from 'jsonwebtoken';
 
 const secret = 'abc123';
-const EXPIRES = 60 * 60;
+const EXPIRES = 60 * 60 * 24;
 
 interface payload {
     id: number,
     role: 'client' | 'professional'
 }
 
-export async function createJWT (payload: payload) : Promise<boolean |string> {
+export async function createJWT (payload: payload) : Promise<boolean | string> {
     const token = jwt.sign({ userId: payload.id, role: payload.role}, secret, { expiresIn: EXPIRES });
 
     if (!token) {

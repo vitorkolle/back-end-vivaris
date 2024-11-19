@@ -125,3 +125,11 @@ export function isValidCvc(cvc: number){
 
     return testCvc.success
 }
+
+export async function isValidAssessment(avaliacao:string) {
+    const assessmentSchema = z.enum(['Um', 'Dois', 'Tres', 'Quatro', 'Cinco'])
+
+    const testAssessment = assessmentSchema.safeParse(avaliacao)
+
+    return testAssessment.success
+}
