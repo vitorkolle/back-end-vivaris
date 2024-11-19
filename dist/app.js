@@ -23,11 +23,30 @@ const verifyJWT = (req, res, next) => __awaiter(void 0, void 0, void 0, function
         if (!token) {
             return res.status(401).json("É necessário um token de autorização").end();
         }
+        const authToken = yield (0, middlewareJWT_1.validateJWT)(token.toString());
+        if (authToken) {
+            next();
+        }
+        else {
+            return res.status(401).end();
+        }
+    }
+    catch (error) {
+        console.error('Erro ao tentar autenticar usuário:', error);
+        return res.status(401).json(config_1.ERROR_INVALID_AUTH_TOKEN.message).end();
+    }
+});
+const verifyJWTRole = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let token = req.header('x-access-token');
+        if (!token) {
+            return res.status(401).json("É necessário um token de autorização").end();
+        }
         let role = yield (0, middlewareJWT_1.getRole)(token.toString());
         if (role === 'Função Inválida') {
             return res.status(401).json("Função Inválida").end();
         }
-        const authToken = yield (0, middlewareJWT_1.validateJWT)(token.toString(), role);
+        const authToken = yield (0, middlewareJWT_1.validateJWTRole)(token.toString(), role);
         if (authToken) {
             next();
         }
@@ -143,7 +162,7 @@ route.get('/usuario/sexo/:id', verifyJWT, (req, res) => __awaiter(void 0, void 0
 }));
 /****************************************************PSICÓLOGO****************************************************/
 //post de psicólogos
-route.post('/psicologo', verifyJWT, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+route.post('/psicologo', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const contentType = req.header('Content-Type');
     const professionalData = {
         nome: req.body.nome,
@@ -160,7 +179,7 @@ route.post('/psicologo', verifyJWT, (req, res) => __awaiter(void 0, void 0, void
     res.status(newProfesional.status_code);
     res.json(newProfesional);
 }));
-route.post('/profissional/login', verifyJWT, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+route.post('/profissional/login', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let email = req.body.email;
     let senha = req.body.senha;
     let user = yield (0, controller_psicologo_1.getLogarPsicologo)(email, senha);
@@ -180,7 +199,7 @@ route.get('/profissionais', verifyJWT, (req, res) => __awaiter(void 0, void 0, v
     res.json(getProfissionais);
 }));
 /****************************************************DISPONIBILIDADE****************************************************/
-route.post('/disponibilidade', verifyJWT, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+route.post('/disponibilidade', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const contentType = req.header('content-type');
     const disponibilidade = {
         dia_semana: req.body.dia_semana,
@@ -192,7 +211,7 @@ route.post('/disponibilidade', verifyJWT, (req, res) => __awaiter(void 0, void 0
     res.status(rsDisponilidade.status_code);
     res.json(rsDisponilidade);
 }));
-route.post('/disponibilidade/psicologo/:id', verifyJWT, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+route.post('/disponibilidade/psicologo/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let id = Number(req.params.id);
     const availability = {
         disponibilidade_id: req.body.disponibilidade,
@@ -265,7 +284,6 @@ route.get('/preferencias', verifyJWT, (req, res) => __awaiter(void 0, void 0, vo
     res.json(preferenceData);
 }));
 route.get('/preferencias/:id', verifyJWT, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log("g");
     let id = Number(req.params.id);
     let preferenceData = yield (0, controller_preferencia_1.getBuscarPreferencia)(id);
     res.status(preferenceData.status_code);

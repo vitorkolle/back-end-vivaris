@@ -24,7 +24,6 @@ const createPaymentIntent = (idConsulta, id_cliente) => __awaiter(void 0, void 0
         };
     }
     catch (error) {
-        console.log(error);
         return {
             result: error,
             status_code: 400

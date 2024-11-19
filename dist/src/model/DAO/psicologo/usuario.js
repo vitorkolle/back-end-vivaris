@@ -153,7 +153,6 @@ function listarPsicologos() {
                     }
                 }
             });
-            console.log(user);
             if (!user) {
                 return {
                     data: config_1.ERROR_NOT_FOUND.message,

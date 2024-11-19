@@ -15,9 +15,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.createJWT = createJWT;
 exports.getRole = getRole;
 exports.validateJWT = validateJWT;
+exports.validateJWTRole = validateJWTRole;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const secret = 'abc123';
-const EXPIRES = 60;
+const EXPIRES = 60 * 60;
 function createJWT(payload) {
     return __awaiter(this, void 0, void 0, function* () {
         const token = jsonwebtoken_1.default.sign({ userId: payload.id, role: payload.role }, secret, { expiresIn: EXPIRES });
@@ -36,7 +37,13 @@ function getRole(token) {
         return verify.role;
     });
 }
-function validateJWT(token, user) {
+function validateJWT(token) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const verify = jsonwebtoken_1.default.verify(token, secret);
+        return verify ? true : false;
+    });
+}
+function validateJWTRole(token, user) {
     return __awaiter(this, void 0, void 0, function* () {
         const verify = jsonwebtoken_1.default.verify(token, secret);
         if (verify.role !== user) {

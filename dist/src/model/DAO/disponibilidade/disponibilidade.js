@@ -128,7 +128,6 @@ function listarDisponibilidadesPorProfissional(profissionalId) {
 }
 function criarDisponibilidadeProfissional(profissionalId, disponibilidade, status) {
     return __awaiter(this, void 0, void 0, function* () {
-        console.log(profissionalId, disponibilidade, status);
         try {
             yield prisma.tbl_psicologo_disponibilidade.create({
                 data: {
@@ -178,23 +177,20 @@ function criarDisponibilidadeProfissional(profissionalId, disponibilidade, statu
                 },
             });
             if (!disponibilidades) {
-                console.log('oi');
+                throw new Error('Nenhuma disponibilidade encontrada.');
             }
             const response = {
                 id: usuario.id,
                 nome: usuario.nome,
                 email: usuario.email,
                 telefone: usuario.telefone,
-                disponibilidades: disponibilidades.map((disp) => {
-                    var _a, _b, _c, _d;
-                    return ({
-                        id: (_a = disp.tbl_disponibilidade) === null || _a === void 0 ? void 0 : _a.id,
-                        dia_semana: (_b = disp.tbl_disponibilidade) === null || _b === void 0 ? void 0 : _b.dia_semana,
-                        from: (_c = disp.tbl_disponibilidade) === null || _c === void 0 ? void 0 : _c.horario_inicio,
-                        to: (_d = disp.tbl_disponibilidade) === null || _d === void 0 ? void 0 : _d.horario_fim,
-                        status: disp.status_disponibilidade,
-                    });
-                }),
+                disponibilidades: disponibilidades.map((disp) => ({
+                    id: disp.tbl_disponibilidade.id,
+                    dia_semana: disp.tbl_disponibilidade.dia_semana,
+                    from: disp.tbl_disponibilidade.horario_inicio,
+                    to: disp.tbl_disponibilidade.horario_fim,
+                    status: disp.status_disponibilidade,
+                })),
             };
             return response;
         }

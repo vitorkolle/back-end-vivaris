@@ -64,7 +64,7 @@ import cors from 'cors'
 const corsOptions = {
     origin: ['http://localhost:5173', 'http://127.0.0.1:5173', '*'],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Métodos permitidos
-    allowedHeaders: ['Content-Type', 'Authorization'], // Cabeçalhos permitidos
+    allowedHeaders: ['Content-Type', 'Authorization', 'x-acccess-token'], // Cabeçalhos permitidos
     optionsSuccessStatus: 200
 };
 app.use(cors(corsOptions));

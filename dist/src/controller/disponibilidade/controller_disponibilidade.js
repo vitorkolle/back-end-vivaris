@@ -78,7 +78,6 @@ function criarDisponibilidadePsicologo(availability) {
                 return config_1.ERROR_REQUIRED_FIELDS;
             }
             const validateProfessional = yield (0, controller_psicologo_1.getBuscarPsicologo)(availability.id_psicologo);
-            console.log(availability.id_psicologo, yield (0, controller_psicologo_1.getBuscarPsicologo)(availability.id_psicologo));
             if (validateProfessional.status_code === 404) {
                 return config_1.ERROR_NOT_FOUND_PROFESSIONAL;
             }
@@ -106,7 +105,6 @@ function criarDisponibilidadePsicologo(availability) {
                 searchProfessionalAvailbility.forEach((searchAvailability) => __awaiter(this, void 0, void 0, function* () {
                     if (searchAvailability.psicologo_id == availability.id_psicologo && searchAvailability.disponibilidade_id == availability.disponibilidade_id) {
                         novaDisponibilidade = yield (0, disponibilidade_1.criarDisponibilidadeProfissional)(availability.id_psicologo, availability.disponibilidade_id, availability.status);
-                        console.log(novaDisponibilidade);
                     }
                     else {
                         return config_1.ERROR_ALREADY_EXISTS_PREFRENCE;
@@ -192,7 +190,6 @@ function setDeletarDisponibilidade(diaSemana, idPsicologo) {
                 return config_1.ERROR_NOT_FOUND;
             }
             let deleteAvailbility = yield (0, disponibilidade_1.deletarDisponibilidade)(diaSemana, idPsicologo);
-            console.log(deleteAvailbility);
             if (deleteAvailbility === false) {
                 return config_1.ERROR_NOT_DELETED;
             }
@@ -252,7 +249,6 @@ function setAtualizarDisponibilidadeProfissional(availabilityData, contentType) 
             if (String(contentType).toLowerCase() !== 'application/json') {
                 return config_1.ERROR_CONTENT_TYPE;
             }
-            console.log(availabilityData);
             if (!(0, zod_validations_1.isValidId)(availabilityData.disponibilidade_id)) {
                 return config_1.ERROR_INVALID_ID;
             }
