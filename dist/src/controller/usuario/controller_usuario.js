@@ -15,10 +15,12 @@ exports.getBuscarSexo = getBuscarSexo;
 exports.getLogarCliente = getLogarCliente;
 exports.getBuscarCliente = getBuscarCliente;
 exports.getBuscarClientePreferencias = getBuscarClientePreferencias;
+exports.getListarClientes = getListarClientes;
 const config_1 = require("../../../module/config");
 const usuario_1 = require("../../model/DAO/cliente/usuario");
 const sexo_1 = require("../../model/DAO/cliente/sexo");
 const client_data_validation_1 = require("../../infra/client-data-validation");
+const middlewareJWT_1 = require("../../../middleware/middlewareJWT");
 const zod_validations_1 = require("../../infra/zod-validations");
 function setInserirUsuario(user, contentType) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -130,20 +132,27 @@ function getBuscarSexo(id) {
 }
 function getLogarCliente(email, senha) {
     return __awaiter(this, void 0, void 0, function* () {
-        if (!email || !(0, zod_validations_1.isValidEmail)(email) ||
-            !senha || !(0, zod_validations_1.isValidPassword)(senha)) {
-            return config_1.ERROR_REQUIRED_FIELDS;
+        try {
+            if (!email || !(0, zod_validations_1.isValidEmail)(email) ||
+                !senha || !(0, zod_validations_1.isValidPassword)(senha)) {
+                return config_1.ERROR_REQUIRED_FIELDS;
+            }
+            let clientData = yield (0, usuario_1.logarCliente)(email, senha);
+            if (clientData.status == 200) {
+                let clientToken = yield (0, middlewareJWT_1.createJWT)({ id: clientData.id, role: 'client' });
+                return {
+                    cliente: clientData,
+                    token: clientToken,
+                    status_code: clientData.status
+                };
+            }
+            else {
+                return config_1.ERROR_NOT_FOUND;
+            }
         }
-        let clientData = yield (0, usuario_1.logarCliente)(email, senha);
-        console.log(clientData);
-        if (clientData.status == 200) {
-            return {
-                cliente: clientData,
-                status_code: clientData.status
-            };
-        }
-        else {
-            return config_1.ERROR_NOT_FOUND;
+        catch (error) {
+            console.error('Erro ao tentar logar usuário:', error);
+            return config_1.ERROR_INTERNAL_SERVER;
         }
     });
 }
@@ -173,6 +182,21 @@ function getBuscarClientePreferencias(id) {
             return config_1.ERROR_REQUIRED_FIELDS;
         }
         let clientData = yield (0, usuario_1.obterUsuarioComPreferencias)(id);
+        if (!clientData) {
+            return {
+                data: config_1.ERROR_NOT_FOUND.message,
+                status_code: 404
+            };
+        }
+        return {
+            data: clientData,
+            status_code: 200
+        };
+    });
+}
+function getListarClientes() {
+    return __awaiter(this, void 0, void 0, function* () {
+        let clientData = yield (0, usuario_1.listarUsuarios)();
         if (!clientData) {
             return {
                 data: config_1.ERROR_NOT_FOUND.message,

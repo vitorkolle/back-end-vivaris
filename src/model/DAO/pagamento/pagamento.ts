@@ -12,7 +12,6 @@ export async function createPayment(intent_payment_id:string| null, consultaId:n
             data: {
                 intent_payment_id: intent_payment_id,
                 id_consulta: consultaId,
-                id_cartao: 1,
                 is_paid: true
             },
         });

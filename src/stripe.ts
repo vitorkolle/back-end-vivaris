@@ -1,5 +1,4 @@
 import { TAppointment } from "./domain/entities/appointment-entity";
-import { buscarCartaoPorCliente } from "./model/DAO/cartao/cartao";
 import { buscarCliente } from "./model/DAO/cliente/usuario";
 import dotenv from 'dotenv';
 dotenv.config();

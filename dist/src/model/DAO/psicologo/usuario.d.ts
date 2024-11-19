@@ -13,10 +13,6 @@ export declare function criarNovoPsicologo(userInput: TProfessional): Promise<{
     cip: string;
 }>;
 export declare function logarPsicologo(email: string, senha: string): Promise<{
-    status: boolean;
-    status_code: number;
-    message: string;
-} | {
     id: number;
     nome: string;
     email: string;
@@ -29,6 +25,10 @@ export declare function logarPsicologo(email: string, senha: string): Promise<{
         sexo: string | null;
     };
     cip: string;
+} | {
+    id: number;
+    message: string;
+    status_code: number;
 }>;
 export declare function buscarPsicologo(id: number): Promise<{
     professional: {

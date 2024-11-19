@@ -17,9 +17,11 @@ exports.getListarDisponibilidadesProfissional = getListarDisponibilidadesProfiss
 exports.setDeletarDisponibilidade = setDeletarDisponibilidade;
 exports.setAtualizarDisponibilidade = setAtualizarDisponibilidade;
 exports.setAtualizarDisponibilidadeProfissional = setAtualizarDisponibilidadeProfissional;
+exports.setDeletarDisponibilidadeByHour = setDeletarDisponibilidadeByHour;
 const config_1 = require("../../../module/config");
 const zod_validations_1 = require("../../infra/zod-validations");
 const disponibilidade_1 = require("../../model/DAO/disponibilidade/disponibilidade");
+const usuario_1 = require("../../model/DAO/psicologo/usuario");
 const controller_psicologo_1 = require("../usuario/controller_psicologo");
 function transformarHorario(horario) {
     const hoje = new Date();
@@ -76,7 +78,6 @@ function criarDisponibilidadePsicologo(availability) {
                 return config_1.ERROR_REQUIRED_FIELDS;
             }
             const validateProfessional = yield (0, controller_psicologo_1.getBuscarPsicologo)(availability.id_psicologo);
-            console.log(availability.id_psicologo, yield (0, controller_psicologo_1.getBuscarPsicologo)(availability.id_psicologo));
             if (validateProfessional.status_code === 404) {
                 return config_1.ERROR_NOT_FOUND_PROFESSIONAL;
             }
@@ -104,7 +105,6 @@ function criarDisponibilidadePsicologo(availability) {
                 searchProfessionalAvailbility.forEach((searchAvailability) => __awaiter(this, void 0, void 0, function* () {
                     if (searchAvailability.psicologo_id == availability.id_psicologo && searchAvailability.disponibilidade_id == availability.disponibilidade_id) {
                         novaDisponibilidade = yield (0, disponibilidade_1.criarDisponibilidadeProfissional)(availability.id_psicologo, availability.disponibilidade_id, availability.status);
-                        console.log(novaDisponibilidade);
                     }
                     else {
                         return config_1.ERROR_ALREADY_EXISTS_PREFRENCE;
@@ -190,7 +190,6 @@ function setDeletarDisponibilidade(diaSemana, idPsicologo) {
                 return config_1.ERROR_NOT_FOUND;
             }
             let deleteAvailbility = yield (0, disponibilidade_1.deletarDisponibilidade)(diaSemana, idPsicologo);
-            console.log(deleteAvailbility);
             if (deleteAvailbility === false) {
                 return config_1.ERROR_NOT_DELETED;
             }
@@ -250,7 +249,6 @@ function setAtualizarDisponibilidadeProfissional(availabilityData, contentType) 
             if (String(contentType).toLowerCase() !== 'application/json') {
                 return config_1.ERROR_CONTENT_TYPE;
             }
-            console.log(availabilityData);
             if (!(0, zod_validations_1.isValidId)(availabilityData.disponibilidade_id)) {
                 return config_1.ERROR_INVALID_ID;
             }
@@ -281,6 +279,47 @@ function setAtualizarDisponibilidadeProfissional(availabilityData, contentType) 
         }
         catch (error) {
             console.error('Erro ao tentar atualizar as disponibilidades do profissional:', error);
+            return config_1.ERROR_INTERNAL_SERVER;
+        }
+    });
+}
+function setDeletarDisponibilidadeByHour(dia_semana, horario_inicio, id_psicologo, contentType) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            if (String(contentType).toLowerCase() !== 'application/json') {
+                return config_1.ERROR_CONTENT_TYPE;
+            }
+            if (!dia_semana || !(0, zod_validations_1.isValidWeekDay)(dia_semana) ||
+                !horario_inicio || !(0, zod_validations_1.isValidHour)(horario_inicio) ||
+                !id_psicologo || !(0, zod_validations_1.isValidId)(id_psicologo)) {
+                return config_1.ERROR_REQUIRED_FIELDS;
+            }
+            let validateProfessional = yield (0, usuario_1.buscarPsicologo)(id_psicologo);
+            if (!validateProfessional) {
+                return config_1.ERROR_NOT_FOUND_PROFESSIONAL;
+            }
+            let formatHour = transformarHorario(horario_inicio.toString());
+            if (!formatHour) {
+                return config_1.ERROR_DATE_NOT_VALID;
+            }
+            let validateAvailbility = yield (0, disponibilidade_1.buscarDisponibilidadeByHourAndWeekDay)(dia_semana, formatHour, id_psicologo);
+            if (!validateAvailbility) {
+                return config_1.ERROR_NOT_FOUND_AVAILBILITY;
+            }
+            let deleteAvailbility = yield (0, disponibilidade_1.deletarDisponibilidadeByHour)(id_psicologo, dia_semana, formatHour);
+            if (deleteAvailbility) {
+                return {
+                    data: config_1.SUCCESS_DELETED_ITEM.message,
+                    status_code: config_1.SUCCESS_DELETED_ITEM.status_code
+                };
+            }
+            return {
+                data: config_1.ERROR_NOT_DELETED.message,
+                status_code: config_1.ERROR_NOT_DELETED.status_code
+            };
+        }
+        catch (error) {
+            console.error('Erro ao tentar deletar as disponibilidades do profissional:', error);
             return config_1.ERROR_INTERNAL_SERVER;
         }
     });

@@ -1,8 +1,9 @@
 import {ERROR_ALREADY_EXISTS_ACCOUNT_CPF, ERROR_ALREADY_EXISTS_ACCOUNT_EMAIL, ERROR_CONTENT_TYPE, ERROR_DATE_NOT_VALID, ERROR_INTERNAL_SERVER, ERROR_INTERNAL_SERVER_DB, ERROR_NOT_CREATED, ERROR_NOT_FOUND, ERROR_REQUIRED_FIELDS, SUCCESS_CREATED_ITEM } from "../../../module/config"
 import { TUser } from "../../domain/entities/user-entity"
-import { buscarCliente, criarNovoCliente, logarCliente, obterUsuarioComPreferencias } from "../../model/DAO/cliente/usuario"
+import { buscarCliente, criarNovoCliente, listarUsuarios, logarCliente, obterUsuarioComPreferencias } from "../../model/DAO/cliente/usuario"
 import { getAllSexos, getSexoById } from "../../model/DAO/cliente/sexo";
 import { verificacao } from "../../infra/client-data-validation";
+import {createJWT} from '../../../middleware/middlewareJWT'
 import { isValidEmail, isValidId, isValidName, isValidPassword } from "../../infra/zod-validations";
 
 export async function setInserirUsuario(user: TUser, contentType: string | undefined) {
@@ -132,26 +133,32 @@ export async function getBuscarSexo(id: number) {
 }
 
 export async function getLogarCliente(email: string | undefined, senha: string | undefined) {
-    if(
-        !email || !isValidEmail(email) ||
-        !senha || !isValidPassword(senha)
-    ){
-        return ERROR_REQUIRED_FIELDS 
-    }
-
-    let clientData = await logarCliente(email, senha)
-
-    console.log(clientData);
-    
-
-    if(clientData.status == 200){
-        return {
-            cliente: clientData,
-            status_code: clientData.status
+    try {
+        if(
+            !email || !isValidEmail(email) ||
+            !senha || !isValidPassword(senha)
+        ){
+            return ERROR_REQUIRED_FIELDS 
         }
-    }
-    else{
-        return ERROR_NOT_FOUND
+    
+        let clientData = await logarCliente(email, senha)
+    
+        
+    
+        if(clientData.status == 200){
+            let clientToken = await createJWT({id:clientData.id, role:'client'})
+            return {
+                cliente: clientData,
+                token: clientToken,
+                status_code: clientData.status
+            }
+        }
+        else{
+            return ERROR_NOT_FOUND
+        }   
+    } catch (error) {
+        console.error('Erro ao tentar logar usuário:', error);
+        return ERROR_INTERNAL_SERVER;
     }
 }
 
@@ -195,6 +202,22 @@ export async function getBuscarClientePreferencias(id:number) {
     }
 
     return{
+        data: clientData,
+        status_code: 200
+    }
+}
+
+export async function getListarClientes() {
+    let clientData = await listarUsuarios()
+
+    if(!clientData){
+        return {
+            data: ERROR_NOT_FOUND.message,
+            status_code: 404
+        }
+    }
+
+    return {
         data: clientData,
         status_code: 200
     }

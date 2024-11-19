@@ -16,7 +16,6 @@ export const createPaymentIntent = async (idConsulta:number, id_cliente:number) 
         };
 
     } catch (error) {
-        console.log(error);
         return {
             result: error,
             status_code: 400

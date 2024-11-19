@@ -53,7 +53,11 @@ export async function logarPsicologo(email: string, senha: string) {
       }
     })
     if (!user) {
-      return Promise.resolve(ERROR_NOT_FOUND);
+      return{
+        id: 0,
+        message: ERROR_NOT_FOUND.message,
+        status_code: ERROR_NOT_FOUND.status_code
+      } 
     }
 
     return user;
@@ -138,8 +142,6 @@ export async function listarPsicologos() {
         }
       }
     })
-
-    console.log(user);
 
     if (!user) {
       return{

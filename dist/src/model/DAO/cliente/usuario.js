@@ -14,6 +14,7 @@ exports.obterUsuarioComPreferencias = obterUsuarioComPreferencias;
 exports.criarPreferenciasUsuario = criarPreferenciasUsuario;
 exports.logarCliente = logarCliente;
 exports.buscarCliente = buscarCliente;
+exports.listarUsuarios = listarUsuarios;
 const client_1 = require("@prisma/client");
 const config_1 = require("../../../../module/config");
 const prisma = new client_1.PrismaClient();
@@ -168,9 +169,9 @@ function logarCliente(email, senha) {
                     foto_perfil: true
                 }
             });
-            console.log(usuario);
             if (!usuario) {
                 return {
+                    id: 0,
                     status: config_1.ERROR_NOT_FOUND.status_code,
                     message: config_1.ERROR_NOT_FOUND.message
                 };
@@ -186,6 +187,7 @@ function logarCliente(email, senha) {
             });
             if (!preferencias_usuario) {
                 const response = {
+                    id: usuario.id,
                     usuario: usuario,
                     status: 200,
                     message: config_1.ERROR_NOT_FOUND_PREFERENCE.message
@@ -209,6 +211,7 @@ function logarCliente(email, senha) {
             }
             if (preferenciasArray.length < 1) {
                 const response = {
+                    id: usuario.id,
                     usuario: usuario,
                     status: 200,
                     message: config_1.ERROR_NOT_FOUND_PREFERENCE.message
@@ -216,6 +219,7 @@ function logarCliente(email, senha) {
                 return response;
             }
             const response = {
+                id: usuario.id,
                 usuario: usuario,
                 preferencias_usuario: preferenciasArray,
                 status: 200
@@ -253,6 +257,51 @@ function buscarCliente(id) {
         catch (error) {
             console.error("Erro ao obter o usuário", error);
             throw new Error("Não foi possível obter o usuário");
+        }
+    });
+}
+function listarUsuarios() {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            let clientData = yield prisma.tbl_clientes.findMany({
+                select: {
+                    id: true,
+                    nome: true,
+                    email: true,
+                    senha: true,
+                    telefone: true,
+                    cpf: true,
+                    data_nascimento: true,
+                    foto_perfil: true,
+                    link_instagram: true,
+                    id_sexo: true,
+                    tbl_clientes_preferencias: {
+                        select: {
+                            id_clientes: true,
+                            tbl_preferencias: {
+                                select: {
+                                    id: true,
+                                    nome: true,
+                                    cor: true
+                                }
+                            }
+                        }
+                    },
+                    tbl_sexo: {
+                        select: {
+                            sexo: true
+                        }
+                    }
+                }
+            });
+            if (!clientData) {
+                return false;
+            }
+            return clientData;
+        }
+        catch (error) {
+            console.error("Erro ao obter o usuário", error);
+            throw new Error("Não foi possível obter os usuários");
         }
     });
 }

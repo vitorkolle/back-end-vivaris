@@ -37,6 +37,7 @@ export declare function getLogarCliente(email: string | undefined, senha: string
     message: string;
 } | {
     cliente: {
+        id: number;
         usuario: {
             id: number;
             nome: string;
@@ -47,6 +48,7 @@ export declare function getLogarCliente(email: string | undefined, senha: string
         status: number;
         message: string;
     } | {
+        id: number;
         usuario: {
             id: number;
             nome: string;
@@ -61,9 +63,11 @@ export declare function getLogarCliente(email: string | undefined, senha: string
         }[][];
         status: number;
     } | {
+        id: number;
         status: number;
         message: string;
     };
+    token: string | boolean;
     status_code: number;
 }>;
 export declare function getBuscarCliente(id: number): Promise<{
@@ -107,5 +111,34 @@ export declare function getBuscarClientePreferencias(id: number): Promise<{
             hexcolor: any;
         }[];
     };
+    status_code: number;
+}>;
+export declare function getListarClientes(): Promise<{
+    data: string;
+    status_code: number;
+} | {
+    data: {
+        id: number;
+        nome: string;
+        email: string;
+        data_nascimento: Date;
+        cpf: string;
+        senha: string;
+        foto_perfil: string | null;
+        telefone: string;
+        link_instagram: string | null;
+        id_sexo: number | null;
+        tbl_sexo: {
+            sexo: string | null;
+        } | null;
+        tbl_clientes_preferencias: {
+            id_clientes: number | null;
+            tbl_preferencias: {
+                id: number;
+                nome: string;
+                cor: string;
+            } | null;
+        }[];
+    }[];
     status_code: number;
 }>;

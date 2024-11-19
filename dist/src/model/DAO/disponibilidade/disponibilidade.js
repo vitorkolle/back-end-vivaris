@@ -18,6 +18,8 @@ exports.deletarDisponibilidade = deletarDisponibilidade;
 exports.atualizarDisponibilidade = atualizarDisponibilidade;
 exports.atualizarDisponibilidadeProfissional = atualizarDisponibilidadeProfissional;
 exports.buscarDisponibilidadePsicologoById = buscarDisponibilidadePsicologoById;
+exports.deletarDisponibilidadeByHour = deletarDisponibilidadeByHour;
+exports.buscarDisponibilidadeByHourAndWeekDay = buscarDisponibilidadeByHourAndWeekDay;
 const client_1 = require("@prisma/client");
 const config_1 = require("../../../../module/config");
 const prisma = new client_1.PrismaClient();
@@ -126,7 +128,6 @@ function listarDisponibilidadesPorProfissional(profissionalId) {
 }
 function criarDisponibilidadeProfissional(profissionalId, disponibilidade, status) {
     return __awaiter(this, void 0, void 0, function* () {
-        console.log(profissionalId, disponibilidade, status);
         try {
             yield prisma.tbl_psicologo_disponibilidade.create({
                 data: {
@@ -176,23 +177,20 @@ function criarDisponibilidadeProfissional(profissionalId, disponibilidade, statu
                 },
             });
             if (!disponibilidades) {
-                console.log('oi');
+                throw new Error('Nenhuma disponibilidade encontrada.');
             }
             const response = {
                 id: usuario.id,
                 nome: usuario.nome,
                 email: usuario.email,
                 telefone: usuario.telefone,
-                disponibilidades: disponibilidades.map((disp) => {
-                    var _a, _b, _c, _d;
-                    return ({
-                        id: (_a = disp.tbl_disponibilidade) === null || _a === void 0 ? void 0 : _a.id,
-                        dia_semana: (_b = disp.tbl_disponibilidade) === null || _b === void 0 ? void 0 : _b.dia_semana,
-                        from: (_c = disp.tbl_disponibilidade) === null || _c === void 0 ? void 0 : _c.horario_inicio,
-                        to: (_d = disp.tbl_disponibilidade) === null || _d === void 0 ? void 0 : _d.horario_fim,
-                        status: disp.status_disponibilidade,
-                    });
-                }),
+                disponibilidades: disponibilidades.map((disp) => ({
+                    id: disp.tbl_disponibilidade.id,
+                    dia_semana: disp.tbl_disponibilidade.dia_semana,
+                    from: disp.tbl_disponibilidade.horario_inicio,
+                    to: disp.tbl_disponibilidade.horario_fim,
+                    status: disp.status_disponibilidade,
+                })),
             };
             return response;
         }
@@ -339,6 +337,57 @@ function buscarDisponibilidadePsicologoById(availabilityId) {
             };
         }
         catch (error) {
+            console.error("Erro ao obter disponibilidade do profissional:", error);
+            throw new Error("Não foi possível obter a disponibilidade do profissional");
+        }
+    });
+}
+function deletarDisponibilidadeByHour(id_psicologo, dia_semana, horario_inicio) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            let sql = `CALL deleteDispByWeekDayAndHour("${dia_semana}", '${horario_inicio.getUTCDate() + ":00:00"}', ${id_psicologo})`;
+            let availability = yield prisma.$queryRawUnsafe(sql);
+            if (!availability) {
+                return false;
+            }
+            return true;
+        }
+        catch (error) {
+            console.error("Erro ao deletar disponibilidade do profissional:", error);
+            throw new Error("Não foi possível deletar a disponibilidade do profissional");
+        }
+    });
+}
+function buscarDisponibilidadeByHourAndWeekDay(dia_semana, horario_inicio, id_psicologo) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            let availability = yield prisma.tbl_psicologo_disponibilidade.findMany({
+                where: {
+                    psicologo_id: id_psicologo
+                },
+                select: {
+                    tbl_disponibilidade: {
+                        select: {
+                            dia_semana: true,
+                            horario_inicio: true
+                        }
+                    }
+                }
+            });
+            if (availability.length < 1) {
+                return false;
+            }
+            let existsAvailbility = false || true;
+            availability.forEach(avail => {
+                if (avail.tbl_disponibilidade.dia_semana === dia_semana && avail.tbl_disponibilidade.horario_inicio === new Date(horario_inicio)) {
+                    existsAvailbility = true;
+                }
+            });
+            return existsAvailbility === true;
+        }
+        catch (error) {
+            console.error("Erro ao obter disponibilidade do profissional:", error);
+            throw new Error("Não foi possível obter a disponibilidade do profissional");
         }
     });
 }
