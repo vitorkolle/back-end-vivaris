@@ -15,6 +15,7 @@ export declare function setInserirPsicologo(user: TProfessional, contentType: st
         telefone: string;
         link_instagram: string | null;
         id_sexo: number;
+        price: number;
         cip: string;
         descricao: string | null;
     };
@@ -58,8 +59,8 @@ export declare function getBuscarPsicologo(id: number): Promise<{
                 tbl_disponibilidade: {
                     id: number;
                     dia_semana: import(".prisma/client").$Enums.tbl_disponibilidade_dia_semana;
-                    horario_inicio: Date;
-                    horario_fim: Date;
+                    horario_inicio: string;
+                    horario_fim: string;
                 };
                 psicologo_id: number;
             }[];
@@ -74,6 +75,7 @@ export declare function getBuscarPsicologo(id: number): Promise<{
             telefone: string;
             link_instagram: string | null;
             id_sexo: number;
+            price: number;
             cip: string;
             descricao: string | null;
         };
@@ -111,8 +113,8 @@ export declare function getListarPsicologos(): Promise<{
                 tbl_disponibilidade: {
                     id: number;
                     dia_semana: import(".prisma/client").$Enums.tbl_disponibilidade_dia_semana;
-                    horario_inicio: Date;
-                    horario_fim: Date;
+                    horario_inicio: string;
+                    horario_fim: string;
                 };
             }[];
             cip: string;

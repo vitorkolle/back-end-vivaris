@@ -92,11 +92,13 @@ export async function buscarPsicologo(id: number) {
     })
 
     if (professional) {
+      console.log(professional)
       return {
         professional: professional,
         status_code: 200
       }
     }
+
 
     return {
       professional: ERROR_NOT_FOUND.message,

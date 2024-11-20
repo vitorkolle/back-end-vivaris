@@ -121,8 +121,8 @@ function listarDisponibilidadesPorProfissional(profissionalId) {
             }
         }
         catch (error) {
-            console.error("Erro ao obter o usuário com as preferências:", error);
-            throw new Error("Não foi possível obter o usuário com as preferências.");
+            console.error("Erro ao obter disponibilidade", error);
+            throw new Error("Não foi possível obter o psicólogo com as disponibilidades.");
         }
     });
 }
@@ -345,7 +345,7 @@ function buscarDisponibilidadePsicologoById(availabilityId) {
 function deletarDisponibilidadeByHour(id_psicologo, dia_semana, horario_inicio) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            let sql = `CALL deleteDispByWeekDayAndHour("${dia_semana}", '${horario_inicio.getUTCDate() + ":00:00"}', ${id_psicologo})`;
+            let sql = `CALL deleteDispByWeekDayAndHour("${dia_semana}", '${horario_inicio}', ${id_psicologo})`;
             let availability = yield prisma.$queryRawUnsafe(sql);
             if (!availability) {
                 return false;
@@ -379,7 +379,7 @@ function buscarDisponibilidadeByHourAndWeekDay(dia_semana, horario_inicio, id_ps
             }
             let existsAvailbility = false || true;
             availability.forEach(avail => {
-                if (avail.tbl_disponibilidade.dia_semana === dia_semana && avail.tbl_disponibilidade.horario_inicio === new Date(horario_inicio)) {
+                if (avail.tbl_disponibilidade.dia_semana === dia_semana && avail.tbl_disponibilidade.horario_inicio === horario_inicio) {
                     existsAvailbility = true;
                 }
             });

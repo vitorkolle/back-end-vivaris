@@ -70,3 +70,26 @@ export async function selectAppointment(id: number) {
     }
     return appointment
 }
+
+export async function createAppointment(idProfessional: number, idClient: number, data: Date) {
+    const professional = await prisma.tbl_psicologos.findUnique({
+        where: {
+            id: idProfessional
+        }
+    })
+    const appointment = await prisma.tbl_consultas.create({
+        data: {
+            valor: professional.price,
+            tbl_clientes: {
+                connect: {
+                    id: idClient
+                }
+            },
+            tbl_psicologos: {
+                connect: {
+                    id: idProfessional
+                }
+            },
+        }
+    })
+}

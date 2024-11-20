@@ -47,8 +47,8 @@ function setInserirDisponibilidade(disponibilidade, contentType) {
             else {
                 const disponibilidadeInput = {
                     dia_semana: disponibilidade.dia_semana,
-                    horario_inicio: transformarHorario(disponibilidade.horario_inicio.toString()),
-                    horario_fim: transformarHorario(disponibilidade.horario_fim.toString())
+                    horario_inicio: disponibilidade.horario_inicio.toString(),
+                    horario_fim: disponibilidade.horario_fim.toString()
                 };
                 const newAvailability = yield (0, disponibilidade_1.criarDisponibilidade)(disponibilidadeInput);
                 if (newAvailability) {
@@ -222,8 +222,8 @@ function setAtualizarDisponibilidade(availabilityData, contentType, availability
             }
             const disponibilidadeInput = {
                 dia_semana: availabilityData.dia_semana,
-                horario_inicio: transformarHorario(availabilityData.horario_inicio.toString()),
-                horario_fim: transformarHorario(availabilityData.horario_fim.toString())
+                horario_inicio: availabilityData.horario_inicio.toString(),
+                horario_fim: availabilityData.horario_fim.toString()
             };
             let updateAvaibility = yield (0, disponibilidade_1.atualizarDisponibilidade)(disponibilidadeInput, availabilityId);
             if (!updateAvaibility) {
@@ -298,15 +298,11 @@ function setDeletarDisponibilidadeByHour(dia_semana, horario_inicio, id_psicolog
             if (!validateProfessional) {
                 return config_1.ERROR_NOT_FOUND_PROFESSIONAL;
             }
-            let formatHour = transformarHorario(horario_inicio.toString());
-            if (!formatHour) {
-                return config_1.ERROR_DATE_NOT_VALID;
-            }
-            let validateAvailbility = yield (0, disponibilidade_1.buscarDisponibilidadeByHourAndWeekDay)(dia_semana, formatHour, id_psicologo);
+            let validateAvailbility = yield (0, disponibilidade_1.buscarDisponibilidadeByHourAndWeekDay)(dia_semana, horario_inicio, id_psicologo);
             if (!validateAvailbility) {
                 return config_1.ERROR_NOT_FOUND_AVAILBILITY;
             }
-            let deleteAvailbility = yield (0, disponibilidade_1.deletarDisponibilidadeByHour)(id_psicologo, dia_semana, formatHour);
+            let deleteAvailbility = yield (0, disponibilidade_1.deletarDisponibilidadeByHour)(id_psicologo, dia_semana, horario_inicio);
             if (deleteAvailbility) {
                 return {
                     data: config_1.SUCCESS_DELETED_ITEM.message,
