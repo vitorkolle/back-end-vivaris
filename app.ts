@@ -317,14 +317,14 @@ route.get("/usuarios", verifyJWT, async (req, res) => {
 });
 
 /****************************************************GÊNERO****************************************************/
-route.get("/sexo", verifyJWT, async (req, res) => {
+route.get("/sexo", async (req, res) => {
   let allSex = await getListarSexo();
 
   res.status(allSex.status_code);
   res.json(allSex);
 });
 
-route.get("/usuario/sexo/:id", verifyJWT, async (req, res) => {
+route.get("/usuario/sexo/:id", async (req, res) => {
   let id = req.params.id;
   let idFormat = Number(id);
 
@@ -521,7 +521,7 @@ route.delete("/disponibilidade/psicologo/:id", verifyJWT, async (req, res) => {
 });
 
 /****************************************************PREFERÊNCIAS****************************************************/
-route.get("/preferencias", verifyJWT, async (req, res) => {
+route.get("/preferencias", async (req, res) => {
   let preferenceData = await getListarPreferencias();
 
   console.log(preferenceData);
@@ -530,7 +530,7 @@ route.get("/preferencias", verifyJWT, async (req, res) => {
   res.json(preferenceData);
 });
 
-route.get("/preferencias/:id", verifyJWT, async (req, res) => {
+route.get("/preferencias/:id", async (req, res) => {
   let id = Number(req.params.id);
 
   let preferenceData = await getBuscarPreferencia(id);
