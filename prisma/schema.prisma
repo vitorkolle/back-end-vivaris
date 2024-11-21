@@ -68,8 +68,8 @@ model tbl_consultas {
 model tbl_disponibilidade {
   id                            Int                             @id @default(autoincrement())
   dia_semana                    tbl_disponibilidade_dia_semana
-  horario_inicio                String                        
-  horario_fim                   String                        
+  horario_inicio                String                       
+  horario_fim                   String                       
   tbl_psicologo_disponibilidade tbl_psicologo_disponibilidade[]
 }
 
