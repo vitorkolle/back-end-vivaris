@@ -1,8 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { WeekDay, TAvailability } from "../../../domain/entities/availability-entity";
-import { ERROR_CONTENT_TYPE, ERROR_INVALID_ID, ERROR_NOT_FOUND, ERROR_NOT_FOUND_AVAILBILITY, ERROR_NOT_FOUND_PROFESSIONAL } from "../../../../module/config";
+import { ERROR_NOT_FOUND_AVAILBILITY, ERROR_NOT_FOUND_PROFESSIONAL } from "../../../../module/config";
 import { TProfessionalAvailability } from "../../../domain/entities/professional-availability";
-import { transformarHorario } from "../../../controller/disponibilidade/controller_disponibilidade";
 const prisma = new PrismaClient()
 
 

@@ -289,20 +289,26 @@ function setDeletarDisponibilidadeByHour(dia_semana, horario_inicio, id_psicolog
             if (String(contentType).toLowerCase() !== 'application/json') {
                 return config_1.ERROR_CONTENT_TYPE;
             }
+            console.log(horario_inicio);
             if (!dia_semana || !(0, zod_validations_1.isValidWeekDay)(dia_semana) ||
                 !horario_inicio || !(0, zod_validations_1.isValidHour)(horario_inicio) ||
                 !id_psicologo || !(0, zod_validations_1.isValidId)(id_psicologo)) {
+                console.log((0, zod_validations_1.isValidHour)(horario_inicio));
+                console.log('ata');
                 return config_1.ERROR_REQUIRED_FIELDS;
             }
             let validateProfessional = yield (0, usuario_1.buscarPsicologo)(id_psicologo);
+            console.log(validateProfessional);
             if (!validateProfessional) {
                 return config_1.ERROR_NOT_FOUND_PROFESSIONAL;
             }
             let validateAvailbility = yield (0, disponibilidade_1.buscarDisponibilidadeByHourAndWeekDay)(dia_semana, horario_inicio, id_psicologo);
+            console.log(validateAvailbility);
             if (!validateAvailbility) {
                 return config_1.ERROR_NOT_FOUND_AVAILBILITY;
             }
             let deleteAvailbility = yield (0, disponibilidade_1.deletarDisponibilidadeByHour)(id_psicologo, dia_semana, horario_inicio);
+            console.log(deleteAvailbility);
             if (deleteAvailbility) {
                 return {
                     data: config_1.SUCCESS_DELETED_ITEM.message,
