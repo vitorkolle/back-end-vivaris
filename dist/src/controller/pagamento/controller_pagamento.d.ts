@@ -1,4 +1,8 @@
 export declare const createPaymentIntent: (idConsulta: number, id_cliente: number) => Promise<{
+    status: boolean;
+    status_code: number;
+    message: string;
+} | {
     result: unknown;
     status_code: number;
 }>;

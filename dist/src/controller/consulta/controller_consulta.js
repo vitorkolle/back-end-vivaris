@@ -73,13 +73,13 @@ function getBuscarConsulta(id) {
             return config_1.ERROR_INVALID_ID;
         }
         let getAppointment = yield (0, consulta_1.selectAppointment)(id);
-        if (!getAppointment) {
-            return config_1.ERROR_NOT_FOUND;
+        if (getAppointment) {
+            return {
+                data: getAppointment,
+                status_code: 200
+            };
         }
-        return {
-            data: getAppointment,
-            status_code: 200
-        };
+        return config_1.ERROR_NOT_FOUND;
     });
 }
 function setDeletarConsulta(id) {

@@ -2,6 +2,7 @@
 export const ERROR_INVALID_ID = {status: false, status_code: 400, message: 'O ID encaminhado na requisição não é válido!!'}
 export const ERROR_REQUIRED_FIELDS = {status: false, status_code: 400, message: 'Existem campos requeridos que não foram preenchidos, ou não atendem aos critérios de digitação!!'}
 export const ERROR_NOT_FOUND = {status: false, status_code: 404, message: 'Não foram encontrados itens na requisição!!'}
+export const ERROR_NOT_FOUND_ASSESSMENT = {status: false, status_code: 404, message: 'Não foram encontradas consultas na requisição!!'}
 export const ERROR_NOT_FOUND_PROFESSIONAL = {status: false, status_code: 404, message: 'Não foram encontrados psicólogos na requisição!!'}
 export const ERROR_NOT_FOUND_CLIENT = {status: false, status_code: 404, message: 'Não foram encontrados clientes na requisição!!'}
 export const ERROR_NOT_FOUND_PREFERENCE = {status: false, status_code: 404, message: 'Não foram encontradas preferências na requisição!!'}

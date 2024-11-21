@@ -16,63 +16,69 @@ const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
 function selectAppointment(id) {
     return __awaiter(this, void 0, void 0, function* () {
-        const appointment = yield prisma.tbl_consultas.findUnique({
-            where: {
-                id: id,
-            },
-            select: {
-                id: true,
-                data_consulta: true,
-                valor: true,
-                avaliacao: true,
-                tbl_clientes: {
-                    select: {
-                        id: true,
-                        nome: true,
-                        email: true,
-                        telefone: true,
-                        cpf: true,
-                        data_nascimento: true,
-                        foto_perfil: true,
-                        link_instagram: true,
-                        tbl_sexo: {
-                            select: {
-                                id: true,
-                                sexo: true,
-                            },
-                        },
-                        id_sexo: true,
-                        senha: true
-                    }
+        try {
+            const appointment = yield prisma.tbl_consultas.findUnique({
+                where: {
+                    id: id,
                 },
-                tbl_psicologos: {
-                    select: {
-                        id: true,
-                        nome: true,
-                        email: true,
-                        telefone: true,
-                        cpf: true,
-                        cip: true,
-                        data_nascimento: true,
-                        foto_perfil: true,
-                        link_instagram: true,
-                        tbl_sexo: {
-                            select: {
-                                id: true,
-                                sexo: true,
+                select: {
+                    id: true,
+                    data_consulta: true,
+                    valor: true,
+                    avaliacao: true,
+                    tbl_clientes: {
+                        select: {
+                            id: true,
+                            nome: true,
+                            email: true,
+                            telefone: true,
+                            cpf: true,
+                            data_nascimento: true,
+                            foto_perfil: true,
+                            link_instagram: true,
+                            tbl_sexo: {
+                                select: {
+                                    id: true,
+                                    sexo: true,
+                                },
                             },
-                        },
-                        senha: true,
-                        id_sexo: true,
-                        preco: true
+                            id_sexo: true,
+                            senha: true
+                        }
                     },
-                },
+                    tbl_psicologos: {
+                        select: {
+                            id: true,
+                            nome: true,
+                            email: true,
+                            telefone: true,
+                            cpf: true,
+                            cip: true,
+                            data_nascimento: true,
+                            foto_perfil: true,
+                            link_instagram: true,
+                            tbl_sexo: {
+                                select: {
+                                    id: true,
+                                    sexo: true,
+                                },
+                            },
+                            senha: true,
+                            id_sexo: true,
+                            preco: true
+                        },
+                    },
+                }
+            });
+            if (!appointment) {
+                return false;
             }
-        });
-        if (!appointment) {
-            throw new Error('Consulta não encontrada.');
+            return appointment;
         }
-        return appointment;
+        catch (error) {
+            console.error("Erro ao buscar consulta", error);
+            throw new Error("Não foi possível buscar a consulta");
+        }
     });
 }
 function createAppointment(idProfessional, idClient, data) {

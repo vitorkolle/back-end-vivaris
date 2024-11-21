@@ -1,4 +1,4 @@
-export declare function selectAppointment(id: number): Promise<{
+export declare function selectAppointment(id: number): Promise<false | {
     tbl_clientes: {
         id: number;
         nome: string;

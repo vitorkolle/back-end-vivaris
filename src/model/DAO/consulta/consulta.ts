@@ -4,66 +4,72 @@ import { TAssessmentNumber } from "../../../domain/entities/assessment";
 const prisma = new PrismaClient();
 
 export async function selectAppointment(id: number) {
-    const appointment = await prisma.tbl_consultas.findUnique({
-        where: {
-            id: id,
-        },
-        select: {
-            id: true,
-            data_consulta: true,
-            valor: true,
-            avaliacao: true,
-            tbl_clientes: {
-                select: {
-                    id: true,
-                    nome: true,
-                    email: true,
-                    telefone: true,
-                    cpf: true,
-                    data_nascimento: true,
-                    foto_perfil: true,
-                    link_instagram: true,
-                    tbl_sexo: {
-                        select: {
-                            id: true,
-                            sexo: true,
-                        },
-                    },
-                    id_sexo: true,
-                    senha: true
-                }
+    try {
+        const appointment = await prisma.tbl_consultas.findUnique({
+            where: {
+                id: id,
             },
-            tbl_psicologos: {
-                select: {
-                    id: true,
-                    nome: true,
-                    email: true,
-                    telefone: true,
-                    cpf: true,
-                    cip: true,
-                    data_nascimento: true,
-                    foto_perfil: true,
-                    link_instagram: true,
-                    tbl_sexo: {
-                        select: {
-                            id: true,
-                            sexo: true,
+            select: {
+                id: true,
+                data_consulta: true,
+                valor: true,
+                avaliacao: true,
+                tbl_clientes: {
+                    select: {
+                        id: true,
+                        nome: true,
+                        email: true,
+                        telefone: true,
+                        cpf: true,
+                        data_nascimento: true,
+                        foto_perfil: true,
+                        link_instagram: true,
+                        tbl_sexo: {
+                            select: {
+                                id: true,
+                                sexo: true,
+                            },
                         },
-                    },
-                    senha: true,
-                    id_sexo: true,
-                    preco: true
+                        id_sexo: true,
+                        senha: true
+                    }
                 },
-            },
+                tbl_psicologos: {
+                    select: {
+                        id: true,
+                        nome: true,
+                        email: true,
+                        telefone: true,
+                        cpf: true,
+                        cip: true,
+                        data_nascimento: true,
+                        foto_perfil: true,
+                        link_instagram: true,
+                        tbl_sexo: {
+                            select: {
+                                id: true,
+                                sexo: true,
+                            },
+                        },
+                        senha: true,
+                        id_sexo: true,
+                        preco: true
+                    },
+                },
+            }
+        })
+    
+        if (!appointment) {
+            return false
         }
-    })
-
-
-    if (!appointment) {
-        throw new Error('Consulta não encontrada.')
+        
+        return appointment
+    } catch (error) {
+        console.error("Erro ao buscar consulta", error);
+        throw new Error("Não foi possível buscar a consulta");
     }
-    return appointment
 }
+   
 
 export async function createAppointment(idProfessional: number, idClient: number, data: Date) {
     const professional = await prisma.tbl_psicologos.findUnique({

@@ -71,6 +71,7 @@ export async function setCadastrarConsulta(idProfessional: number, idClient: num
     }
 }
 
+
 export async function getBuscarConsulta(id:number) {
     if (!isValidId(id)) {
         return ERROR_INVALID_ID
@@ -78,14 +79,14 @@ export async function getBuscarConsulta(id:number) {
 
     let getAppointment = await selectAppointment(id)
 
-    if (!getAppointment) {
-        return ERROR_NOT_FOUND
+    if (getAppointment) {
+        return{
+            data: getAppointment,
+            status_code: 200
+        }
     }
 
-    return{
-        data: getAppointment,
-        status_code: 200
-    }
+    return ERROR_NOT_FOUND
 }
 
 export async function setDeletarConsulta(id: number) {

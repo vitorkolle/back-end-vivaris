@@ -14,6 +14,11 @@ export declare const ERROR_NOT_FOUND: {
     status_code: number;
     message: string;
 };
+export declare const ERROR_NOT_FOUND_ASSESSMENT: {
+    status: boolean;
+    status_code: number;
+    message: string;
+};
 export declare const ERROR_NOT_FOUND_PROFESSIONAL: {
     status: boolean;
     status_code: number;
