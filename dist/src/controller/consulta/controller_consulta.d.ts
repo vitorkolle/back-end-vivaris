@@ -97,3 +97,14 @@ export declare function setDeletarConsulta(id: number): Promise<{
     data: string;
     status_code: number;
 }>;
+export declare function setAtualizarConsulta(id: number, data: Date, contentType: string | undefined): Promise<{
+    status: boolean;
+    status_code: number;
+    message: string;
+} | {
+    data: string;
+    status_code: number;
+} | {
+    data: true;
+    status_code: number;
+}>;

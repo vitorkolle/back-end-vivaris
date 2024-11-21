@@ -76,3 +76,4 @@ export declare function createAppointment(idProfessional: number, idClient: numb
     };
 }>;
 export declare function deleteAppointment(id: number): Promise<boolean>;
+export declare function updateAppointment(data: Date, id: number): Promise<boolean>;

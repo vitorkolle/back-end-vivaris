@@ -1,6 +1,4 @@
-import { PrismaClient, tbl_avaliacoes, tbl_avaliacoes_avaliacao, tbl_consultas_avaliacao } from "@prisma/client";
-import { TAppointment } from "../../../domain/entities/appointment-entity";
-import { TAssessmentNumber } from "../../../domain/entities/assessment";
+import { PrismaClient, tbl_consultas_avaliacao } from "@prisma/client";
 const prisma = new PrismaClient();
 
 export async function selectAppointment(id: number) {
@@ -62,7 +60,7 @@ export async function selectAppointment(id: number) {
         if (!appointment) {
             return false
         }
-        
+
         return appointment
     } catch (error) {
         console.error("Erro ao buscar consulta", error);
@@ -170,5 +168,27 @@ export async function deleteAppointment(id: number) {
     } catch (error) {
         console.error("Erro ao deletar consulta do profissional:", error);
         throw new Error("Não foi possível deletar a consulta do profissional");
+    }
+}
+
+export async function updateAppointment(data: Date, id: number) {
+    try {
+        let appointment = await prisma.tbl_consultas.update({
+            where: {
+                id: id
+            },
+            data: {
+                data_consulta: data
+            }
+        })
+
+        if (!appointment) {
+            return false
+        }
+
+        return true
+    } catch (error) {
+        console.error("Erro ao atualizar a consulta do profissional:", error);
+        throw new Error("Não foi possível atualizar a consulta do profissional");
     }
 }

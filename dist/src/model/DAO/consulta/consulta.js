@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.selectAppointment = selectAppointment;
 exports.createAppointment = createAppointment;
 exports.deleteAppointment = deleteAppointment;
+exports.updateAppointment = updateAppointment;
 const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
 function selectAppointment(id) {
@@ -164,6 +165,28 @@ function deleteAppointment(id) {
         catch (error) {
             console.error("Erro ao deletar consulta do profissional:", error);
             throw new Error("Não foi possível deletar a consulta do profissional");
+        }
+    });
+}
+function updateAppointment(data, id) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            let appointment = yield prisma.tbl_consultas.update({
+                where: {
+                    id: id
+                },
+                data: {
+                    data_consulta: data
+                }
+            });
+            if (!appointment) {
+                return false;
+            }
+            return true;
+        }
+        catch (error) {
+            console.error("Erro ao atualizar a consulta do profissional:", error);
+            throw new Error("Não foi possível atualizar a consulta do profissional");
         }
     });
 }

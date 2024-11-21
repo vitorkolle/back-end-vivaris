@@ -205,7 +205,7 @@ server.listen("8080", () => {
 //Import 
 import { setCadastrarAvaliacao } from './src/controller/avaliacao/controller_avaliacao'
 import { TAssessment } from './src/domain/entities/assessment'
-import { getBuscarConsulta, setCadastrarConsulta, setDeletarConsulta } from "./src/controller/consulta/controller_consulta";
+import { getBuscarConsulta, setAtualizarConsulta, setCadastrarConsulta, setDeletarConsulta } from "./src/controller/consulta/controller_consulta";
 
 
 /**********************************************STRIPE***************************************************************/
@@ -602,4 +602,15 @@ route.delete('/consulta/:id', verifyJWT, async (req, res) => {
 
     res.status(deleteAppointment.status_code)
     res.json(deleteAppointment)
+})
+
+route.put('/consulta/:id', verifyJWT, async (req, res) => {
+    const id = Number(req.params.id)
+    const contentType = req.header('content-type')
+    const data = req.body.data_consulta
+
+    let updateAvaibility = await setAtualizarConsulta(id, data, contentType)
+
+    res.status(updateAvaibility.status_code)
+    res.json(updateAvaibility)
 })

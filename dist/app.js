@@ -398,3 +398,11 @@ route.delete('/consulta/:id', verifyJWT, (req, res) => __awaiter(void 0, void 0,
     res.status(deleteAppointment.status_code);
     res.json(deleteAppointment);
 }));
+route.put('/consulta/:id', verifyJWT, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const id = Number(req.params.id);
+    const contentType = req.header('content-type');
+    const data = req.body.data_consulta;
+    let updateAvaibility = yield (0, controller_consulta_1.setAtualizarConsulta)(id, data, contentType);
+    res.status(updateAvaibility.status_code);
+    res.json(updateAvaibility);
+}));
