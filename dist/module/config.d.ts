@@ -19,6 +19,11 @@ export declare const ERROR_NOT_FOUND_PROFESSIONAL: {
     status_code: number;
     message: string;
 };
+export declare const ERROR_NOT_FOUND_CLIENT: {
+    status: boolean;
+    status_code: number;
+    message: string;
+};
 export declare const ERROR_NOT_FOUND_PREFERENCE: {
     status: boolean;
     status_code: number;

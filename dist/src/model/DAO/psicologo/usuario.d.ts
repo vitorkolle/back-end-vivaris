@@ -34,13 +34,13 @@ export declare function logarPsicologo(email: string, senha: string): Promise<{
 export declare function buscarPsicologo(id: number): Promise<{
     professional: {
         tbl_psicologo_disponibilidade: {
+            psicologo_id: number;
             tbl_disponibilidade: {
                 id: number;
                 dia_semana: import(".prisma/client").$Enums.tbl_disponibilidade_dia_semana;
                 horario_inicio: Date;
                 horario_fim: Date;
             };
-            psicologo_id: number;
         }[];
     } & {
         id: number;
@@ -77,6 +77,7 @@ export declare function listarPsicologos(): Promise<{
         tbl_sexo: {
             sexo: string | null;
         };
+        cip: string;
         tbl_psicologo_disponibilidade: {
             id: number;
             tbl_disponibilidade: {
@@ -86,7 +87,6 @@ export declare function listarPsicologos(): Promise<{
                 horario_fim: Date;
             };
         }[];
-        cip: string;
     }[];
     status_code: number;
 }>;

@@ -304,7 +304,7 @@ route.post('/create-checkout-session', verifyJWT, (req, res) => __awaiter(void 0
     res.json(result);
 }));
 /*********************************Avaliação************************************/
-route.post("/avaliacao", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+route.post('/avaliacao', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let contentType = req.header('content-type');
     let inputData = {
         texto: req.body.texto,

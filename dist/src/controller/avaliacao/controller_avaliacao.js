@@ -13,6 +13,8 @@ exports.setCadastrarAvaliacao = setCadastrarAvaliacao;
 const config_1 = require("../../../module/config");
 const zod_validations_1 = require("../../infra/zod-validations");
 const avaliacao_1 = require("../../model/DAO/avaliacao/avaliacao");
+const usuario_1 = require("../../model/DAO/cliente/usuario");
+const usuario_2 = require("../../model/DAO/psicologo/usuario");
 function setCadastrarAvaliacao(avaliacao, contentType) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -24,6 +26,14 @@ function setCadastrarAvaliacao(avaliacao, contentType) {
                 !avaliacao.id_cliente || !(0, zod_validations_1.isValidId)(avaliacao.id_cliente) ||
                 !avaliacao.id_psicologo || !(0, zod_validations_1.isValidId)(avaliacao.id_psicologo)) {
                 return config_1.ERROR_REQUIRED_FIELDS;
+            }
+            let validateProfessional = yield (0, usuario_2.buscarPsicologo)(avaliacao.id_psicologo);
+            if (!validateProfessional) {
+                return config_1.ERROR_NOT_FOUND_PROFESSIONAL;
+            }
+            let validateClient = yield (0, usuario_1.buscarCliente)(avaliacao.id_cliente);
+            if (!validateClient) {
+                return config_1.ERROR_NOT_FOUND_CLIENT;
             }
             let createAssessment = yield (0, avaliacao_1.criarAvaliacao)(avaliacao);
             if (!createAssessment) {
