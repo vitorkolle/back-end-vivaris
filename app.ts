@@ -205,6 +205,7 @@ server.listen("8080", () => {
 //Import 
 import { setCadastrarAvaliacao } from './src/controller/avaliacao/controller_avaliacao'
 import { TAssessment } from './src/domain/entities/assessment'
+import { getBuscarConsulta, setCadastrarConsulta, setDeletarConsulta } from "./src/controller/consulta/controller_consulta";
 
 
 /**********************************************STRIPE***************************************************************/
@@ -565,4 +566,39 @@ route.post('/avaliacao', async (req, res) => {
 
     res.status(assessment.status_code)
     res.json(assessment)
+})
+
+
+/*******************************Consulta*************************/
+route.post('/consulta', async (req, res) => {
+    let contentType = req.header('content-type')
+
+   let idProfessional = req.body.id_psicologo
+
+   let idClient = req.body.id_cliente
+
+   let appointmentDate = req.body.data_consulta
+
+   let newAppointment = await setCadastrarConsulta(idProfessional, idClient, appointmentDate, contentType)
+
+   res.status(newAppointment.status_code)
+   res.json(newAppointment)
+})
+
+route.get('/consulta/:id', async (req, res) => {
+    let id = Number(req.params.id)
+
+    let appointment = await getBuscarConsulta(id)
+
+    res.status(appointment.status_code)
+    res.json(appointment)
+})
+
+route.delete('/consulta/:id', async (req, res) => {
+    let id = Number(req.params.id)  
+
+    let deleteAppointment = await setDeletarConsulta(id)
+
+    res.status(deleteAppointment.status_code)
+    res.json(deleteAppointment)
 })
