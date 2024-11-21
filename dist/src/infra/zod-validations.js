@@ -20,9 +20,6 @@ exports.isValidWeekDay = isValidWeekDay;
 exports.isValidHour = isValidHour;
 exports.isValidNumberArray = isValidNumberArray;
 exports.isValidAvailbilityStatus = isValidAvailbilityStatus;
-exports.isValidCardNumber = isValidCardNumber;
-exports.isValidModality = isValidModality;
-exports.isValidCvc = isValidCvc;
 exports.isValidAssessment = isValidAssessment;
 const zod_1 = require("zod");
 function isValidId(id) {
@@ -51,7 +48,7 @@ function isValidWeekDay(date) {
     //* ^  Possível uso quando a aplicação estiver na fase final
     const dateSchema = zod_1.z.string().min(5).max(7);
     const testDate = dateSchema.safeParse(date);
-    if (testDate.success === false) {
+    if (!testDate.success) {
         return false;
     }
     const weekDaysArray = ['Domingo', 'Segunda', 'Terca', 'Quarta', 'Quinta', 'Sexta', 'Sabado'];
@@ -60,7 +57,7 @@ function isValidWeekDay(date) {
     return finalDayTest.success;
 }
 function isValidHour(hour) {
-    const hourSchema = zod_1.z.string().time().length(8);
+    const hourSchema = zod_1.z.string().length(8);
     const validateHour = hourSchema.safeParse(hour);
     return validateHour.success;
 }
@@ -79,21 +76,6 @@ function isValidAvailbilityStatus(availabilityStatus) {
     const availabilityStatusArraySchema = zod_1.z.enum(availabilityStatusArray);
     const finalStatusTest = availabilityStatusArraySchema.safeParse(availabilityStatus);
     return finalStatusTest.success;
-}
-function isValidCardNumber(cardNumber) {
-    const cardNumberSchema = zod_1.z.number().int().positive().min(1111111111111111).max(9999999999999999);
-    const testNumber = cardNumberSchema.safeParse(cardNumber);
-    return testNumber.success;
-}
-function isValidModality(modality) {
-    const modalitySchema = zod_1.z.enum(['Credito', 'Debito']);
-    const testModality = modalitySchema.safeParse(modality);
-    return testModality.success;
-}
-function isValidCvc(cvc) {
-    const cvcSchema = zod_1.z.number().int().positive().min(111).max(9999);
-    const testCvc = cvcSchema.safeParse(cvc);
-    return testCvc.success;
 }
 function isValidAssessment(avaliacao) {
     return __awaiter(this, void 0, void 0, function* () {

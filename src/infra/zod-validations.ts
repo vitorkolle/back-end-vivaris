@@ -49,7 +49,7 @@ export function isValidWeekDay(date: string) : boolean{
 
     const testDate = dateSchema.safeParse(date)
 
-    if(testDate.success === false){
+    if(!testDate.success){
         return false
     }
 
@@ -58,14 +58,13 @@ export function isValidWeekDay(date: string) : boolean{
     const weekDaySchema = z.enum(weekDaysArray)
 
     const finalDayTest = weekDaySchema.safeParse(date)
-
     
 
     return finalDayTest.success
 }
 
 export function isValidHour(hour: string) : boolean{
-    const hourSchema = z.string().time().length(8)
+    const hourSchema = z.string().length(8)
 
     const validateHour = hourSchema.safeParse(hour)  
     
@@ -98,32 +97,6 @@ export function isValidAvailbilityStatus(availabilityStatus : string) : boolean{
    const finalStatusTest = availabilityStatusArraySchema.safeParse(availabilityStatus)
 
    return finalStatusTest.success
-}
-
-export function isValidCardNumber(cardNumber: number){
-    
-    const cardNumberSchema = z.number().int().positive().min(1111111111111111).max(9999999999999999)
-
-    const testNumber = cardNumberSchema.safeParse(cardNumber)
-    
-    return testNumber.success
-}
-
-export function isValidModality(modality:string){
-
-    const modalitySchema = z.enum(['Credito', 'Debito'])
-
-    const testModality = modalitySchema.safeParse(modality)
-
-    return testModality.success
-}
-
-export function isValidCvc(cvc: number){
-    const cvcSchema = z.number().int().positive().min(111).max(9999)
-
-    const testCvc = cvcSchema.safeParse(cvc)
-
-    return testCvc.success
 }
 
 export async function isValidAssessment(avaliacao:string) {

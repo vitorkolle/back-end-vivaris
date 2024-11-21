@@ -504,6 +504,7 @@ route.put("/psicologo/disponibilidade", verifyJWT, async (req, res) => {
 });
 
 route.delete("/disponibilidade/psicologo/:id", verifyJWT, async (req, res) => {
+  
   let contentType = req.header("Content-Type");
   let professionalId = Number(req.params.id);
   let weekDay = req.body.dia_semana;

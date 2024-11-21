@@ -313,24 +313,32 @@ export async function setDeletarDisponibilidadeByHour(dia_semana : WeekDay, hora
     try {
         if (String(contentType).toLowerCase() !== 'application/json') {
             return ERROR_CONTENT_TYPE
-        }
+        }  
+        console.log(horario_inicio);
+        
         
         if(
             !dia_semana || !isValidWeekDay(dia_semana) ||
             !horario_inicio || !isValidHour(horario_inicio) ||
             !id_psicologo || !isValidId(id_psicologo)
         ) {
+            console.log (isValidHour(horario_inicio));
+            
+            console.log('ata');
+            
             return ERROR_REQUIRED_FIELDS
         }
 
         let validateProfessional = await buscarPsicologo(id_psicologo)
-
+        console.log(validateProfessional);
+        
         if(!validateProfessional){
             return ERROR_NOT_FOUND_PROFESSIONAL
         }
 
 
         let validateAvailbility = await buscarDisponibilidadeByHourAndWeekDay(dia_semana, horario_inicio, id_psicologo)
+        console.log(validateAvailbility);
         
 
         if(!validateAvailbility){
@@ -338,6 +346,7 @@ export async function setDeletarDisponibilidadeByHour(dia_semana : WeekDay, hora
         }
 
         let deleteAvailbility = await deletarDisponibilidadeByHour(id_psicologo, dia_semana, horario_inicio)
+console.log(deleteAvailbility);
 
         if(deleteAvailbility){
             return{

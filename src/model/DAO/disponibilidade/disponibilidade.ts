@@ -1,8 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { WeekDay, TAvailability } from "../../../domain/entities/availability-entity";
-import { ERROR_CONTENT_TYPE, ERROR_INVALID_ID, ERROR_NOT_FOUND, ERROR_NOT_FOUND_AVAILBILITY, ERROR_NOT_FOUND_PROFESSIONAL } from "../../../../module/config";
+import { ERROR_NOT_FOUND_AVAILBILITY, ERROR_NOT_FOUND_PROFESSIONAL } from "../../../../module/config";
 import { TProfessionalAvailability } from "../../../domain/entities/professional-availability";
-import { transformarHorario } from "../../../controller/disponibilidade/controller_disponibilidade";
 const prisma = new PrismaClient()
 
 
@@ -377,7 +376,7 @@ export async function buscarDisponibilidadeByHourAndWeekDay(dia_semana : WeekDay
     let existsAvailbility : boolean = false || true
 
     availability.forEach(avail => {      
-      if(avail.tbl_disponibilidade.dia_semana === dia_semana && avail.tbl_disponibilidade.horario_inicio === new Date(horario_inicio)){
+      if(avail.tbl_disponibilidade.dia_semana === dia_semana && avail.tbl_disponibilidade.horario_inicio === horario_inicio){
         existsAvailbility = true
       }
     });

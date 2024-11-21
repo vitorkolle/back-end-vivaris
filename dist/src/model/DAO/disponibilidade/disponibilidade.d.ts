@@ -3,8 +3,8 @@ import { TProfessionalAvailability } from "../../../domain/entities/professional
 export declare function criarDisponibilidade(disponibilidade: TAvailability): Promise<{
     id: number;
     dia_semana: import(".prisma/client").$Enums.tbl_disponibilidade_dia_semana;
-    horario_inicio: Date;
-    horario_fim: Date;
+    horario_inicio: string;
+    horario_fim: string;
 }>;
 export declare function listarDisponibilidadesPorProfissional(profissionalId: number): Promise<{
     id: null;
@@ -51,15 +51,15 @@ export declare function buscarDisponibilidadePsicologo(availabilityData: TProfes
 }[]>;
 export declare function buscarDisponibilidade(id: number): Promise<false | {
     dia_semana: import(".prisma/client").$Enums.tbl_disponibilidade_dia_semana;
-    horario_inicio: Date;
-    horario_fim: Date;
+    horario_inicio: string;
+    horario_fim: string;
 }[]>;
 export declare function deletarDisponibilidade(diaSemana: string, idPsicologo: number): Promise<boolean>;
 export declare function atualizarDisponibilidade(availabilityData: TAvailability, availabilityId: number): Promise<false | {
     id: number;
     dia_semana: import(".prisma/client").$Enums.tbl_disponibilidade_dia_semana;
-    horario_inicio: Date;
-    horario_fim: Date;
+    horario_inicio: string;
+    horario_fim: string;
 }>;
 export declare function atualizarDisponibilidadeProfissional(availabilityData: TProfessionalAvailability): Promise<false | {
     id: number;
