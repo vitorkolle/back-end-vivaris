@@ -17,6 +17,9 @@ const stripe_1 = require("../../stripe");
 const createPaymentIntent = (idConsulta, id_cliente) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const dadosConsulta = yield (0, consulta_1.selectAppointment)(idConsulta);
+        if (!dadosConsulta) {
+            return config_1.ERROR_NOT_FOUND_ASSESSMENT;
+        }
         let dadosConsultaFormat = {
             id: dadosConsulta.id,
             data_consulta: dadosConsulta.data_consulta,

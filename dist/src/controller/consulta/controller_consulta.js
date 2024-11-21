@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.setCadastrarConsulta = setCadastrarConsulta;
 exports.getBuscarConsulta = getBuscarConsulta;
 exports.setDeletarConsulta = setDeletarConsulta;
+exports.setAtualizarConsulta = setAtualizarConsulta;
 const config_1 = require("../../../module/config");
 const zod_validations_1 = require("../../infra/zod-validations");
 const usuario_1 = require("../../model/DAO/cliente/usuario");
@@ -73,27 +74,82 @@ function getBuscarConsulta(id) {
             return config_1.ERROR_INVALID_ID;
         }
         let getAppointment = yield (0, consulta_1.selectAppointment)(id);
-        if (!getAppointment) {
-            return config_1.ERROR_NOT_FOUND;
+        if (getAppointment) {
+            return {
+                data: getAppointment,
+                status_code: 200
+            };
         }
-        return {
-            data: getAppointment,
-            status_code: 200
-        };
+        return config_1.ERROR_NOT_FOUND;
     });
 }
 function setDeletarConsulta(id) {
     return __awaiter(this, void 0, void 0, function* () {
-        if (!(0, zod_validations_1.isValidId)(id)) {
-            return config_1.ERROR_INVALID_ID;
+        try {
+            if (!(0, zod_validations_1.isValidId)(id)) {
+                return config_1.ERROR_INVALID_ID;
+            }
+            let appointment = yield (0, consulta_1.deleteAppointment)(id);
+            if (!appointment) {
+                return config_1.ERROR_NOT_DELETED;
+            }
+            return {
+                data: config_1.SUCCESS_DELETED_ITEM.message,
+                status_code: 200
+            };
         }
-        let appointment = yield (0, consulta_1.deleteAppointment)(id);
-        if (!consulta_1.deleteAppointment) {
-            return config_1.ERROR_NOT_DELETED;
+        catch (error) {
+            console.error('Erro ao tentar deletar a consulta:', error);
+            return config_1.ERROR_INTERNAL_SERVER;
         }
-        return {
-            data: config_1.SUCCESS_DELETED_ITEM.message,
-            status_code: 200
-        };
+    });
+}
+function setAtualizarConsulta(id, data, contentType) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            if (String(contentType).toLowerCase() !== 'application/json') {
+                return config_1.ERROR_CONTENT_TYPE;
+            }
+            function validarData(data) {
+                if (data.length !== 10)
+                    return false;
+                const partes = data.split("-");
+                const ano = parseInt(partes[0], 10);
+                const mes = parseInt(partes[1], 10);
+                const dia = parseInt(partes[2], 10);
+                if (mes < 1 || mes > 12)
+                    return false;
+                const dataTestada = new Date(ano, mes - 1, dia);
+                return dataTestada.getFullYear() === ano && dataTestada.getMonth() === mes - 1 && dataTestada.getDate() === dia;
+            }
+            function transformarData(data) {
+                if (!validarData(data)) {
+                    throw new Error("Formato de data inválido");
+                }
+                return new Date(data);
+            }
+            if (!(0, zod_validations_1.isValidId)(id) || !validarData(data.toString()) || !transformarData(data.toString())) {
+                return config_1.ERROR_CONTENT_TYPE;
+            }
+            let validateAppointment = yield (0, consulta_1.selectAppointment)(id);
+            if (!validateAppointment) {
+                return config_1.ERROR_NOT_FOUND;
+            }
+            let appointment = yield (0, consulta_1.updateAppointment)(transformarData(data.toString()), id);
+            if (!appointment) {
+                return {
+                    data: config_1.ERROR_INTERNAL_SERVER_DB.message,
+                    status_code: 500
+                };
+            }
+            return {
+                data: appointment,
+                status_code: 200
+            };
+        }
+        catch (error) {
+            console.error('Erro ao tentar atualizar a consulta:', error);
+            return config_1.ERROR_INTERNAL_SERVER;
+        }
     });
 }

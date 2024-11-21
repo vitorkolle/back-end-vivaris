@@ -12,67 +12,74 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.selectAppointment = selectAppointment;
 exports.createAppointment = createAppointment;
 exports.deleteAppointment = deleteAppointment;
+exports.updateAppointment = updateAppointment;
 const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
 function selectAppointment(id) {
     return __awaiter(this, void 0, void 0, function* () {
-        const appointment = yield prisma.tbl_consultas.findUnique({
-            where: {
-                id: id,
-            },
-            select: {
-                id: true,
-                data_consulta: true,
-                valor: true,
-                avaliacao: true,
-                tbl_clientes: {
-                    select: {
-                        id: true,
-                        nome: true,
-                        email: true,
-                        telefone: true,
-                        cpf: true,
-                        data_nascimento: true,
-                        foto_perfil: true,
-                        link_instagram: true,
-                        tbl_sexo: {
-                            select: {
-                                id: true,
-                                sexo: true,
-                            },
-                        },
-                        id_sexo: true,
-                        senha: true
-                    }
+        try {
+            const appointment = yield prisma.tbl_consultas.findUnique({
+                where: {
+                    id: id,
                 },
-                tbl_psicologos: {
-                    select: {
-                        id: true,
-                        nome: true,
-                        email: true,
-                        telefone: true,
-                        cpf: true,
-                        cip: true,
-                        data_nascimento: true,
-                        foto_perfil: true,
-                        link_instagram: true,
-                        tbl_sexo: {
-                            select: {
-                                id: true,
-                                sexo: true,
+                select: {
+                    id: true,
+                    data_consulta: true,
+                    valor: true,
+                    avaliacao: true,
+                    tbl_clientes: {
+                        select: {
+                            id: true,
+                            nome: true,
+                            email: true,
+                            telefone: true,
+                            cpf: true,
+                            data_nascimento: true,
+                            foto_perfil: true,
+                            link_instagram: true,
+                            tbl_sexo: {
+                                select: {
+                                    id: true,
+                                    sexo: true,
+                                },
                             },
-                        },
-                        senha: true,
-                        id_sexo: true,
-                        preco: true
+                            id_sexo: true,
+                            senha: true
+                        }
                     },
-                },
+                    tbl_psicologos: {
+                        select: {
+                            id: true,
+                            nome: true,
+                            email: true,
+                            telefone: true,
+                            cpf: true,
+                            cip: true,
+                            data_nascimento: true,
+                            foto_perfil: true,
+                            link_instagram: true,
+                            tbl_sexo: {
+                                select: {
+                                    id: true,
+                                    sexo: true,
+                                },
+                            },
+                            senha: true,
+                            id_sexo: true,
+                            preco: true
+                        },
+                    },
+                }
+            });
+            if (!appointment) {
+                return false;
             }
-        });
-        if (!appointment) {
-            throw new Error('Consulta não encontrada.');
+            return appointment;
         }
-        return appointment;
+        catch (error) {
+            console.error("Erro ao buscar consulta", error);
+            throw new Error("Não foi possível buscar a consulta");
+        }
     });
 }
 function createAppointment(idProfessional, idClient, data) {
@@ -87,12 +94,22 @@ function createAppointment(idProfessional, idClient, data) {
         }
         let avaliacao = yield prisma.$queryRawUnsafe(`call getMediaAvaliacao(${idProfessional})`);
         if (!avaliacao) {
-            avaliacao = 0;
+            return false;
+        }
+        function formatAvaliacao(avaliacao) {
+            switch (true) {
+                case (avaliacao >= 1 && avaliacao < 2): return client_1.tbl_consultas_avaliacao.Um;
+                case (avaliacao >= 2 && avaliacao < 3): return client_1.tbl_consultas_avaliacao.Dois;
+                case (avaliacao >= 3 && avaliacao < 4): return client_1.tbl_consultas_avaliacao.Tres;
+                case (avaliacao >= 4 && avaliacao < 5): return client_1.tbl_consultas_avaliacao.Quatro;
+                case (avaliacao === 5): return client_1.tbl_consultas_avaliacao.Cinco;
+                default: return client_1.tbl_consultas_avaliacao.Um;
+            }
         }
         const appointment = yield prisma.tbl_consultas.create({
             data: {
                 valor: professional.preco,
-                avaliacao: avaliacao,
+                avaliacao: formatAvaliacao(Number(avaliacao)),
                 tbl_clientes: {
                     connect: {
                         id: idClient
@@ -109,7 +126,27 @@ function createAppointment(idProfessional, idClient, data) {
         if (!appointment) {
             return false;
         }
-        return appointment;
+        const user = yield prisma.tbl_clientes.findUnique({
+            where: {
+                id: idClient
+            }
+        });
+        if (!user) {
+            return false;
+        }
+        const professionalUser = yield prisma.tbl_psicologos.findUnique({
+            where: {
+                id: idProfessional
+            }
+        });
+        if (!professionalUser) {
+            return false;
+        }
+        return {
+            consulta: appointment,
+            psicologo: professionalUser,
+            cliente: user
+        };
     });
 }
 function deleteAppointment(id) {
@@ -128,6 +165,28 @@ function deleteAppointment(id) {
         catch (error) {
             console.error("Erro ao deletar consulta do profissional:", error);
             throw new Error("Não foi possível deletar a consulta do profissional");
+        }
+    });
+}
+function updateAppointment(data, id) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            let appointment = yield prisma.tbl_consultas.update({
+                where: {
+                    id: id
+                },
+                data: {
+                    data_consulta: data
+                }
+            });
+            if (!appointment) {
+                return false;
+            }
+            return true;
+        }
+        catch (error) {
+            console.error("Erro ao atualizar a consulta do profissional:", error);
+            throw new Error("Não foi possível atualizar a consulta do profissional");
         }
     });
 }

@@ -205,7 +205,7 @@ server.listen("8080", () => {
 //Import 
 import { setCadastrarAvaliacao } from './src/controller/avaliacao/controller_avaliacao'
 import { TAssessment } from './src/domain/entities/assessment'
-import { getBuscarConsulta, setCadastrarConsulta, setDeletarConsulta } from "./src/controller/consulta/controller_consulta";
+import { getBuscarConsulta, setAtualizarConsulta, setCadastrarConsulta, setDeletarConsulta } from "./src/controller/consulta/controller_consulta";
 
 
 /**********************************************STRIPE***************************************************************/
@@ -317,14 +317,14 @@ route.get("/usuarios", verifyJWT, async (req, res) => {
 });
 
 /****************************************************GÊNERO****************************************************/
-route.get("/sexo", verifyJWT, async (req, res) => {
+route.get("/sexo", async (req, res) => {
   let allSex = await getListarSexo();
 
   res.status(allSex.status_code);
   res.json(allSex);
 });
 
-route.get("/usuario/sexo/:id", verifyJWT, async (req, res) => {
+route.get("/usuario/sexo/:id", async (req, res) => {
   let id = req.params.id;
   let idFormat = Number(id);
 
@@ -522,7 +522,7 @@ route.delete("/disponibilidade/psicologo/:id", verifyJWT, async (req, res) => {
 });
 
 /****************************************************PREFERÊNCIAS****************************************************/
-route.get("/preferencias", verifyJWT, async (req, res) => {
+route.get("/preferencias", async (req, res) => {
   let preferenceData = await getListarPreferencias();
 
   console.log(preferenceData);
@@ -531,7 +531,7 @@ route.get("/preferencias", verifyJWT, async (req, res) => {
   res.json(preferenceData);
 });
 
-route.get("/preferencias/:id", verifyJWT, async (req, res) => {
+route.get("/preferencias/:id", async (req, res) => {
   let id = Number(req.params.id);
 
   let preferenceData = await getBuscarPreferencia(id);
@@ -587,7 +587,7 @@ route.post('/consulta', async (req, res) => {
    res.json(newAppointment)
 })
 
-route.get('/consulta/:id', async (req, res) => {
+route.get('/consulta/:id', verifyJWT, async (req, res) => {
     let id = Number(req.params.id)
 
     let appointment = await getBuscarConsulta(id)
@@ -596,11 +596,22 @@ route.get('/consulta/:id', async (req, res) => {
     res.json(appointment)
 })
 
-route.delete('/consulta/:id', async (req, res) => {
+route.delete('/consulta/:id', verifyJWT, async (req, res) => {
     let id = Number(req.params.id)  
 
     let deleteAppointment = await setDeletarConsulta(id)
 
     res.status(deleteAppointment.status_code)
     res.json(deleteAppointment)
+})
+
+route.put('/consulta/:id', verifyJWT, async (req, res) => {
+    const id = Number(req.params.id)
+    const contentType = req.header('content-type')
+    const data = req.body.data_consulta
+
+    let updateAvaibility = await setAtualizarConsulta(id, data, contentType)
+
+    res.status(updateAvaibility.status_code)
+    res.json(updateAvaibility)
 })
