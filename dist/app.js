@@ -213,12 +213,12 @@ route.get("/usuarios", verifyJWT, (req, res) => __awaiter(void 0, void 0, void 0
     res.json(allUsers);
 }));
 /****************************************************GÊNERO****************************************************/
-route.get("/sexo", verifyJWT, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+route.get("/sexo", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let allSex = yield (0, controller_usuario_1.getListarSexo)();
     res.status(allSex.status_code);
     res.json(allSex);
 }));
-route.get("/usuario/sexo/:id", verifyJWT, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+route.get("/usuario/sexo/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let id = req.params.id;
     let idFormat = Number(id);
     let buscarSexo = yield (0, controller_usuario_1.getBuscarSexo)(idFormat);
@@ -343,13 +343,13 @@ route.delete("/disponibilidade/psicologo/:id", verifyJWT, (req, res) => __awaite
     res.json(deleteAvailbility);
 }));
 /****************************************************PREFERÊNCIAS****************************************************/
-route.get("/preferencias", verifyJWT, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+route.get("/preferencias", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let preferenceData = yield (0, controller_preferencia_1.getListarPreferencias)();
     console.log(preferenceData);
     res.status(preferenceData.status_code);
     res.json(preferenceData);
 }));
-route.get("/preferencias/:id", verifyJWT, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+route.get("/preferencias/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let id = Number(req.params.id);
     let preferenceData = yield (0, controller_preferencia_1.getBuscarPreferencia)(id);
     res.status(preferenceData.status_code);

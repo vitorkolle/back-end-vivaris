@@ -379,7 +379,7 @@ function buscarDisponibilidadeByHourAndWeekDay(dia_semana, horario_inicio, id_ps
             }
             let existsAvailbility = false || true;
             availability.forEach(avail => {
-                if (avail.tbl_disponibilidade.dia_semana === dia_semana && avail.tbl_disponibilidade.horario_inicio === horario_inicio) {
+                if (avail.tbl_disponibilidade.dia_semana === dia_semana && avail.tbl_disponibilidade.horario_inicio.getTime() === new Date(horario_inicio).getTime()) {
                     existsAvailbility = true;
                 }
             });

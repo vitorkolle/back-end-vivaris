@@ -9,8 +9,8 @@ export declare function setInserirDisponibilidade(disponibilidade: TAvailability
     data: {
         id: number;
         dia_semana: import(".prisma/client").$Enums.tbl_disponibilidade_dia_semana;
-        horario_inicio: string;
-        horario_fim: string;
+        horario_inicio: Date;
+        horario_fim: Date;
     };
     status_code: number;
     message: string;
@@ -59,8 +59,8 @@ export declare function getBuscarDisponibilidade(id: number): Promise<{
     status_code: number;
     data: {
         dia_semana: import(".prisma/client").$Enums.tbl_disponibilidade_dia_semana;
-        horario_inicio: string;
-        horario_fim: string;
+        horario_inicio: Date;
+        horario_fim: Date;
     }[];
 }>;
 export declare function getListarDisponibilidadesProfissional(idProfessional: number): Promise<{
@@ -109,8 +109,8 @@ export declare function setAtualizarDisponibilidade(availabilityData: TAvailabil
     data: {
         id: number;
         dia_semana: import(".prisma/client").$Enums.tbl_disponibilidade_dia_semana;
-        horario_inicio: string;
-        horario_fim: string;
+        horario_inicio: Date;
+        horario_fim: Date;
     };
     message?: undefined;
 }>;
