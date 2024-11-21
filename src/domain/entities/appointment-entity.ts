@@ -6,6 +6,6 @@ export type TAppointment ={
     data_consulta: string,
     valor: number,
     avaliacao:number
-    cliente: TUser,
-    psicologo: TProfessional,
+    tbl_clientes: TUser,
+    tbl_psicologos: TProfessional,
 }
