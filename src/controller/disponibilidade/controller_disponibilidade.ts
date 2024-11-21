@@ -33,8 +33,8 @@ export async function setInserirDisponibilidade(disponibilidade: TAvailability, 
 
             const disponibilidadeInput: TAvailability = { 
                 dia_semana: disponibilidade.dia_semana,
-                horario_inicio: transformarHorario(disponibilidade.horario_inicio.toString()),
-                horario_fim: transformarHorario(disponibilidade.horario_fim.toString())
+                horario_inicio: disponibilidade.horario_inicio.toString(),
+                horario_fim: disponibilidade.horario_fim.toString()
             }
 
             const newAvailability = await criarDisponibilidade(disponibilidadeInput)
@@ -234,8 +234,8 @@ export async function setAtualizarDisponibilidade(availabilityData:TAvailability
 
         const disponibilidadeInput: TAvailability = { 
             dia_semana: availabilityData.dia_semana,
-            horario_inicio: transformarHorario(availabilityData.horario_inicio.toString()),
-            horario_fim: transformarHorario(availabilityData.horario_fim.toString())
+            horario_inicio: availabilityData.horario_inicio.toString(),
+            horario_fim: availabilityData.horario_fim.toString()
         }
 
         let updateAvaibility = await atualizarDisponibilidade(disponibilidadeInput, availabilityId)
@@ -329,20 +329,15 @@ export async function setDeletarDisponibilidadeByHour(dia_semana : WeekDay, hora
             return ERROR_NOT_FOUND_PROFESSIONAL
         }
 
-        let formatHour = transformarHorario(horario_inicio.toString())
 
-        if (!formatHour) {
-            return ERROR_DATE_NOT_VALID
-        }
-
-        let validateAvailbility = await buscarDisponibilidadeByHourAndWeekDay(dia_semana, formatHour, id_psicologo)
+        let validateAvailbility = await buscarDisponibilidadeByHourAndWeekDay(dia_semana, horario_inicio, id_psicologo)
         
 
         if(!validateAvailbility){
             return ERROR_NOT_FOUND_AVAILBILITY
         }
 
-        let deleteAvailbility = await deletarDisponibilidadeByHour(id_psicologo, dia_semana, formatHour)
+        let deleteAvailbility = await deletarDisponibilidadeByHour(id_psicologo, dia_semana, horario_inicio)
 
         if(deleteAvailbility){
             return{

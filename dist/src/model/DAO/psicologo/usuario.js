@@ -103,6 +103,7 @@ function buscarPsicologo(id) {
                 },
             });
             if (professional) {
+                console.log(professional);
                 return {
                     professional: professional,
                     status_code: 200

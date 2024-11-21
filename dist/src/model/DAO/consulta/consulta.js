@@ -10,6 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.selectAppointment = selectAppointment;
+exports.createAppointment = createAppointment;
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 function selectAppointment(id) {
@@ -79,5 +80,29 @@ function selectAppointment(id) {
             throw new Error('Consulta não encontrada.');
         }
         return appointment;
+    });
+}
+function createAppointment(idProfessional, idClient, data) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const professional = yield prisma.tbl_psicologos.findUnique({
+            where: {
+                id: idProfessional
+            }
+        });
+        const appointment = yield prisma.tbl_consultas.create({
+            data: {
+                valor: professional.price,
+                tbl_clientes: {
+                    connect: {
+                        id: idClient
+                    }
+                },
+                tbl_psicologos: {
+                    connect: {
+                        id: idProfessional
+                    }
+                },
+            }
+        });
     });
 }
