@@ -104,7 +104,4 @@ export declare function setAtualizarConsulta(id: number, data: Date, contentType
 } | {
     data: string;
     status_code: number;
-} | {
-    data: true;
-    status_code: number;
 }>;

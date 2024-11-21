@@ -144,7 +144,8 @@ export async function criarDisponibilidadeProfissional(profissionalId: number, d
             id: true,
             sexo: true
           }
-        }
+        },
+        preco:true
       },
     });
 

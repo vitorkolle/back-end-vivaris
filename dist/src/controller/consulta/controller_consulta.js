@@ -143,7 +143,7 @@ function setAtualizarConsulta(id, data, contentType) {
                 };
             }
             return {
-                data: appointment,
+                data: config_1.SUCCESS_UPDATED_ITEM.message,
                 status_code: 200
             };
         }
