@@ -100,6 +100,7 @@ function setInserirPsicologo(user, contentType) {
                     cip: user.cip,
                     data_nascimento: transformarData(user.data_nascimento.toString()),
                     id_sexo: user.id_sexo,
+                    preco: user.preco
                 };
                 // Inserir novo cliente
                 const newProfesional = yield (0, usuario_1.criarNovoPsicologo)(userData);

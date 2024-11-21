@@ -13,6 +13,7 @@ export async function criarNovoPsicologo(userInput: TProfessional) {
         email: userInput.email,
         senha: userInput.senha,
         telefone: userInput.telefone,
+        preco: userInput.preco,
         cpf: userInput.cpf,
         data_nascimento: userInput.data_nascimento,
         cip: userInput.cip,

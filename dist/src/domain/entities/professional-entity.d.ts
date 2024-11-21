@@ -9,4 +9,5 @@ export type TProfessional = {
     senha: string;
     foto_perfil?: string | null;
     link_instagram?: string | null;
+    preco: number;
 };
