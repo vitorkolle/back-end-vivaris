@@ -87,12 +87,22 @@ function createAppointment(idProfessional, idClient, data) {
         }
         let avaliacao = yield prisma.$queryRawUnsafe(`call getMediaAvaliacao(${idProfessional})`);
         if (!avaliacao) {
-            avaliacao = 0;
+            return false;
+        }
+        function formatAvaliacao(avaliacao) {
+            switch (true) {
+                case (avaliacao >= 1 && avaliacao < 2): return client_1.tbl_consultas_avaliacao.Um;
+                case (avaliacao >= 2 && avaliacao < 3): return client_1.tbl_consultas_avaliacao.Dois;
+                case (avaliacao >= 3 && avaliacao < 4): return client_1.tbl_consultas_avaliacao.Tres;
+                case (avaliacao >= 4 && avaliacao < 5): return client_1.tbl_consultas_avaliacao.Quatro;
+                case (avaliacao === 5): return client_1.tbl_consultas_avaliacao.Cinco;
+                default: return client_1.tbl_consultas_avaliacao.Um;
+            }
         }
         const appointment = yield prisma.tbl_consultas.create({
             data: {
                 valor: professional.preco,
-                avaliacao: avaliacao,
+                avaliacao: formatAvaliacao(Number(avaliacao)),
                 tbl_clientes: {
                     connect: {
                         id: idClient
@@ -109,7 +119,27 @@ function createAppointment(idProfessional, idClient, data) {
         if (!appointment) {
             return false;
         }
-        return appointment;
+        const user = yield prisma.tbl_clientes.findUnique({
+            where: {
+                id: idClient
+            }
+        });
+        if (!user) {
+            return false;
+        }
+        const professionalUser = yield prisma.tbl_psicologos.findUnique({
+            where: {
+                id: idProfessional
+            }
+        });
+        if (!professionalUser) {
+            return false;
+        }
+        return {
+            consulta: appointment,
+            psicologo: professionalUser,
+            cliente: user
+        };
     });
 }
 function deleteAppointment(id) {

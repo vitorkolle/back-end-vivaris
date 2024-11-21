@@ -55,7 +55,7 @@ export async function setCadastrarConsulta(idProfessional: number, idClient: num
             return ERROR_NOT_FOUND_PROFESSIONAL
         }
 
-        let newAppointment = await createAppointment(idProfessional, idClient, transformarData(data.toString())) 
+        let newAppointment = await createAppointment(idProfessional, idClient, transformarData(data.toString()))
 
         if (!newAppointment) {
             return ERROR_INTERNAL_SERVER_DB

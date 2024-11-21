@@ -39,8 +39,8 @@ export declare function buscarPsicologo(id: number): Promise<{
             tbl_disponibilidade: {
                 id: number;
                 dia_semana: import(".prisma/client").$Enums.tbl_disponibilidade_dia_semana;
-                horario_inicio: Date;
-                horario_fim: Date;
+                horario_inicio: string;
+                horario_fim: string;
             };
         }[];
     } & {
@@ -85,8 +85,8 @@ export declare function listarPsicologos(): Promise<{
             tbl_disponibilidade: {
                 id: number;
                 dia_semana: import(".prisma/client").$Enums.tbl_disponibilidade_dia_semana;
-                horario_inicio: Date;
-                horario_fim: Date;
+                horario_inicio: string;
+                horario_fim: string;
             };
         }[];
     }[];

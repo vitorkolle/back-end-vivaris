@@ -377,7 +377,7 @@ export async function buscarDisponibilidadeByHourAndWeekDay(dia_semana : WeekDay
     let existsAvailbility : boolean = false || true
 
     availability.forEach(avail => {      
-      if(avail.tbl_disponibilidade.dia_semana === dia_semana && avail.tbl_disponibilidade.horario_inicio === new Date(horario_inicio)){
+      if(avail.tbl_disponibilidade.dia_semana === dia_semana && avail.tbl_disponibilidade.horario_inicio === horario_inicio){
         existsAvailbility = true
       }
     });

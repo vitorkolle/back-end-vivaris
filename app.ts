@@ -586,7 +586,7 @@ route.post('/consulta', async (req, res) => {
    res.json(newAppointment)
 })
 
-route.get('/consulta/:id', async (req, res) => {
+route.get('/consulta/:id', verifyJWT, async (req, res) => {
     let id = Number(req.params.id)
 
     let appointment = await getBuscarConsulta(id)
@@ -595,7 +595,7 @@ route.get('/consulta/:id', async (req, res) => {
     res.json(appointment)
 })
 
-route.delete('/consulta/:id', async (req, res) => {
+route.delete('/consulta/:id', verifyJWT, async (req, res) => {
     let id = Number(req.params.id)  
 
     let deleteAppointment = await setDeletarConsulta(id)

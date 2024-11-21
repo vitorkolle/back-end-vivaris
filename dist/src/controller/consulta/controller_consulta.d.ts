@@ -4,12 +4,41 @@ export declare function setCadastrarConsulta(idProfessional: number, idClient: n
     message: string;
 } | {
     data: {
-        id: number;
-        avaliacao: import(".prisma/client").$Enums.tbl_consultas_avaliacao;
-        id_cliente: number;
-        id_psicologo: number;
-        data_consulta: Date;
-        valor: number;
+        consulta: {
+            id: number;
+            avaliacao: import(".prisma/client").$Enums.tbl_consultas_avaliacao;
+            id_cliente: number;
+            id_psicologo: number;
+            data_consulta: Date;
+            valor: number;
+        };
+        psicologo: {
+            id: number;
+            nome: string;
+            email: string;
+            data_nascimento: Date;
+            cpf: string;
+            senha: string;
+            foto_perfil: string | null;
+            telefone: string;
+            link_instagram: string | null;
+            id_sexo: number;
+            cip: string;
+            descricao: string | null;
+            preco: number;
+        };
+        cliente: {
+            id: number;
+            nome: string;
+            email: string;
+            data_nascimento: Date;
+            cpf: string;
+            senha: string;
+            foto_perfil: string | null;
+            telefone: string;
+            link_instagram: string | null;
+            id_sexo: number | null;
+        };
     };
     status_code: number;
 }>;

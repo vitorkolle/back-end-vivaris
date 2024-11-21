@@ -1,4 +1,6 @@
-import { PrismaClient, tbl_avaliacoes, tbl_avaliacoes_avaliacao } from "@prisma/client";
+import { PrismaClient, tbl_avaliacoes, tbl_avaliacoes_avaliacao, tbl_consultas_avaliacao } from "@prisma/client";
+import { TAppointment } from "../../../domain/entities/appointment-entity";
+import { TAssessmentNumber } from "../../../domain/entities/assessment";
 const prisma = new PrismaClient();
 
 export async function selectAppointment(id: number) {
@@ -71,38 +73,79 @@ export async function createAppointment(idProfessional: number, idClient: number
     })
 
     if (!professional) {
-       return false
+        return false
     }
 
     let avaliacao = await prisma.$queryRawUnsafe(`call getMediaAvaliacao(${idProfessional})`)
 
     if (!avaliacao) {
-        avaliacao = 0
+        return false
+    }
+
+    function formatAvaliacao(avaliacao: number): tbl_consultas_avaliacao {
+        switch (true) {
+            case (avaliacao >= 1 && avaliacao < 2): return tbl_consultas_avaliacao.Um
+
+            case (avaliacao >= 2 && avaliacao < 3): return tbl_consultas_avaliacao.Dois
+
+            case (avaliacao >= 3 && avaliacao < 4): return tbl_consultas_avaliacao.Tres
+
+            case (avaliacao >= 4 && avaliacao < 5): return tbl_consultas_avaliacao.Quatro
+
+            case (avaliacao === 5):return tbl_consultas_avaliacao.Cinco
+
+            default:return tbl_consultas_avaliacao.Um
+        }
+
     }
 
     const appointment = await prisma.tbl_consultas.create({
-    data: {
-        valor: professional.preco,
-        avaliacao: avaliacao as tbl_avaliacoes_avaliacao,
-        tbl_clientes: {
-            connect: {
-                id: idClient
-            }
-        },
-        tbl_psicologos: {
-            connect: {
-                id: idProfessional
-            }
-        },
-        data_consulta: data
+        data: {
+            valor: professional.preco,
+            avaliacao: formatAvaliacao(Number(avaliacao)),
+            tbl_clientes: {
+                connect: {
+                    id: idClient
+                }
+            },
+            tbl_psicologos: {
+                connect: {
+                    id: idProfessional
+                }
+            },
+            data_consulta: data
+        }
+    })
+
+    if (!appointment) {
+        return false
     }
-})
 
-if (!appointment) {
-    return false
-}
+    const user = await prisma.tbl_clientes.findUnique({
+        where: {
+            id: idClient
+        }
+    })
 
-return appointment
+    if (!user) {    
+        return false
+    }
+
+    const professionalUser = await prisma.tbl_psicologos.findUnique({
+        where: {
+            id: idProfessional
+        }
+    })
+
+    if (!professionalUser) {
+        return false
+    }
+
+    return{
+    consulta: appointment,
+    psicologo: professionalUser,
+    cliente: user
+    } 
 }
 
 export async function deleteAppointment(id: number) {
@@ -119,7 +162,7 @@ export async function deleteAppointment(id: number) {
 
         return true
     } catch (error) {
-    console.error("Erro ao deletar consulta do profissional:", error);
-    throw new Error("Não foi possível deletar a consulta do profissional");
+        console.error("Erro ao deletar consulta do profissional:", error);
+        throw new Error("Não foi possível deletar a consulta do profissional");
     }
 }
