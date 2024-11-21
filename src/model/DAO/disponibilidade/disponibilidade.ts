@@ -111,8 +111,8 @@ export async function listarDisponibilidadesPorProfissional(profissionalId: numb
     }
 
   } catch (error) {
-    console.error("Erro ao obter o usuário com as preferências:", error);
-    throw new Error("Não foi possível obter o usuário com as preferências.");
+    console.error("Erro ao obter disponibilidade", error);
+    throw new Error("Não foi possível obter o psicólogo com as disponibilidades.");
   }
 }
 
@@ -339,9 +339,9 @@ export async function buscarDisponibilidadePsicologoById(availabilityId:number) 
   }
 }
 
-export async function deletarDisponibilidadeByHour(id_psicologo: number, dia_semana: WeekDay, horario_inicio: Date){
+export async function deletarDisponibilidadeByHour(id_psicologo: number, dia_semana: WeekDay, horario_inicio: string){
   try {
-    let sql = `CALL deleteDispByWeekDayAndHour("${dia_semana}", '${horario_inicio.getUTCDate()+ ":00:00"}', ${id_psicologo})`
+    let sql = `CALL deleteDispByWeekDayAndHour("${dia_semana}", '${horario_inicio}', ${id_psicologo})`
     let availability = await prisma.$queryRawUnsafe(sql)    
 
     if (!availability) {
@@ -355,7 +355,7 @@ export async function deletarDisponibilidadeByHour(id_psicologo: number, dia_sem
   }
 }
 
-export async function buscarDisponibilidadeByHourAndWeekDay(dia_semana : WeekDay, horario_inicio : Date, id_psicologo : number) {
+export async function buscarDisponibilidadeByHourAndWeekDay(dia_semana : WeekDay, horario_inicio : string, id_psicologo : number) {
   try {
     let availability = await prisma.tbl_psicologo_disponibilidade.findMany({
       where:{

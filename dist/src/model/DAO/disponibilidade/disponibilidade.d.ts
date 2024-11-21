@@ -80,5 +80,5 @@ export declare function buscarDisponibilidadePsicologoById(availabilityId: numbe
     status_code: number;
     message?: undefined;
 }>;
-export declare function deletarDisponibilidadeByHour(id_psicologo: number, dia_semana: WeekDay, horario_inicio: Date): Promise<boolean>;
-export declare function buscarDisponibilidadeByHourAndWeekDay(dia_semana: WeekDay, horario_inicio: Date, id_psicologo: number): Promise<boolean>;
+export declare function deletarDisponibilidadeByHour(id_psicologo: number, dia_semana: WeekDay, horario_inicio: string): Promise<boolean>;
+export declare function buscarDisponibilidadeByHourAndWeekDay(dia_semana: WeekDay, horario_inicio: string, id_psicologo: number): Promise<boolean>;
