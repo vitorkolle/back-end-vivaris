@@ -349,6 +349,7 @@ route.post("/psicologo", async (req, res) => {
     cip: req.body.cip,
     data_nascimento: req.body.data_nascimento,
     id_sexo: req.body.id_sexo,
+    preco: req.body.preco
   };
 
   const newProfesional = await setInserirPsicologo(

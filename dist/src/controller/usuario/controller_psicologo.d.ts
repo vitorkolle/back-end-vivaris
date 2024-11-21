@@ -17,6 +17,7 @@ export declare function setInserirPsicologo(user: TProfessional, contentType: st
         id_sexo: number;
         cip: string;
         descricao: string | null;
+        preco: number;
     };
     status_code: number;
     message: string;
@@ -76,6 +77,7 @@ export declare function getBuscarPsicologo(id: number): Promise<{
             id_sexo: number;
             cip: string;
             descricao: string | null;
+            preco: number;
         };
         status_code: number;
     } | {

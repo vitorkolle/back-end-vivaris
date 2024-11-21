@@ -9,7 +9,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
   apiVersion: "2024-09-30.acacia",
 });
 
-export const  makePayment = async (data: TAppointment, id_cliente:number) => {
+export const makePayment = async (data: TAppointment, id_cliente:number) => {
   try {
     let usuario = await buscarCliente(id_cliente)
 

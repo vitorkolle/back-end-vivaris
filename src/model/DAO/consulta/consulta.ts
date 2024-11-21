@@ -27,19 +27,8 @@ export async function selectAppointment(id: number) {
                             sexo: true,
                         },
                     },
-                    tbl_clientes_preferencias: {
-                        select: {
-                            id_clientes: true,
-                            id_preferencias: true,
-                            tbl_preferencias: {
-                                select: {
-                                    id: true,
-                                    nome: true,
-                                    cor: true,
-                                }
-                            },
-                        },
-                    },
+                    id_sexo: true,
+                    senha: true
                 }
             },
             tbl_psicologos: {
@@ -59,6 +48,9 @@ export async function selectAppointment(id: number) {
                             sexo: true,
                         },
                     },
+                    senha: true,
+                    id_sexo: true,
+                    preco: true
                 },
             },
         }

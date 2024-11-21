@@ -104,6 +104,7 @@ export async function setInserirPsicologo(user: TProfessional, contentType: stri
                 cip: user.cip,
                 data_nascimento: transformarData(user.data_nascimento.toString()),
                 id_sexo: user.id_sexo,
+                preco: user.preco
             };
 
             // Inserir novo cliente

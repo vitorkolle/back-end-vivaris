@@ -142,17 +142,17 @@ enum tbl_disponibilidade_dia_semana {
 }
 
 enum tbl_avaliacoes_avaliacao {
-  Um @map("1")
-  Dois  @map("2")
-  Tres @map("3")
+  Um     @map("1")
+  Dois   @map("2")
+  Tres   @map("3")
   Quatro @map("4")
-  Cinco @map("5")
+  Cinco  @map("5")
 }
 
 enum tbl_consultas_avaliacao {
-  Um @map("1")
-  Dois  @map("2")
-  Tres @map("3")
+  Um     @map("1")
+  Dois   @map("2")
+  Tres   @map("3")
   Quatro @map("4")
-  Cinco @map("5")
+  Cinco  @map("5")
 }

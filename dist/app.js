@@ -137,6 +137,7 @@ server.listen("8080", () => {
 });
 //Import 
 const controller_avaliacao_1 = require("./src/controller/avaliacao/controller_avaliacao");
+const controller_consulta_1 = require("./src/controller/consulta/controller_consulta");
 /**********************************************STRIPE***************************************************************/
 route.post("/webhook", express_1.default.raw({ type: "application/json" }), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const signature = req.headers["stripe-signature"];
@@ -237,6 +238,7 @@ route.post("/psicologo", (req, res) => __awaiter(void 0, void 0, void 0, functio
         cip: req.body.cip,
         data_nascimento: req.body.data_nascimento,
         id_sexo: req.body.id_sexo,
+        preco: req.body.preco
     };
     const newProfesional = yield (0, controller_psicologo_1.setInserirPsicologo)(professionalData, contentType);
     console.log(newProfesional);
@@ -373,4 +375,26 @@ route.post('/avaliacao', (req, res) => __awaiter(void 0, void 0, void 0, functio
     let assessment = yield (0, controller_avaliacao_1.setCadastrarAvaliacao)(inputData, contentType);
     res.status(assessment.status_code);
     res.json(assessment);
+}));
+/*******************************Consulta*************************/
+route.post('/consulta', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    let contentType = req.header('content-type');
+    let idProfessional = req.body.id_psicologo;
+    let idClient = req.body.id_cliente;
+    let appointmentDate = req.body.data_consulta;
+    let newAppointment = yield (0, controller_consulta_1.setCadastrarConsulta)(idProfessional, idClient, appointmentDate, contentType);
+    res.status(newAppointment.status_code);
+    res.json(newAppointment);
+}));
+route.get('/consulta/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    let id = Number(req.params.id);
+    let appointment = yield (0, controller_consulta_1.getBuscarConsulta)(id);
+    res.status(appointment.status_code);
+    res.json(appointment);
+}));
+route.delete('/consulta/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    let id = Number(req.params.id);
+    let deleteAppointment = yield (0, controller_consulta_1.setDeletarConsulta)(id);
+    res.status(deleteAppointment.status_code);
+    res.json(deleteAppointment);
 }));

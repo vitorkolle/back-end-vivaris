@@ -8,5 +8,6 @@ export type TProfessional = {
     cip: string;
     senha: string;
     foto_perfil?: string | null;
-    link_instagram?: string | null
+    link_instagram?: string | null;
+    preco: number
 }

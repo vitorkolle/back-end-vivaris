@@ -11,8 +11,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.selectAppointment = selectAppointment;
 exports.createAppointment = createAppointment;
-const { PrismaClient } = require("@prisma/client");
-const prisma = new PrismaClient();
+exports.deleteAppointment = deleteAppointment;
+const client_1 = require("@prisma/client");
+const prisma = new client_1.PrismaClient();
 function selectAppointment(id) {
     return __awaiter(this, void 0, void 0, function* () {
         const appointment = yield prisma.tbl_consultas.findUnique({
@@ -40,19 +41,8 @@ function selectAppointment(id) {
                                 sexo: true,
                             },
                         },
-                        tbl_clientes_preferencias: {
-                            select: {
-                                id_clientes: true,
-                                id_preferencias: true,
-                                tbl_preferencias: {
-                                    select: {
-                                        id: true,
-                                        nome: true,
-                                        cor: true,
-                                    }
-                                },
-                            },
-                        },
+                        id_sexo: true,
+                        senha: true
                     }
                 },
                 tbl_psicologos: {
@@ -72,6 +62,9 @@ function selectAppointment(id) {
                                 sexo: true,
                             },
                         },
+                        senha: true,
+                        id_sexo: true,
+                        preco: true
                     },
                 },
             }
@@ -89,9 +82,17 @@ function createAppointment(idProfessional, idClient, data) {
                 id: idProfessional
             }
         });
+        if (!professional) {
+            return false;
+        }
+        let avaliacao = yield prisma.$queryRawUnsafe(`call getMediaAvaliacao(${idProfessional})`);
+        if (!avaliacao) {
+            avaliacao = 0;
+        }
         const appointment = yield prisma.tbl_consultas.create({
             data: {
-                valor: professional.price,
+                valor: professional.preco,
+                avaliacao: avaliacao,
                 tbl_clientes: {
                     connect: {
                         id: idClient
@@ -102,7 +103,31 @@ function createAppointment(idProfessional, idClient, data) {
                         id: idProfessional
                     }
                 },
+                data_consulta: data
             }
         });
+        if (!appointment) {
+            return false;
+        }
+        return appointment;
+    });
+}
+function deleteAppointment(id) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            let appointment = yield prisma.tbl_consultas.delete({
+                where: {
+                    id: id
+                }
+            });
+            if (!appointment) {
+                return false;
+            }
+            return true;
+        }
+        catch (error) {
+            console.error("Erro ao deletar consulta do profissional:", error);
+            throw new Error("Não foi possível deletar a consulta do profissional");
+        }
     });
 }
