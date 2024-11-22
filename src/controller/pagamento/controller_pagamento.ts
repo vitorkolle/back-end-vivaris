@@ -9,40 +9,13 @@ export const createPaymentIntent = async (idConsulta:number, id_cliente:number) 
         const dadosConsulta = await selectAppointment(idConsulta)
 
         if (!dadosConsulta) {
-            return ERROR_NOT_FOUND_ASSESSMENT
+            return {
+                result: "Consulta não encontrada",
+                status_code: 404
+            };
         }
 
-        let dadosConsultaFormat = {
-            id: dadosConsulta.id,
-            data_consulta: dadosConsulta.data_consulta,
-            valor: dadosConsulta.valor,
-            avaliacao: dadosConsulta.avaliacao,
-            cliente: {
-                nome: dadosConsulta.tbl_clientes.nome,
-                email: dadosConsulta.tbl_clientes.email,
-                telefone: dadosConsulta.tbl_clientes.telefone,
-                cpf: dadosConsulta.tbl_clientes.cpf,
-                data_nascimento: dadosConsulta.tbl_clientes.data_nascimento,
-                foto_perfil: dadosConsulta.tbl_clientes.foto_perfil,
-                link_instagram: dadosConsulta.tbl_clientes.link_instagram,
-                senha: dadosConsulta.tbl_clientes.senha,
-                id_sexo: dadosConsulta.tbl_clientes.id_sexo
-            },
-            psicologo: {
-                nome: dadosConsulta.tbl_psicologos.nome,
-                email: dadosConsulta.tbl_psicologos.email,
-                telefone: dadosConsulta.tbl_psicologos.telefone,
-                cpf: dadosConsulta.tbl_psicologos.cpf,
-                data_nascimento: dadosConsulta.tbl_psicologos.data_nascimento,
-                link_instagram: dadosConsulta.tbl_psicologos.link_instagram,
-                senha: dadosConsulta.tbl_psicologos.senha,
-                id_sexo: dadosConsulta.tbl_psicologos.id_sexo,
-                cip: dadosConsulta.tbl_psicologos.cip,
-                preco: dadosConsulta.tbl_psicologos.preco
-            }
-        }
-
-        const result = await makePayment(dadosConsultaFormat, id_cliente);
+        const result = await makePayment(dadosConsulta, id_cliente);
 
         return {
             result: result,
@@ -50,6 +23,7 @@ export const createPaymentIntent = async (idConsulta:number, id_cliente:number) 
         };
 
     } catch (error) {
+        console.log(error);
         return {
             result: error,
             status_code: 400
