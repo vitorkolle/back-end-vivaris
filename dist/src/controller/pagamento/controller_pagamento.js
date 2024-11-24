@@ -18,44 +18,19 @@ const createPaymentIntent = (idConsulta, id_cliente) => __awaiter(void 0, void 0
     try {
         const dadosConsulta = yield (0, consulta_1.selectAppointment)(idConsulta);
         if (!dadosConsulta) {
-            return config_1.ERROR_NOT_FOUND_ASSESSMENT;
+            return {
+                result: "Consulta não encontrada",
+                status_code: 404
+            };
         }
-        let dadosConsultaFormat = {
-            id: dadosConsulta.id,
-            data_consulta: dadosConsulta.data_consulta,
-            valor: dadosConsulta.valor,
-            avaliacao: dadosConsulta.avaliacao,
-            cliente: {
-                nome: dadosConsulta.tbl_clientes.nome,
-                email: dadosConsulta.tbl_clientes.email,
-                telefone: dadosConsulta.tbl_clientes.telefone,
-                cpf: dadosConsulta.tbl_clientes.cpf,
-                data_nascimento: dadosConsulta.tbl_clientes.data_nascimento,
-                foto_perfil: dadosConsulta.tbl_clientes.foto_perfil,
-                link_instagram: dadosConsulta.tbl_clientes.link_instagram,
-                senha: dadosConsulta.tbl_clientes.senha,
-                id_sexo: dadosConsulta.tbl_clientes.id_sexo
-            },
-            psicologo: {
-                nome: dadosConsulta.tbl_psicologos.nome,
-                email: dadosConsulta.tbl_psicologos.email,
-                telefone: dadosConsulta.tbl_psicologos.telefone,
-                cpf: dadosConsulta.tbl_psicologos.cpf,
-                data_nascimento: dadosConsulta.tbl_psicologos.data_nascimento,
-                link_instagram: dadosConsulta.tbl_psicologos.link_instagram,
-                senha: dadosConsulta.tbl_psicologos.senha,
-                id_sexo: dadosConsulta.tbl_psicologos.id_sexo,
-                cip: dadosConsulta.tbl_psicologos.cip,
-                preco: dadosConsulta.tbl_psicologos.preco
-            }
-        };
-        const result = yield (0, stripe_1.makePayment)(dadosConsultaFormat, id_cliente);
+        const result = yield (0, stripe_1.makePayment)(dadosConsulta, id_cliente);
         return {
             result: result,
             status_code: 200
         };
     }
     catch (error) {
+        console.log(error);
         return {
             result: error,
             status_code: 400

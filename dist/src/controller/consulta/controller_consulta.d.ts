@@ -47,46 +47,7 @@ export declare function getBuscarConsulta(id: number): Promise<{
     status_code: number;
     message: string;
 } | {
-    data: {
-        tbl_clientes: {
-            id: number;
-            nome: string;
-            email: string;
-            data_nascimento: Date;
-            cpf: string;
-            senha: string;
-            foto_perfil: string | null;
-            telefone: string;
-            link_instagram: string | null;
-            id_sexo: number | null;
-            tbl_sexo: {
-                id: number;
-                sexo: string | null;
-            } | null;
-        };
-        id: number;
-        tbl_psicologos: {
-            id: number;
-            nome: string;
-            email: string;
-            data_nascimento: Date;
-            cpf: string;
-            senha: string;
-            foto_perfil: string | null;
-            telefone: string;
-            link_instagram: string | null;
-            id_sexo: number;
-            tbl_sexo: {
-                id: number;
-                sexo: string | null;
-            };
-            cip: string;
-            preco: number;
-        };
-        avaliacao: import(".prisma/client").$Enums.tbl_consultas_avaliacao;
-        data_consulta: Date;
-        valor: number;
-    };
+    data: import("../../domain/entities/appointment-entity").TAppointment;
     status_code: number;
 }>;
 export declare function setDeletarConsulta(id: number): Promise<{

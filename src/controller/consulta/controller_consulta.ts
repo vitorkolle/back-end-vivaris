@@ -11,34 +11,62 @@ export async function setCadastrarConsulta(idProfessional: number, idClient: num
         }
 
         function validarData(data: string): boolean {
+            console.log(data)
 
-            if (data.length !== 10) return false;
+            if (data.length !== 16) return false;
 
-            const partes = data.split("-");
-            const ano = parseInt(partes[0], 10);
-            const mes = parseInt(partes[1], 10);
-            const dia = parseInt(partes[2], 10);
+            const partes = data.split(" ");
+
+            const anomesdia = partes[0];
+            const hora = partes[1];
+
+            const partesAnomesdia = anomesdia.split("-")
+            const ano = parseInt(partesAnomesdia[0])
+            const mes = parseInt(partesAnomesdia[1])
+            const dia = parseInt(partesAnomesdia[2])
+
+            if (mes < 1 || mes > 12) {
+                console.log('é isso');
+                
+                return false;
+            }
 
 
-            if (mes < 1 || mes > 12) return false;
-
-
-            const dataTestada = new Date(ano, mes - 1, dia);
+            const dataTestada = new Date(`${anomesdia}T${hora}:00.000z`);
+            console.log(dataTestada)
             return dataTestada.getFullYear() === ano && dataTestada.getMonth() === mes - 1 && dataTestada.getDate() === dia;
         }
 
         function transformarData(data: string): Date {
             if (!validarData(data)) {
+                
                 throw new Error("Formato de data inválido");
             }
 
-            return new Date(data);
+            const partes = data.split(" ");
+
+            const anomesdia = partes[0];
+            const hora = partes[1];
+
+            const partesAnomesdia = anomesdia.split("-")
+            data = data.replace(" ", "T")
+            
+            const myDate = new Date(`${anomesdia}T${hora}:00.000z`)
+ 
+            return myDate;
+        
         }
 
         if
             (
             !isValidId(idProfessional) || !isValidId(idClient) || !validarData(data.toString()) || !transformarData(data.toString())
         ) {
+
+            console.log(isValidId(idProfessional));
+            console.log(isValidId(idClient));
+            console.log(validarData(data.toString()));
+            console.log(transformarData(data.toString()));
+          
             return ERROR_REQUIRED_FIELDS
         }
 

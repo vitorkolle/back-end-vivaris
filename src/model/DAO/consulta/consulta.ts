@@ -1,7 +1,8 @@
 import { PrismaClient, tbl_consultas_avaliacao } from "@prisma/client";
+import { TAppointment } from "../../../domain/entities/appointment-entity";
 const prisma = new PrismaClient();
 
-export async function selectAppointment(id: number) {
+export async function selectAppointment(id: number): Promise<TAppointment | false>{
     try {
         const appointment = await prisma.tbl_consultas.findUnique({
             where: {
@@ -61,7 +62,7 @@ export async function selectAppointment(id: number) {
             return false
         }
 
-        return appointment
+        return appointment as unknown as TAppointment
     } catch (error) {
         console.error("Erro ao buscar consulta", error);
         throw new Error("Não foi possível buscar a consulta");
