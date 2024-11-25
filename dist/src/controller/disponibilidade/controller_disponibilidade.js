@@ -47,9 +47,10 @@ function setInserirDisponibilidade(disponibilidade, contentType) {
             else {
                 const disponibilidadeInput = {
                     dia_semana: disponibilidade.dia_semana,
-                    horario_inicio: disponibilidade.horario_inicio.toString(),
-                    horario_fim: disponibilidade.horario_fim.toString()
+                    horario_inicio: disponibilidade.horario_inicio,
+                    horario_fim: disponibilidade.horario_fim
                 };
+                console.log(disponibilidadeInput);
                 const newAvailability = yield (0, disponibilidade_1.criarDisponibilidade)(disponibilidadeInput);
                 if (newAvailability) {
                     return {

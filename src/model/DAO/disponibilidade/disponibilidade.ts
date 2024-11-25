@@ -18,6 +18,7 @@ export async function criarDisponibilidade(disponibilidade: TAvailability) {
         let newAvailability 
 
         if (!disponibilidadeExistente) {
+          
             newAvailability = await prisma.tbl_disponibilidade.create({
             data: {
               dia_semana: disponibilidade.dia_semana,
@@ -25,6 +26,7 @@ export async function criarDisponibilidade(disponibilidade: TAvailability) {
               horario_fim: disponibilidade.horario_fim,
             }, 
           });
+          
         } else {
            newAvailability = disponibilidadeExistente
         }
@@ -377,7 +379,7 @@ export async function buscarDisponibilidadeByHourAndWeekDay(dia_semana : WeekDay
     let existsAvailbility : boolean = false || true
 
     availability.forEach(avail => {      
-      if(avail.tbl_disponibilidade.dia_semana === dia_semana && avail.tbl_disponibilidade.horario_inicio === horario_inicio){
+      if(avail.tbl_disponibilidade.dia_semana === dia_semana && new Date(avail.tbl_disponibilidade.horario_inicio) === new Date(horario_inicio)){
         existsAvailbility = true
       }
     });

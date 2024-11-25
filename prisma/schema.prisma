@@ -68,8 +68,8 @@ model tbl_consultas {
 model tbl_disponibilidade {
   id                            Int                             @id @default(autoincrement())
   dia_semana                    tbl_disponibilidade_dia_semana
-  horario_inicio                String                       
-  horario_fim                   String                       
+  horario_inicio                String                          @db.VarChar(8)
+  horario_fim                   String                          @db.VarChar(8)
   tbl_psicologo_disponibilidade tbl_psicologo_disponibilidade[]
 }
 
@@ -115,7 +115,7 @@ model tbl_psicologos {
   link_instagram                String?                         @db.VarChar(56)
   descricao                     String?                         @db.VarChar(350)
   id_sexo                       Int
-  preco                         Float                           @db.Float @default(100)
+  preco                         Float                           @db.Float
   tbl_avaliacoes                tbl_avaliacoes[]
   tbl_consultas                 tbl_consultas[]
   tbl_psicologo_disponibilidade tbl_psicologo_disponibilidade[]
