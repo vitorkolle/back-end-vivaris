@@ -47,6 +47,68 @@ export async function selectAppointment(id: number): Promise<TAppointment | fals
 
 }
 
+export async function selectAppointmentByProfessional (id: number): Promise<TAppointment[] | false>{
+    const appointments = await prisma.tbl_consultas.findMany({
+        where:{
+            id_psicologo: id
+        },
+        select: {
+            tbl_clientes:{
+                select: {
+                    id: true,
+                    nome: true,
+                    email: true,
+                    telefone: true,
+                    cpf: true,
+                    data_nascimento: true,
+                    foto_perfil: true,
+                    link_instagram: true,
+                    tbl_sexo: {
+                        select: {
+                            id: true,
+                            sexo: true,
+                        },
+                    }
+                }
+            },
+            tbl_psicologos:{
+                select: {
+                    id: true,
+                    nome: true,
+                    email: true,
+                    cip: true,
+                    cpf: true,
+                    data_nascimento: true,
+                    link_instagram: true,
+                    tbl_sexo: {
+                        select: {
+                            id: true,
+                            sexo: true,
+                        },
+                    },
+                    preco:true,
+                    telefone:true,
+                    foto_perfil: true
+                }
+            },
+            tbl_pagamentos:{
+                select: {
+                   is_paid:true
+                }
+            },
+            data_consulta: true,
+            valor: true,
+            avaliacao: true,
+        }
+    })
+
+    if (!appointments) {
+        return false
+    }
+
+    return appointments as unknown as TAppointment[]
+}
+
 
 
 export async function createAppointment(idProfessional: number, idClient: number, data: Date) {

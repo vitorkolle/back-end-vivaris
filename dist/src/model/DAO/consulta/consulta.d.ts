@@ -1,5 +1,6 @@
 import { TAppointment } from "../../../domain/entities/appointment-entity";
 export declare function selectAppointment(id: number): Promise<TAppointment | false>;
+export declare function selectAppointmentByProfessional(id: number): Promise<TAppointment[] | false>;
 export declare function createAppointment(idProfessional: number, idClient: number, data: Date): Promise<false | {
     consulta: {
         id: number;

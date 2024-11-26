@@ -11,6 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.setCadastrarConsulta = setCadastrarConsulta;
 exports.getBuscarConsulta = getBuscarConsulta;
+exports.getBuscarConsultasPorProfissional = getBuscarConsultasPorProfissional;
 exports.setDeletarConsulta = setDeletarConsulta;
 exports.setAtualizarConsulta = setAtualizarConsulta;
 const config_1 = require("../../../module/config");
@@ -50,16 +51,11 @@ function setCadastrarConsulta(idProfessional, idClient, data, contentType) {
                 const partes = data.split(" ");
                 const anomesdia = partes[0];
                 const hora = partes[1];
-                const partesAnomesdia = anomesdia.split("-");
                 data = data.replace(" ", "T");
                 const myDate = new Date(`${anomesdia}T${hora}:00.000z`);
                 return myDate;
             }
             if (!(0, zod_validations_1.isValidId)(idProfessional) || !(0, zod_validations_1.isValidId)(idClient) || !validarData(data.toString()) || !transformarData(data.toString())) {
-                console.log((0, zod_validations_1.isValidId)(idProfessional));
-                console.log((0, zod_validations_1.isValidId)(idClient));
-                console.log(validarData(data.toString()));
-                console.log(transformarData(data.toString()));
                 return config_1.ERROR_REQUIRED_FIELDS;
             }
             let validateClient = yield (0, usuario_1.buscarCliente)(idClient);
@@ -70,7 +66,9 @@ function setCadastrarConsulta(idProfessional, idClient, data, contentType) {
             if (!validateProfessional) {
                 return config_1.ERROR_NOT_FOUND_PROFESSIONAL;
             }
-            let newAppointment = yield (0, consulta_1.createAppointment)(idProfessional, idClient, transformarData(data.toString()));
+            let newData = transformarData(data.toString());
+            console.log('NEW DATTAAAA:', newData);
+            let newAppointment = yield (0, consulta_1.createAppointment)(idProfessional, idClient, newData);
             if (!newAppointment) {
                 return config_1.ERROR_INTERNAL_SERVER_DB;
             }
@@ -98,6 +96,28 @@ function getBuscarConsulta(id) {
             };
         }
         return config_1.ERROR_NOT_FOUND;
+    });
+}
+function getBuscarConsultasPorProfissional(id) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            if (!(0, zod_validations_1.isValidId)(id)) {
+                return config_1.ERROR_INVALID_ID;
+            }
+            let getAppointmentByProfessional = yield (0, consulta_1.selectAppointmentByProfessional)(id);
+            if (getAppointmentByProfessional) {
+                return {
+                    data: getAppointmentByProfessional,
+                    status_code: 200
+                };
+            }
+            else {
+                return config_1.ERROR_NOT_FOUND;
+            }
+        }
+        catch (error) {
+            return config_1.ERROR_NOT_FOUND_APPOINTMENTS;
+        }
     });
 }
 function setDeletarConsulta(id) {
