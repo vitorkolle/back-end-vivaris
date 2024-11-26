@@ -13,6 +13,7 @@ exports.setCadastrarConsulta = setCadastrarConsulta;
 exports.getBuscarConsulta = getBuscarConsulta;
 exports.setDeletarConsulta = setDeletarConsulta;
 exports.setAtualizarConsulta = setAtualizarConsulta;
+exports.getAllAppointmentByUserId = getAllAppointmentByUserId;
 const config_1 = require("../../../module/config");
 const zod_validations_1 = require("../../infra/zod-validations");
 const usuario_1 = require("../../model/DAO/cliente/usuario");
@@ -24,8 +25,8 @@ function setCadastrarConsulta(idProfessional, idClient, data, contentType) {
             if (String(contentType).toLowerCase() !== 'application/json') {
                 return config_1.ERROR_CONTENT_TYPE;
             }
+            console.log(data);
             function validarData(data) {
-                console.log(data);
                 if (data.length !== 16)
                     return false;
                 const partes = data.split(" ");
@@ -36,11 +37,9 @@ function setCadastrarConsulta(idProfessional, idClient, data, contentType) {
                 const mes = parseInt(partesAnomesdia[1]);
                 const dia = parseInt(partesAnomesdia[2]);
                 if (mes < 1 || mes > 12) {
-                    console.log('é isso');
                     return false;
                 }
                 const dataTestada = new Date(`${anomesdia}T${hora}:00.000z`);
-                console.log(dataTestada);
                 return dataTestada.getFullYear() === ano && dataTestada.getMonth() === mes - 1 && dataTestada.getDate() === dia;
             }
             function transformarData(data) {
@@ -56,10 +55,6 @@ function setCadastrarConsulta(idProfessional, idClient, data, contentType) {
                 return myDate;
             }
             if (!(0, zod_validations_1.isValidId)(idProfessional) || !(0, zod_validations_1.isValidId)(idClient) || !validarData(data.toString()) || !transformarData(data.toString())) {
-                console.log((0, zod_validations_1.isValidId)(idProfessional));
-                console.log((0, zod_validations_1.isValidId)(idClient));
-                console.log(validarData(data.toString()));
-                console.log(transformarData(data.toString()));
                 return config_1.ERROR_REQUIRED_FIELDS;
             }
             let validateClient = yield (0, usuario_1.buscarCliente)(idClient);
@@ -166,6 +161,32 @@ function setAtualizarConsulta(id, data, contentType) {
         }
         catch (error) {
             console.error('Erro ao tentar atualizar a consulta:', error);
+            return config_1.ERROR_INTERNAL_SERVER;
+        }
+    });
+}
+function getAllAppointmentByUserId(user, user_id, contentType) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            if (String(contentType).toLowerCase() !== 'application/json') {
+                return config_1.ERROR_CONTENT_TYPE;
+            }
+            console.log(user_id);
+            if (!user || !(0, zod_validations_1.isValidUser)(user) ||
+                !user_id || !(0, zod_validations_1.isValidId)(user_id)) {
+                return config_1.ERROR_REQUIRED_FIELDS;
+            }
+            let searchAppointment = yield (0, consulta_1.selectAppointmentByUserId)(user_id, user);
+            if (!searchAppointment) {
+                return config_1.ERROR_NOT_FOUND;
+            }
+            return {
+                data: searchAppointment,
+                status_code: 200
+            };
+        }
+        catch (error) {
+            console.error('Erro ao tentar buscar a consulta:', error);
             return config_1.ERROR_INTERNAL_SERVER;
         }
     });

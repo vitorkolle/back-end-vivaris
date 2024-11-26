@@ -195,7 +195,7 @@ export async function updateAppointment(data: Date, id: number) {
     }
 }
 
-export async function selectAppointmentByIdAndWeekDay(id_usuario : number, usuario : 'cliente' | 'psicologo') {
+export async function selectAppointmentByUserId(id_usuario : number, usuario : string) {
     try {
 
         if (usuario === 'psicologo') {

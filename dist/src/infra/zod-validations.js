@@ -21,8 +21,10 @@ exports.isValidHour = isValidHour;
 exports.isValidNumberArray = isValidNumberArray;
 exports.isValidAvailbilityStatus = isValidAvailbilityStatus;
 exports.isValidAssessment = isValidAssessment;
+exports.isValidUser = isValidUser;
 const zod_1 = require("zod");
 function isValidId(id) {
+    console.log(id);
     const idSchema = zod_1.z.number().int().positive();
     const testId = idSchema.safeParse(id);
     return testId.success;
@@ -82,5 +84,12 @@ function isValidAssessment(avaliacao) {
         const assessmentSchema = zod_1.z.enum(['Um', 'Dois', 'Tres', 'Quatro', 'Cinco']);
         const testAssessment = assessmentSchema.safeParse(avaliacao);
         return testAssessment.success;
+    });
+}
+function isValidUser(user) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const firstUserSchema = zod_1.z.enum(['cliente', 'psicologo']);
+        const testUser = firstUserSchema.safeParse(user);
+        return testUser.success;
     });
 }

@@ -205,7 +205,7 @@ server.listen("8080", () => {
 //Import 
 import { setCadastrarAvaliacao } from './src/controller/avaliacao/controller_avaliacao'
 import { TAssessment } from './src/domain/entities/assessment'
-import { getBuscarConsulta, setAtualizarConsulta, setCadastrarConsulta, setDeletarConsulta } from "./src/controller/consulta/controller_consulta";
+import { getAllAppointmentByUserId, getBuscarConsulta, setAtualizarConsulta, setCadastrarConsulta, setDeletarConsulta } from "./src/controller/consulta/controller_consulta";
 
 
 /**********************************************STRIPE***************************************************************/
@@ -614,4 +614,17 @@ route.put('/consulta/:id', verifyJWT, async (req, res) => {
 
     res.status(updateAvaibility.status_code)
     res.json(updateAvaibility)
+})
+
+route.get('/consulta/usuario/:id', verifyJWT, async (req, res) => {
+  const contentType = req.header('content-type')
+  
+  let userId = Number(req.params.id)
+
+  let user = req.body.usuario
+
+  let appointment = await getAllAppointmentByUserId(user, userId, contentType)
+
+  res.status(appointment.status_code)
+  res.json(appointment)
 })
