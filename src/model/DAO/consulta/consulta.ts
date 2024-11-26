@@ -1,5 +1,6 @@
 import { PrismaClient, tbl_consultas_avaliacao } from "@prisma/client";
 import { TAppointment } from "../../../domain/entities/appointment-entity";
+import { WeekDay } from "../../../domain/entities/availability-entity";
 const prisma = new PrismaClient();
 
 export async function selectAppointment(id: number): Promise<TAppointment | false>{
@@ -190,6 +191,88 @@ export async function updateAppointment(data: Date, id: number) {
         return true
     } catch (error) {
         console.error("Erro ao atualizar a consulta do profissional:", error);
+        throw new Error("Não foi possível atualizar a consulta do profissional");
+    }
+}
+
+export async function selectAppointmentByIdAndWeekDay(id_usuario : number, usuario : 'cliente' | 'psicologo') {
+    try {
+
+        if (usuario === 'psicologo') {
+            let getAppointment = await prisma.tbl_consultas.findMany({
+                where: {
+                    id_psicologo: id_usuario
+                },
+                select:{
+                    id: true,
+                    data_consulta: true,
+                    valor: true,
+                    avaliacao: true,
+                    tbl_psicologos: {
+                        select: {
+                            id: true,
+                            nome: true,
+                            email: true,
+                            telefone: true,
+                            data_nascimento: true,
+                            foto_perfil: true,
+                            link_instagram: true,
+                            tbl_sexo: {
+                                select: {
+                                    sexo: true
+                                },
+                            },
+                            preco: true
+                        }
+                    }
+                }
+            })
+    
+            if (!getAppointment) {
+                return false
+            }
+    
+            return getAppointment
+        }
+
+        else if (usuario === 'cliente') {
+            let getAppointment = await prisma.tbl_consultas.findMany({
+                where: {
+                    id_cliente: id_usuario
+                },
+                select:{
+                    id: true,
+                    data_consulta: true,
+                    valor: true,
+                    avaliacao: true,
+                    tbl_clientes: {
+                        select: {
+                            id: true,
+                            nome: true,
+                            email: true,
+                            telefone: true,
+                            data_nascimento: true,
+                            foto_perfil: true,
+                            link_instagram: true,
+                            tbl_sexo: {
+                                select: {
+                                    sexo: true
+                                },
+                            }
+                        }
+                    }
+                }
+            })
+    
+            if (!getAppointment) {
+                return false
+            }
+    
+            return getAppointment
+        }
+        
+    } catch (error) {
+        console.error("Erro ao buscar a consulta do profissional:", error);
         throw new Error("Não foi possível atualizar a consulta do profissional");
     }
 }

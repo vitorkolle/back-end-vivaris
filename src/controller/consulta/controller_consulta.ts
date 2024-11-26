@@ -202,3 +202,7 @@ export async function setAtualizarConsulta(id: number, data: Date, contentType: 
         return ERROR_INTERNAL_SERVER;
     }    
 }
+
+export async function getAllAppointmentByIdAndWeekDay() {
+    
+}
