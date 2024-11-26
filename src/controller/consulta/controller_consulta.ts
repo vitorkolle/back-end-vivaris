@@ -117,6 +117,23 @@ export async function getBuscarConsulta(id: number) {
     return ERROR_NOT_FOUND
 }
 
+export async function getConsultaPorProfissional(id: number) {
+    if (!isValidId(id)) {
+        return ERROR_INVALID_ID
+    }
+
+    let getAppointmentByProfessional = await selectAppointmentByProfessional(id)
+
+    if (getAppointmentByProfessional) {
+        return {
+            data: getAppointmentByProfessional,
+            status_code: 200
+        }
+    }
+
+    return ERROR_NOT_FOUND
+}
+
 export async function setDeletarConsulta(id: number) {
     try {
         if (!isValidId(id)) {

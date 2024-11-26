@@ -42,33 +42,9 @@ function selectAppointment(id) {
                                     id: true,
                                     sexo: true,
                                 },
-                            },
-                            id_sexo: true,
-                            senha: true
+                            }
                         }
-                    },
-                    tbl_psicologos: {
-                        select: {
-                            id: true,
-                            nome: true,
-                            email: true,
-                            telefone: true,
-                            cpf: true,
-                            cip: true,
-                            data_nascimento: true,
-                            foto_perfil: true,
-                            link_instagram: true,
-                            tbl_sexo: {
-                                select: {
-                                    id: true,
-                                    sexo: true,
-                                },
-                            },
-                            senha: true,
-                            id_sexo: true,
-                            preco: true
-                        },
-                    },
+                    }
                 }
             });
             if (!appointment) {

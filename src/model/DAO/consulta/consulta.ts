@@ -2,7 +2,8 @@ import { PrismaClient, tbl_consultas_avaliacao } from "@prisma/client";
 import { TAppointment } from "../../../domain/entities/appointment-entity";
 const prisma = new PrismaClient();
 
-export async function selectAppointment(id: number): Promise<TAppointment | false>{
+export async function selectAppointment(id: number): Promise<TAppointment | false> {
+
     try {
         const appointment = await prisma.tbl_consultas.findUnique({
             where: {
@@ -28,36 +29,12 @@ export async function selectAppointment(id: number): Promise<TAppointment | fals
                                 id: true,
                                 sexo: true,
                             },
-                        },
-                        id_sexo: true,
-                        senha: true
+                        }
                     }
-                },
-                tbl_psicologos: {
-                    select: {
-                        id: true,
-                        nome: true,
-                        email: true,
-                        telefone: true,
-                        cpf: true,
-                        cip: true,
-                        data_nascimento: true,
-                        foto_perfil: true,
-                        link_instagram: true,
-                        tbl_sexo: {
-                            select: {
-                                id: true,
-                                sexo: true,
-                            },
-                        },
-                        senha: true,
-                        id_sexo: true,
-                        preco: true
-                    },
-                },
+                }
             }
         })
-    
+
         if (!appointment) {
             return false
         }
@@ -67,8 +44,10 @@ export async function selectAppointment(id: number): Promise<TAppointment | fals
         console.error("Erro ao buscar consulta", error);
         throw new Error("Não foi possível buscar a consulta");
     }
+
 }
-   
+
+
 
 export async function createAppointment(idProfessional: number, idClient: number, data: Date) {
     const professional = await prisma.tbl_psicologos.findUnique({
@@ -97,9 +76,9 @@ export async function createAppointment(idProfessional: number, idClient: number
 
             case (avaliacao >= 4 && avaliacao < 5): return tbl_consultas_avaliacao.Quatro
 
-            case (avaliacao === 5):return tbl_consultas_avaliacao.Cinco
+            case (avaliacao === 5): return tbl_consultas_avaliacao.Cinco
 
-            default:return tbl_consultas_avaliacao.Um
+            default: return tbl_consultas_avaliacao.Um
         }
 
     }
@@ -132,7 +111,7 @@ export async function createAppointment(idProfessional: number, idClient: number
         }
     })
 
-    if (!user) {    
+    if (!user) {
         return false
     }
 
@@ -146,11 +125,11 @@ export async function createAppointment(idProfessional: number, idClient: number
         return false
     }
 
-    return{
-    consulta: appointment,
-    psicologo: professionalUser,
-    cliente: user
-    } 
+    return {
+        consulta: appointment,
+        psicologo: professionalUser,
+        cliente: user
+    }
 }
 
 export async function deleteAppointment(id: number) {

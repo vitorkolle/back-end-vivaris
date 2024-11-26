@@ -547,7 +547,7 @@ route.post('/create-checkout-session', verifyJWT, async (req, res) => {
     let idCliente = req.body.id_cliente
 
    const result = await createPaymentIntent(idConsulta, idCliente)
-
+  
     res.status(result.status_code)
     res.json(result)
 
@@ -585,6 +585,18 @@ route.post('/consulta', async (req, res) => {
 
    res.status(newAppointment.status_code)
    res.json(newAppointment)
+})
+
+route.get('/consulta', async (req, res) => {
+  let contentType = req.header('content-type')
+
+  let idProfessional = req.body.id_psicologo
+
+
+  let consultas = await getBuscarConsultasPorProfissional()
+
+  res.status(consultas.status_code)
+  res.json(consultas)
 })
 
 route.get('/consulta/:id', verifyJWT, async (req, res) => {
