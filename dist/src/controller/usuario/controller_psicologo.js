@@ -129,7 +129,7 @@ function getLogarPsicologo(email, senha) {
             return config_1.ERROR_REQUIRED_FIELDS;
         }
         let clientData = yield (0, usuario_1.logarPsicologo)(email, senha);
-        if (clientData) {
+        if (clientData.id > 0) {
             let professionalToken = yield (0, middlewareJWT_1.createJWT)({ id: clientData.id, role: 'professional' });
             return {
                 data: clientData,

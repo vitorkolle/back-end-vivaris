@@ -137,7 +137,7 @@ export async function getLogarPsicologo(email: string | null, senha: string | nu
 
     let clientData = await logarPsicologo(email, senha)
 
-    if(clientData){
+    if(clientData.id > 0){
         let professionalToken = await createJWT({id:clientData.id, role:'professional'})
         return {
             data: clientData,
