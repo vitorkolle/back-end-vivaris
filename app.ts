@@ -1,4 +1,8 @@
 //Import
+import { setCadastrarAvaliacao } from './src/controller/avaliacao/controller_avaliacao'
+import { TAssessment } from './src/domain/entities/assessment'
+import { getAllAppointmentByUserId, getBuscarConsulta, getBuscarConsultasPorProfissional, setAtualizarConsulta, setCadastrarConsulta, setDeletarConsulta } from "./src/controller/consulta/controller_consulta";
+
 import { TUser } from "./src/domain/entities/user-entity";
 import { TUserPreferences } from "./src/domain/entities/user-preferences";
 
@@ -35,6 +39,7 @@ import {
   getLogarPsicologo,
   setInserirPsicologo,
 } from "./src/controller/usuario/controller_psicologo";
+import { v4 as uuidv4 } from 'uuid'; // Para gerar IDs únicos
 import {
   getBuscarCliente,
   getBuscarClientePreferencias,
@@ -50,9 +55,12 @@ import { TProfessional } from "./src/domain/entities/professional-entity";
 import {
   confirmPayment,
   createPaymentIntent,
+  processarEventoCheckout,
 } from "./src/controller/pagamento/controller_pagamento";
 import stripe from "stripe";
 import { ERROR_INVALID_AUTH_TOKEN } from "./module/config";
+
+const bodyParser = require('body-parser');
 
 /*****************************Autenticação/JWT****************************************************/
 const verifyJWT = async (
@@ -120,13 +128,10 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 
-app.use(express.json());
-
 app.use("/v1/vivaris", route);
 
 
 /******************************VideoChamada****************************************************/
-import { v4 as uuidv4 } from 'uuid'; // Para gerar IDs únicos
 
 const rooms: Record<string, string[]> = {};
 
@@ -202,16 +207,10 @@ server.listen("8080", () => {
 })
 
 
-//Import 
-import { setCadastrarAvaliacao } from './src/controller/avaliacao/controller_avaliacao'
-import { TAssessment } from './src/domain/entities/assessment'
-import { getBuscarConsulta, getBuscarConsultasPorProfissional, setAtualizarConsulta, setCadastrarConsulta, setDeletarConsulta } from "./src/controller/consulta/controller_consulta";
-
-
 /**********************************************STRIPE***************************************************************/
 route.post(
   "/webhook",
-  express.raw({ type: "application/json" }),
+  bodyParser.raw({ type: "application/json" }),
   async (req, res) => {
     const signature = req.headers["stripe-signature"];
 
@@ -227,12 +226,25 @@ route.post(
       process.env.STRIPE_ENDPOINT_SECRET
     );
 
+    console.log("Evento construído com sucesso:", event)  
+    console.log("Tipo de evento recebido:", event.type);
+
+
     switch (event.type) {
       case "checkout.session.completed":
-        const session = event.data.object;
+        try {
+          console.log('OIII');
+          
+          const session = event.data.object
 
-        await confirmPayment(session);
+          await confirmPayment(session);
 
+          await processarEventoCheckout(session);
+
+        } catch (error) {
+          console.error("Erro ao processar evento:", error);
+          return res.status(500).json({ error: "Erro no processamento do evento" });
+        }
         break;
       default:
         console.log(`Unhandled event type ${event.type}`);

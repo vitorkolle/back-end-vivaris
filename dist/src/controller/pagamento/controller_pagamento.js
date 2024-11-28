@@ -10,8 +10,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.confirmPayment = exports.createPaymentIntent = void 0;
+exports.processarEventoCheckout = processarEventoCheckout;
 const config_1 = require("../../../module/config");
 const consulta_1 = require("../../model/DAO/consulta/consulta");
+const disponibilidade_1 = require("../../model/DAO/disponibilidade/disponibilidade");
 const pagamento_1 = require("../../model/DAO/pagamento/pagamento");
 const stripe_1 = require("../../stripe");
 const createPaymentIntent = (idConsulta, id_cliente) => __awaiter(void 0, void 0, void 0, function* () {
@@ -58,6 +60,21 @@ const confirmPayment = (order) => __awaiter(void 0, void 0, void 0, function* ()
     }
 });
 exports.confirmPayment = confirmPayment;
+function processarEventoCheckout(session) {
+    return __awaiter(this, void 0, void 0, function* () {
+        var _a;
+        console.log('VIEO AQ');
+        const disponibilidadeJSON = (_a = session.metadata) === null || _a === void 0 ? void 0 : _a.disponibilidade;
+        console.log("DISPOJSONMETA:", disponibilidadeJSON);
+        if (!disponibilidadeJSON) {
+            throw new Error("Disponibilidade não encontrada na metadata!");
+        }
+        const disp = JSON.parse(disponibilidadeJSON);
+        console.log("DISP APP:", disp);
+        const result = yield (0, disponibilidade_1.atualizarDisponibilidadeProfissional)(disp);
+        console.log("Resultado:", result);
+    });
+}
 const extractPaymentInfo = (event) => {
     const consultaId = isNaN(Number(event.metadata.consultaId)) ? 1 : Number(event.metadata.consultaId);
     const paymentMethod = event.payment_method_types[0];

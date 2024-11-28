@@ -293,19 +293,21 @@ function atualizarDisponibilidade(availabilityData, availabilityId) {
 }
 function atualizarDisponibilidadeProfissional(availabilityData) {
     return __awaiter(this, void 0, void 0, function* () {
+        console.log('available availability: ' + availabilityData);
         try {
-            const updateProfessionalAvailbility = yield prisma.tbl_psicologo_disponibilidade.update({
+            const updateProfessionalAvailbility = yield prisma.tbl_psicologo_disponibilidade.updateMany({
                 where: {
-                    id: availabilityData.disponibilidade_id
+                    disponibilidade_id: availabilityData.disponibilidade_id,
+                    psicologo_id: availabilityData.id_psicologo
                 },
                 data: {
-                    status_disponibilidade: availabilityData.status
+                    status_disponibilidade: 'Confirmado'
                 }
             });
-            if (!updateProfessionalAvailbility) {
+            if (updateProfessionalAvailbility.count === 0) {
                 return false;
             }
-            return updateProfessionalAvailbility;
+            return true;
         }
         catch (error) {
             console.error("Erro ao atualizar disponibilidade do profissional:", error);

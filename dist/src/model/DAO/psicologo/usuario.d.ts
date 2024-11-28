@@ -63,6 +63,7 @@ export declare function buscarPsicologo(id: number): Promise<{
     professional: string;
     status_code: number;
 }>;
+export declare function getIdByName(name: string): Promise<string | number>;
 export declare function listarPsicologos(): Promise<{
     data: string;
     status_code: number;

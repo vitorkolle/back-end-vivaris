@@ -61,12 +61,7 @@ export declare function atualizarDisponibilidade(availabilityData: TAvailability
     horario_inicio: string;
     horario_fim: string;
 }>;
-export declare function atualizarDisponibilidadeProfissional(availabilityData: TProfessionalAvailability): Promise<false | {
-    id: number;
-    psicologo_id: number;
-    disponibilidade_id: number;
-    status_disponibilidade: string;
-}>;
+export declare function atualizarDisponibilidadeProfissional(availabilityData: TProfessionalAvailability): Promise<boolean>;
 export declare function buscarDisponibilidadePsicologoById(availabilityId: number): Promise<{
     status_code: number;
     message: string;

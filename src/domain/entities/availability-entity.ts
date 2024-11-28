@@ -1,10 +1,11 @@
-export type WeekDay = 
+export type WeekDay =
   'Domingo' | 'Segunda' | 'Terca' | 'Quarta' | 'Quinta' | 'Sexta' | 'Sabado';
 
 export type TAvailability = {
-    dia_semana: WeekDay;
-    horario_inicio: string;
-    horario_fim: string;
+  id?: number;
+  dia_semana: WeekDay;
+  horario_inicio: string;
+  horario_fim: string;
 }
 
 export type TProfessionalSchedule = {

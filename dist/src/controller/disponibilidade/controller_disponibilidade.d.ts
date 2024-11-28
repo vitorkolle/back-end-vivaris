@@ -123,12 +123,7 @@ export declare function setAtualizarDisponibilidadeProfissional(availabilityData
     message: string;
     data?: undefined;
 } | {
-    data: {
-        id: number;
-        psicologo_id: number;
-        disponibilidade_id: number;
-        status_disponibilidade: string;
-    };
+    data: true;
     status_code: number;
     message?: undefined;
 }>;

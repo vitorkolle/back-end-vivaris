@@ -93,7 +93,7 @@ export async function buscarPsicologo(id: number) {
     })
 
     if (professional) {
-      console.log(professional)
+    
       return {
         professional: professional,
         status_code: 200
@@ -109,6 +109,30 @@ export async function buscarPsicologo(id: number) {
   } catch (error) {
     console.error("Erro ao obter o usuário", error);
     throw new Error("Não foi possível obter o usuário");
+  }
+}
+
+export async function getIdByName(name: string){
+  
+  try {
+    const id = await prisma.tbl_psicologos.findFirst({
+      where: {
+        nome: name
+      },
+      select: {
+        id: true
+      }
+    })
+
+    if(id){
+      return id?.id;
+    }
+
+    return ERROR_NOT_FOUND.message
+
+
+  } catch (error) {
+    return ERROR_NOT_FOUND.message
   }
 }
 

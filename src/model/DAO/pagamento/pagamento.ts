@@ -24,12 +24,10 @@ export async function createPayment(intent_payment_id:string| null, consultaId:n
     }
  };
 
-// const findByIntentPayment = async (intent_payment_id) => {
-// };
+
 
 
 module.exports = {
   selectAllPayments,
-  //findByIntentPayment,
   createPayment,
 };

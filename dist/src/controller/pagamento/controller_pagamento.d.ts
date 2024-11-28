@@ -1,3 +1,4 @@
+import stripe from "stripe";
 export declare const createPaymentIntent: (idConsulta: number, id_cliente: number) => Promise<{
     result: unknown;
     status_code: number;
@@ -15,3 +16,4 @@ export declare const confirmPayment: (order: any) => Promise<false | {
         id_consulta: number;
     };
 } | undefined>;
+export declare function processarEventoCheckout(session: stripe.Checkout.Session): Promise<void>;

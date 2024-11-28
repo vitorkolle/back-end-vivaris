@@ -12,6 +12,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+//Import
+const controller_avaliacao_1 = require("./src/controller/avaliacao/controller_avaliacao");
+const controller_consulta_1 = require("./src/controller/consulta/controller_consulta");
 const express_1 = __importDefault(require("express"));
 const route = express_1.default.Router();
 const app = (0, express_1.default)();
@@ -21,10 +24,12 @@ const middlewareJWT_1 = require("./middleware/middlewareJWT");
 const controller_disponibilidade_1 = require("./src/controller/disponibilidade/controller_disponibilidade");
 const controller_preferencia_1 = require("./src/controller/preferencia/controller_preferencia");
 const controller_psicologo_1 = require("./src/controller/usuario/controller_psicologo");
+const uuid_1 = require("uuid"); // Para gerar IDs únicos
 const controller_usuario_1 = require("./src/controller/usuario/controller_usuario");
 const controller_pagamento_1 = require("./src/controller/pagamento/controller_pagamento");
 const stripe_1 = __importDefault(require("stripe"));
 const config_1 = require("./module/config");
+const bodyParser = require('body-parser');
 /*****************************Autenticação/JWT****************************************************/
 const verifyJWT = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -76,10 +81,8 @@ const corsOptions = {
     optionsSuccessStatus: 200
 };
 app.use((0, cors_1.default)(corsOptions));
-app.use(express_1.default.json());
 app.use("/v1/vivaris", route);
 /******************************VideoChamada****************************************************/
-const uuid_1 = require("uuid"); // Para gerar IDs únicos
 const rooms = {};
 const server = http_1.default.createServer(app);
 const io = new socket_io_1.Server(server, {
@@ -135,11 +138,8 @@ io.on("connection", (socket) => __awaiter(void 0, void 0, void 0, function* () {
 server.listen("8080", () => {
     console.log("API funcionando na porta 8080");
 });
-//Import 
-const controller_avaliacao_1 = require("./src/controller/avaliacao/controller_avaliacao");
-const controller_consulta_1 = require("./src/controller/consulta/controller_consulta");
 /**********************************************STRIPE***************************************************************/
-route.post("/webhook", express_1.default.raw({ type: "application/json" }), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+route.post("/webhook", bodyParser.raw({ type: "application/json" }), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const signature = req.headers["stripe-signature"];
     if (!signature || typeof signature !== "string") {
         return res
@@ -147,10 +147,20 @@ route.post("/webhook", express_1.default.raw({ type: "application/json" }), (req
             .json({ error: "Invalid or missing Stripe signature" });
     }
     const event = stripe_1.default.webhooks.constructEvent(req.body, signature, process.env.STRIPE_ENDPOINT_SECRET);
+    console.log("Evento construído com sucesso:", event);
+    console.log("Tipo de evento recebido:", event.type);
     switch (event.type) {
         case "checkout.session.completed":
-            const session = event.data.object;
-            yield (0, controller_pagamento_1.confirmPayment)(session);
+            try {
+                console.log('OIII');
+                const session = event.data.object;
+                yield (0, controller_pagamento_1.confirmPayment)(session);
+                yield (0, controller_pagamento_1.processarEventoCheckout)(session);
+            }
+            catch (error) {
+                console.error("Erro ao processar evento:", error);
+                return res.status(500).json({ error: "Erro no processamento do evento" });
+            }
             break;
         default:
             console.log(`Unhandled event type ${event.type}`);
