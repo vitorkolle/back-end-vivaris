@@ -1,7 +1,8 @@
-import { ERROR_CONTENT_TYPE, ERROR_INTERNAL_SERVER, ERROR_INTERNAL_SERVER_DB, ERROR_INVALID_ID, ERROR_NOT_DELETED, ERROR_NOT_FOUND, ERROR_NOT_FOUND_CLIENT, ERROR_NOT_FOUND_PROFESSIONAL, ERROR_REQUIRED_FIELDS, SUCCESS_DELETED_ITEM, SUCCESS_UPDATED_ITEM } from "../../../module/config";
+
+import { ERROR_CONTENT_TYPE, ERROR_INTERNAL_SERVER, ERROR_INTERNAL_SERVER_DB, ERROR_INVALID_ID, ERROR_NOT_DELETED, ERROR_NOT_FOUND, ERROR_NOT_FOUND_APPOINTMENTS, ERROR_NOT_FOUND_CLIENT, ERROR_NOT_FOUND_PROFESSIONAL, ERROR_REQUIRED_FIELDS, SUCCESS_DELETED_ITEM, SUCCESS_UPDATED_ITEM } from "../../../module/config";
 import { isValidId, isValidUser } from "../../infra/zod-validations";
 import { buscarCliente } from "../../model/DAO/cliente/usuario";
-import { createAppointment, deleteAppointment, selectAppointment, selectAppointmentByUserId, updateAppointment } from "../../model/DAO/consulta/consulta";
+import { createAppointment, deleteAppointment, selectAppointment, selectAppointmentByProfessional, updateAppointment } from "../../model/DAO/consulta/consulta";
 import { buscarPsicologo } from "../../model/DAO/psicologo/usuario";
 
 export async function setCadastrarConsulta(idProfessional: number, idClient: number, data: Date, contentType: string | undefined) {
@@ -46,7 +47,6 @@ export async function setCadastrarConsulta(idProfessional: number, idClient: num
             const anomesdia = partes[0];
             const hora = partes[1];
 
-            const partesAnomesdia = anomesdia.split("-")
             data = data.replace(" ", "T")
             
             const myDate = new Date(`${anomesdia}T${hora}:00.000z`)
@@ -56,7 +56,7 @@ export async function setCadastrarConsulta(idProfessional: number, idClient: num
         
         if
             (
-            !isValidId(idProfessional) || !isValidId(idClient) || !validarData(data.toString()) || !transformarData(data.toString())
+            !isValidId(idProfessional) || !isValidId(idClient) || !validarData(data.toString()) || !transformarData(data.toString()
         ) {          
             return ERROR_REQUIRED_FIELDS
         }
@@ -74,7 +74,9 @@ export async function setCadastrarConsulta(idProfessional: number, idClient: num
             return ERROR_NOT_FOUND_PROFESSIONAL
         }        
 
-        let newAppointment = await createAppointment(idProfessional, idClient, transformarData(data.toString()))
+        let newData = transformarData(data.toString())
+    
+        let newAppointment = await createAppointment(idProfessional, idClient, newData)
 
         if (!newAppointment) {
             return ERROR_INTERNAL_SERVER_DB
@@ -106,6 +108,27 @@ export async function getBuscarConsulta(id: number) {
     }
 
     return ERROR_NOT_FOUND
+}
+
+export async function getBuscarConsultasPorProfissional(id: number) {
+    try{
+        if (!isValidId(id)) {
+            return ERROR_INVALID_ID
+        }
+    
+        let getAppointmentByProfessional = await selectAppointmentByProfessional(id)
+    
+        if (getAppointmentByProfessional) {
+            return {
+                data: getAppointmentByProfessional,
+                status_code: 200
+            }
+        } else{
+            return ERROR_NOT_FOUND
+        }
+    } catch(error){
+        return ERROR_NOT_FOUND_APPOINTMENTS
+    }
 }
 
 export async function setDeletarConsulta(id: number) {

@@ -205,7 +205,7 @@ server.listen("8080", () => {
 //Import 
 import { setCadastrarAvaliacao } from './src/controller/avaliacao/controller_avaliacao'
 import { TAssessment } from './src/domain/entities/assessment'
-import { getAllAppointmentByUserId, getBuscarConsulta, setAtualizarConsulta, setCadastrarConsulta, setDeletarConsulta } from "./src/controller/consulta/controller_consulta";
+import { getBuscarConsulta, getBuscarConsultasPorProfissional, setAtualizarConsulta, setCadastrarConsulta, setDeletarConsulta } from "./src/controller/consulta/controller_consulta";
 
 
 /**********************************************STRIPE***************************************************************/
@@ -547,7 +547,7 @@ route.post('/create-checkout-session', verifyJWT, async (req, res) => {
     let idCliente = req.body.id_cliente
 
    const result = await createPaymentIntent(idConsulta, idCliente)
-
+  
     res.status(result.status_code)
     res.json(result)
 
@@ -585,6 +585,20 @@ route.post('/consulta', async (req, res) => {
 
    res.status(newAppointment.status_code)
    res.json(newAppointment)
+})
+
+route.get('/consultas/psicologo/:id_psicologo', verifyJWTRole, async (req, res) => {
+  
+  let idProfessional = Number(req.params.id_psicologo)
+
+  if (!idProfessional) {
+    return res.status(400).json({ error: 'O ID do psicólogo é obrigatório.' });
+}
+
+  let consultas = await getBuscarConsultasPorProfissional(idProfessional)
+
+  res.status(consultas.status_code)
+  res.json(consultas)
 })
 
 route.get('/consulta/:id', verifyJWT, async (req, res) => {

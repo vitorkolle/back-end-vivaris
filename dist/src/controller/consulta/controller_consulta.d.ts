@@ -50,6 +50,14 @@ export declare function getBuscarConsulta(id: number): Promise<{
     data: import("../../domain/entities/appointment-entity").TAppointment;
     status_code: number;
 }>;
+export declare function getBuscarConsultasPorProfissional(id: number): Promise<{
+    status: boolean;
+    status_code: number;
+    message: string;
+} | {
+    data: import("../../domain/entities/appointment-entity").TAppointment[];
+    status_code: number;
+}>;
 export declare function setDeletarConsulta(id: number): Promise<{
     status: boolean;
     status_code: number;

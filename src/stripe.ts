@@ -13,8 +13,6 @@ export const makePayment = async (data: TAppointment, id_cliente:number) => {
   try {
     let usuario = await buscarCliente(id_cliente)
 
-   // let cartao = await buscarCartaoPorCliente(id_cliente)
-    
     const customer = await stripe.customers.create({
       metadata:{
         userId: String(usuario?.id),
@@ -39,8 +37,8 @@ export const makePayment = async (data: TAppointment, id_cliente:number) => {
       mode: 'payment',
       payment_method_types: ['card'],
       customer: customer.id,
-      success_url: `http://localhost:5501/success.html`,
-      cancel_url: `http://localhost:5501/canceled.html`,
+      success_url: `http://localhost:5173/success.html`,
+      cancel_url: `http://localhost:5173/canceled.html`,
       metadata: {
         userId: String(usuario?.id),
         consultaId: String(data.id)

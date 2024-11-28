@@ -386,6 +386,15 @@ route.post('/consulta', (req, res) => __awaiter(void 0, void 0, void 0, function
     res.status(newAppointment.status_code);
     res.json(newAppointment);
 }));
+route.get('/consultas/psicologo/:id_psicologo', verifyJWTRole, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    let idProfessional = Number(req.params.id_psicologo);
+    if (!idProfessional) {
+        return res.status(400).json({ error: 'O ID do psicólogo é obrigatório.' });
+    }
+    let consultas = yield (0, controller_consulta_1.getBuscarConsultasPorProfissional)(idProfessional);
+    res.status(consultas.status_code);
+    res.json(consultas);
+}));
 route.get('/consulta/:id', verifyJWT, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let id = Number(req.params.id);
     let appointment = yield (0, controller_consulta_1.getBuscarConsulta)(id);

@@ -10,6 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.selectAppointment = selectAppointment;
+exports.selectAppointmentByProfessional = selectAppointmentByProfessional;
 exports.createAppointment = createAppointment;
 exports.deleteAppointment = deleteAppointment;
 exports.updateAppointment = updateAppointment;
@@ -43,33 +44,9 @@ function selectAppointment(id) {
                                     id: true,
                                     sexo: true,
                                 },
-                            },
-                            id_sexo: true,
-                            senha: true
+                            }
                         }
-                    },
-                    tbl_psicologos: {
-                        select: {
-                            id: true,
-                            nome: true,
-                            email: true,
-                            telefone: true,
-                            cpf: true,
-                            cip: true,
-                            data_nascimento: true,
-                            foto_perfil: true,
-                            link_instagram: true,
-                            tbl_sexo: {
-                                select: {
-                                    id: true,
-                                    sexo: true,
-                                },
-                            },
-                            senha: true,
-                            id_sexo: true,
-                            preco: true
-                        },
-                    },
+                    }
                 }
             });
             if (!appointment) {
@@ -81,6 +58,67 @@ function selectAppointment(id) {
             console.error("Erro ao buscar consulta", error);
             throw new Error("Não foi possível buscar a consulta");
         }
+    });
+}
+function selectAppointmentByProfessional(id) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const appointments = yield prisma.tbl_consultas.findMany({
+            where: {
+                id_psicologo: id
+            },
+            select: {
+                tbl_clientes: {
+                    select: {
+                        id: true,
+                        nome: true,
+                        email: true,
+                        telefone: true,
+                        cpf: true,
+                        data_nascimento: true,
+                        foto_perfil: true,
+                        link_instagram: true,
+                        tbl_sexo: {
+                            select: {
+                                id: true,
+                                sexo: true,
+                            },
+                        }
+                    }
+                },
+                tbl_psicologos: {
+                    select: {
+                        id: true,
+                        nome: true,
+                        email: true,
+                        cip: true,
+                        cpf: true,
+                        data_nascimento: true,
+                        link_instagram: true,
+                        tbl_sexo: {
+                            select: {
+                                id: true,
+                                sexo: true,
+                            },
+                        },
+                        preco: true,
+                        telefone: true,
+                        foto_perfil: true
+                    }
+                },
+                tbl_pagamentos: {
+                    select: {
+                        is_paid: true
+                    }
+                },
+                data_consulta: true,
+                valor: true,
+                avaliacao: true,
+            }
+        });
+        if (!appointments) {
+            return false;
+        }
+        return appointments;
     });
 }
 function createAppointment(idProfessional, idClient, data) {

@@ -23,7 +23,6 @@ const stripe = new stripe_1.Stripe(process.env.STRIPE_SECRET_KEY, {
 const makePayment = (data, id_cliente) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         let usuario = yield (0, usuario_1.buscarCliente)(id_cliente);
-        // let cartao = await buscarCartaoPorCliente(id_cliente)
         const customer = yield stripe.customers.create({
             metadata: {
                 userId: String(usuario === null || usuario === void 0 ? void 0 : usuario.id),
@@ -46,8 +45,8 @@ const makePayment = (data, id_cliente) => __awaiter(void 0, void 0, void 0, func
             mode: 'payment',
             payment_method_types: ['card'],
             customer: customer.id,
-            success_url: `http://localhost:5501/success.html`,
-            cancel_url: `http://localhost:5501/canceled.html`,
+            success_url: `http://localhost:5173/success.html`,
+            cancel_url: `http://localhost:5173/canceled.html`,
             metadata: {
                 userId: String(usuario === null || usuario === void 0 ? void 0 : usuario.id),
                 consultaId: String(data.id)
