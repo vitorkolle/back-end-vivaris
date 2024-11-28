@@ -629,3 +629,16 @@ route.put('/consulta/:id', verifyJWT, async (req, res) => {
     res.status(updateAvaibility.status_code)
     res.json(updateAvaibility)
 })
+
+route.get('/consulta/usuario/:id', verifyJWT, async (req, res) => {
+  const contentType = req.header('content-type')
+  
+  let userId = Number(req.params.id)
+
+  let user = req.body.usuario
+
+  let appointment = await getAllAppointmentByUserId(user, userId, contentType)
+
+  res.status(appointment.status_code)
+  res.json(appointment)
+})

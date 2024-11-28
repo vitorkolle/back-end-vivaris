@@ -5,6 +5,8 @@
 import { z } from "zod";
 
 export function isValidId(id:number) : boolean {
+
+    console.log(id);
     
     const idSchema = z.number().int().positive()
 
@@ -105,4 +107,12 @@ export async function isValidAssessment(avaliacao:string) {
     const testAssessment = assessmentSchema.safeParse(avaliacao)
 
     return testAssessment.success
+}
+
+export async function isValidUser(user:string) {
+    const firstUserSchema = z.enum(['cliente', 'psicologo'])
+
+    const testUser = firstUserSchema.safeParse(user)
+
+    return testUser.success
 }

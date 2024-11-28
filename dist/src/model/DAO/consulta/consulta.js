@@ -14,6 +14,7 @@ exports.selectAppointmentByProfessional = selectAppointmentByProfessional;
 exports.createAppointment = createAppointment;
 exports.deleteAppointment = deleteAppointment;
 exports.updateAppointment = updateAppointment;
+exports.selectAppointmentByUserId = selectAppointmentByUserId;
 const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
 function selectAppointment(id) {
@@ -224,6 +225,83 @@ function updateAppointment(data, id) {
         }
         catch (error) {
             console.error("Erro ao atualizar a consulta do profissional:", error);
+            throw new Error("Não foi possível atualizar a consulta do profissional");
+        }
+    });
+}
+function selectAppointmentByUserId(id_usuario, usuario) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            if (usuario === 'psicologo') {
+                let getAppointment = yield prisma.tbl_consultas.findMany({
+                    where: {
+                        id_psicologo: id_usuario
+                    },
+                    select: {
+                        id: true,
+                        data_consulta: true,
+                        valor: true,
+                        avaliacao: true,
+                        tbl_psicologos: {
+                            select: {
+                                id: true,
+                                nome: true,
+                                email: true,
+                                telefone: true,
+                                data_nascimento: true,
+                                foto_perfil: true,
+                                link_instagram: true,
+                                tbl_sexo: {
+                                    select: {
+                                        sexo: true
+                                    },
+                                },
+                                preco: true
+                            }
+                        }
+                    }
+                });
+                if (!getAppointment) {
+                    return false;
+                }
+                return getAppointment;
+            }
+            else if (usuario === 'cliente') {
+                let getAppointment = yield prisma.tbl_consultas.findMany({
+                    where: {
+                        id_cliente: id_usuario
+                    },
+                    select: {
+                        id: true,
+                        data_consulta: true,
+                        valor: true,
+                        avaliacao: true,
+                        tbl_clientes: {
+                            select: {
+                                id: true,
+                                nome: true,
+                                email: true,
+                                telefone: true,
+                                data_nascimento: true,
+                                foto_perfil: true,
+                                link_instagram: true,
+                                tbl_sexo: {
+                                    select: {
+                                        sexo: true
+                                    },
+                                }
+                            }
+                        }
+                    }
+                });
+                if (!getAppointment) {
+                    return false;
+                }
+                return getAppointment;
+            }
+        }
+        catch (error) {
+            console.error("Erro ao buscar a consulta do profissional:", error);
             throw new Error("Não foi possível atualizar a consulta do profissional");
         }
     });

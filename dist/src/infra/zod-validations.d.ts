@@ -10,3 +10,4 @@ export declare function isValidHour(hour: string): boolean;
 export declare function isValidNumberArray(numberArray: Array<number>): boolean;
 export declare function isValidAvailbilityStatus(availabilityStatus: string): boolean;
 export declare function isValidAssessment(avaliacao: string): Promise<boolean>;
+export declare function isValidUser(user: string): Promise<boolean>;

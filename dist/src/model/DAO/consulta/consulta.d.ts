@@ -40,3 +40,39 @@ export declare function createAppointment(idProfessional: number, idClient: numb
 }>;
 export declare function deleteAppointment(id: number): Promise<boolean>;
 export declare function updateAppointment(data: Date, id: number): Promise<boolean>;
+export declare function selectAppointmentByUserId(id_usuario: number, usuario: string): Promise<false | {
+    id: number;
+    tbl_psicologos: {
+        id: number;
+        nome: string;
+        email: string;
+        data_nascimento: Date;
+        foto_perfil: string | null;
+        telefone: string;
+        link_instagram: string | null;
+        tbl_sexo: {
+            sexo: string | null;
+        };
+        preco: number;
+    };
+    avaliacao: import(".prisma/client").$Enums.tbl_consultas_avaliacao;
+    data_consulta: Date;
+    valor: number;
+}[] | {
+    tbl_clientes: {
+        id: number;
+        nome: string;
+        email: string;
+        data_nascimento: Date;
+        foto_perfil: string | null;
+        telefone: string;
+        link_instagram: string | null;
+        tbl_sexo: {
+            sexo: string | null;
+        } | null;
+    };
+    id: number;
+    avaliacao: import(".prisma/client").$Enums.tbl_consultas_avaliacao;
+    data_consulta: Date;
+    valor: number;
+}[] | undefined>;
