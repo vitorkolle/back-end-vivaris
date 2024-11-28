@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.criarNovoPsicologo = criarNovoPsicologo;
 exports.logarPsicologo = logarPsicologo;
 exports.buscarPsicologo = buscarPsicologo;
+exports.getIdByName = getIdByName;
 exports.listarPsicologos = listarPsicologos;
 const client_1 = require("@prisma/client");
 const config_1 = require("../../../../module/config");
@@ -104,7 +105,6 @@ function buscarPsicologo(id) {
                 },
             });
             if (professional) {
-                console.log(professional);
                 return {
                     professional: professional,
                     status_code: 200
@@ -118,6 +118,27 @@ function buscarPsicologo(id) {
         catch (error) {
             console.error("Erro ao obter o usuário", error);
             throw new Error("Não foi possível obter o usuário");
+        }
+    });
+}
+function getIdByName(name) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const id = yield prisma.tbl_psicologos.findFirst({
+                where: {
+                    nome: name
+                },
+                select: {
+                    id: true
+                }
+            });
+            if (id) {
+                return id === null || id === void 0 ? void 0 : id.id;
+            }
+            return config_1.ERROR_NOT_FOUND.message;
+        }
+        catch (error) {
+            return config_1.ERROR_NOT_FOUND.message;
         }
     });
 }

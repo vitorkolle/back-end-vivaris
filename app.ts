@@ -1,4 +1,8 @@
 //Import
+import { setCadastrarAvaliacao } from './src/controller/avaliacao/controller_avaliacao'
+import { TAssessment } from './src/domain/entities/assessment'
+import { getAllAppointmentByUserId, getBuscarConsulta, getBuscarConsultasPorProfissional, setAtualizarConsulta, setCadastrarConsulta, setDeletarConsulta } from "./src/controller/consulta/controller_consulta";
+
 import { TUser } from "./src/domain/entities/user-entity";
 import { TUserPreferences } from "./src/domain/entities/user-preferences";
 
@@ -35,6 +39,7 @@ import {
   getLogarPsicologo,
   setInserirPsicologo,
 } from "./src/controller/usuario/controller_psicologo";
+import { v4 as uuidv4 } from 'uuid'; // Para gerar IDs únicos
 import {
   getBuscarCliente,
   getBuscarClientePreferencias,
@@ -50,9 +55,25 @@ import { TProfessional } from "./src/domain/entities/professional-entity";
 import {
   confirmPayment,
   createPaymentIntent,
+  processarEventoCheckout,
 } from "./src/controller/pagamento/controller_pagamento";
 import stripe from "stripe";
 import { ERROR_INVALID_AUTH_TOKEN } from "./module/config";
+
+
+import cors from "cors";
+
+const corsOptions = {
+  origin: ['http://localhost:5173', 'http://127.0.0.1:5173', '*'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Métodos permitidos
+  allowedHeaders: ['Content-Type', 'Authorization', 'x-access-token'], // Cabeçalhos permitidos
+  optionsSuccessStatus: 200
+};
+
+app.use(cors(corsOptions));
+
+
+app.use("/v1/vivaris", route);
 
 /*****************************Autenticação/JWT****************************************************/
 const verifyJWT = async (
@@ -111,23 +132,7 @@ const verifyJWTRole = async (
   }
 };
 
-import cors from "cors";
-const corsOptions = {
-    origin: ['http://localhost:5173', 'http://127.0.0.1:5173', '*'],
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Métodos permitidos
-    allowedHeaders: ['Content-Type', 'Authorization', 'x-access-token'], // Cabeçalhos permitidos
-    optionsSuccessStatus: 200
-};
-app.use(cors(corsOptions));
-
-app.use(express.json());
-
-app.use("/v1/vivaris", route);
-
-
 /******************************VideoChamada****************************************************/
-import { v4 as uuidv4 } from 'uuid'; // Para gerar IDs únicos
-
 const rooms: Record<string, string[]> = {};
 
 
@@ -194,56 +199,56 @@ io.on("connection", async (socket) => {
           console.log(`Usuário ${userId} desconectado.`);
         }
       });
-  
-});
-
-server.listen("8080", () => {
-    console.log("API funcionando na porta 8080");
-})
-
-
-//Import 
-import { setCadastrarAvaliacao } from './src/controller/avaliacao/controller_avaliacao'
-import { TAssessment } from './src/domain/entities/assessment'
-import { getBuscarConsulta, getBuscarConsultasPorProfissional, setAtualizarConsulta, setCadastrarConsulta, setDeletarConsulta } from "./src/controller/consulta/controller_consulta";
-
+      
+    });
+    
+    server.listen("8080", () => {
+      console.log("API funcionando na porta 8080");
+    })
 
 /**********************************************STRIPE***************************************************************/
-route.post(
-  "/webhook",
-  express.raw({ type: "application/json" }),
-  async (req, res) => {
-    const signature = req.headers["stripe-signature"];
+route.post("/webhook", express.raw({ type: "application/json" }), async (req, res) => {
+  const signature = req.headers["stripe-signature"];
 
-    if (!signature || typeof signature !== "string") {
-      return res
-        .status(400)
-        .json({ error: "Invalid or missing Stripe signature" });
-    }
+  if (!signature || typeof signature !== "string") {
+    return res
+      .status(400)
+      .json({ error: "Invalid or missing Stripe signature" });
+  }
 
-    const event = stripe.webhooks.constructEvent(
-      req.body,
-      signature,
-      process.env.STRIPE_ENDPOINT_SECRET
-    );
+  const event = stripe.webhooks.constructEvent(
+    req.body,
+    signature,
+    process.env.STRIPE_ENDPOINT_SECRET
+  );
 
-    switch (event.type) {
-      case "checkout.session.completed":
-        const session = event.data.object;
+  switch (event.type) {
+    case "checkout.session.completed":
+      try {
+        
+        const session = event.data.object
 
         await confirmPayment(session);
 
-        break;
-      default:
-        console.log(`Unhandled event type ${event.type}`);
-    }
+        await processarEventoCheckout(session);
 
-    res.json({ received: true });
+      } catch (error) {
+        console.error("Erro ao processar evento:", error);
+        return res.status(500).json({ error: "Erro no processamento do evento" });
+      }
+      break;
+    default:
+      console.log(`Unhandled event type ${event.type}`);
   }
-);
+
+  res.json({ received: true });
+});
 /****************************************************USUARIO-CLIENTE****************************************************/
+app.use(express.json())
+
 //post de clientes
-route.post("/cliente", async (req, res) => {
+route.post("/cliente", express.json(),async (req, res) => {
+
   const contentType = req.header("content-type");
 
   const userData: TUser = {
@@ -264,7 +269,8 @@ route.post("/cliente", async (req, res) => {
 });
 
 //post de Preferências de Usuário
-route.post("/cliente/preferencias", async (req, res) => {
+route.post("/cliente/preferencias",express.json(), async (req, res) => {
+
   const contentType = req.header("content-type");
 
   const userData: TUserPreferences = {
@@ -279,7 +285,8 @@ route.post("/cliente/preferencias", async (req, res) => {
 });
 
 //login de usuário
-route.post("/login/usuario", async (req, res) => {
+route.post("/login/usuario",express.json(), async (req, res) => {
+
   let email = req.body.email;
   let senha = req.body.senha;
 
@@ -337,7 +344,8 @@ route.get("/usuario/sexo/:id", async (req, res) => {
 /****************************************************PSICÓLOGO****************************************************/
 
 //post de psicólogos
-route.post("/psicologo", async (req, res) => {
+route.post("/psicologo", express.json(),async (req, res) => {
+
   const contentType = req.header("Content-Type");
 
   const professionalData: TProfessional = {
@@ -363,7 +371,8 @@ route.post("/psicologo", async (req, res) => {
   res.json(newProfesional);
 });
 
-route.post("/profissional/login", async (req, res) => {
+route.post("/profissional/login",express.json(), async (req, res) => {
+
   let email = req.body.email;
   let senha = req.body.senha;
 
@@ -392,7 +401,8 @@ route.get("/profissionais", verifyJWT, async (req, res) => {
 });
 
 /****************************************************DISPONIBILIDADE****************************************************/
-route.post("/disponibilidade", async (req, res) => {
+route.post("/disponibilidade", express.json(),async (req, res) => {
+
   const contentType = req.header("content-type");
 
   const disponibilidade: TAvailability = {
@@ -412,7 +422,8 @@ route.post("/disponibilidade", async (req, res) => {
   res.json(rsDisponilidade);
 });
 
-route.post("/disponibilidade/psicologo/:id", async (req, res) => {
+route.post("/disponibilidade/psicologo/:id",express.json(), async (req, res) => {
+
   let id = Number(req.params.id);
 
   const availability: TProfessionalAvailability = {
@@ -541,7 +552,8 @@ route.get("/preferencias/:id", async (req, res) => {
 });
 
 /****************************************************PAGAMENTO****************************************************/
-route.post('/create-checkout-session', verifyJWT, async (req, res) => {
+route.post('/create-checkout-session', verifyJWT, express.json(), async (req, res) => {
+
     let idConsulta = req.body.id_consulta
     
     let idCliente = req.body.id_cliente
@@ -554,7 +566,8 @@ route.post('/create-checkout-session', verifyJWT, async (req, res) => {
 })
 
 /*********************************Avaliação************************************/
-route.post('/avaliacao', async (req, res) => {
+route.post('/avaliacao',express.json(), async (req, res) => {
+
     let contentType = req.header('content-type')
 
     let inputData: TAssessment= {
@@ -572,7 +585,8 @@ route.post('/avaliacao', async (req, res) => {
 
 
 /*******************************Consulta*************************/
-route.post('/consulta', async (req, res) => {
+route.post('/consulta', express.json() ,async (req, res) => {
+
     let contentType = req.header('content-type')
 
    let idProfessional = req.body.id_psicologo
@@ -642,3 +656,4 @@ route.get('/consulta/usuario/:id', verifyJWT, async (req, res) => {
   res.status(appointment.status_code)
   res.json(appointment)
 })
+

@@ -288,22 +288,25 @@ export async function atualizarDisponibilidade(availabilityData: TAvailability, 
   }  
 }
 
-export async function atualizarDisponibilidadeProfissional(availabilityData: TProfessionalAvailability) {
+export async function atualizarDisponibilidadeProfissional(availabilityData: any, idPsico:number) {
+  console.log('available availability: ', availabilityData);
+  
   try {
-    const updateProfessionalAvailbility = await prisma.tbl_psicologo_disponibilidade.update({
-      where: {
-        id: availabilityData.disponibilidade_id
+    const updateProfessionalAvailbility = await prisma.tbl_psicologo_disponibilidade.updateMany({
+      where:{
+        disponibilidade_id: Number(availabilityData.id), 
+        psicologo_id: Number(idPsico)
       },
       data:{
-        status_disponibilidade: availabilityData.status
+        status_disponibilidade: 'Confirmado'
       }
     }) 
 
-    if(!updateProfessionalAvailbility){
-      return false
+    if (updateProfessionalAvailbility.count === 0) {
+      return false;
     }
-
-    return updateProfessionalAvailbility
+    
+    return true;
     
   } catch (error) {
     console.error("Erro ao atualizar disponibilidade do profissional:", error);

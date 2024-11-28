@@ -85,7 +85,7 @@ model tbl_pagamentos {
 
 model tbl_preferencias {
   id                        Int                         @id @default(autoincrement())
-  nome                      String                      @unique(map: "nome") @db.VarChar(15)
+  nome                      String                      @unique(map: "nome") @db.VarChar(50)
   cor                       String                      @unique(map: "cor") @db.VarChar(7)
   tbl_clientes_preferencias tbl_clientes_preferencias[]
 }

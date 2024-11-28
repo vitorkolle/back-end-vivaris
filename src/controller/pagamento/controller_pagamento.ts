@@ -1,5 +1,7 @@
+import stripe from "stripe";
 import { ERROR_REQUIRED_FIELDS, ERROR_INVALID_PAYMENT_METHOD_ID, ERROR_NOT_FOUND, ERROR_NOT_FOUND_ASSESSMENT } from "../../../module/config";
 import { selectAppointment } from "../../model/DAO/consulta/consulta";
+import { atualizarDisponibilidadeProfissional } from "../../model/DAO/disponibilidade/disponibilidade";
 import { createPayment } from "../../model/DAO/pagamento/pagamento";
 import { makePayment } from "../../stripe";
 
@@ -57,6 +59,20 @@ export const confirmPayment = async (order:any) => {
         return false;
     }
 };
+
+export async function processarEventoCheckout(session:stripe.Checkout.Session) {
+    
+    const disponibilidadeJSON = session.metadata?.disponibilidade;
+    const psicoId = Number(session.metadata?.psicoId)
+  
+    if (!disponibilidadeJSON) {
+      throw new Error("Disponibilidade não encontrada na metadata!");
+    }
+  
+    const disp = JSON.parse(disponibilidadeJSON);
+   
+    const result = await atualizarDisponibilidadeProfissional(disp, psicoId);
+  }
 
 const extractPaymentInfo = (event:any) => {
     const consultaId = isNaN(Number(event.metadata.consultaId)) ? 1 : Number(event.metadata.consultaId);

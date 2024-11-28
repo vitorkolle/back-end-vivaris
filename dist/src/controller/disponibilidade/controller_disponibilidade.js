@@ -266,7 +266,7 @@ function setAtualizarDisponibilidadeProfissional(availabilityData, contentType) 
             if (!existsProfessionalAvailbility) {
                 return config_1.ERROR_NOT_FOUND;
             }
-            let updateProfessionalAvailbility = yield (0, disponibilidade_1.atualizarDisponibilidadeProfissional)(availabilityData);
+            let updateProfessionalAvailbility = yield (0, disponibilidade_1.atualizarDisponibilidadeProfissional)(availabilityData, availabilityData.id_psicologo);
             if (!updateProfessionalAvailbility) {
                 return {
                     status_code: config_1.ERROR_INTERNAL_SERVER_DB.status_code,

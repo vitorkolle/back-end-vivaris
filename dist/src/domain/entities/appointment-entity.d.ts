@@ -2,9 +2,9 @@ import { TProfessional } from "./professional-entity";
 import { TUser } from "./user-entity";
 export type TAppointment = {
     id: number;
-    data_consulta: Date;
+    data_consulta: string;
     valor: number;
     avaliacao: string;
-    cliente: TUser;
-    psicologo: TProfessional;
+    tbl_clientes_: TUser;
+    tbl_psicologos: TProfessional;
 };

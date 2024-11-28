@@ -66,7 +66,6 @@ function setCadastrarConsulta(idProfessional, idClient, data, contentType) {
                 return config_1.ERROR_NOT_FOUND_PROFESSIONAL;
             }
             let newData = transformarData(data.toString());
-            console.log('NEW DATTAAAA:', newData);
             let newAppointment = yield (0, consulta_1.createAppointment)(idProfessional, idClient, newData);
             if (!newAppointment) {
                 return config_1.ERROR_INTERNAL_SERVER_DB;

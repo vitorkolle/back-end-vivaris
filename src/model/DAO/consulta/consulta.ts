@@ -32,6 +32,51 @@ export async function selectAppointment(id: number): Promise<TAppointment | fals
                             },
                         }
                     }
+                },
+                tbl_psicologos:{
+                    select:{
+                        id: true,
+                        nome: true,
+                        email: true,
+                        telefone: true,
+                        data_nascimento: true,
+                        foto_perfil: true,
+                        link_instagram: true,
+                        tbl_sexo: {
+                            select: {
+                                id: true,
+                                sexo: true,
+                            },
+                        },
+                        cip:true,
+                        cpf:true,
+                        descricao:true,
+                        preco:true,
+                        tbl_avaliacoes:{
+                            select: {
+                                id: true,
+                                avaliacao: true,
+                                tbl_clientes: {
+                                    select: {
+                                        id: true,
+                                        nome: true,
+                                        email: true,
+                                        telefone: true,
+                                        cpf: true,
+                                        data_nascimento: true,
+                                        foto_perfil: true,
+                                        link_instagram: true,
+                                        tbl_sexo: {
+                                            select: {
+                                                id: true,
+                                                sexo: true,
+                                            },
+                                        }
+                                    }
+                                },
+                            }
+                        }
+                    }
                 }
             }
         })
