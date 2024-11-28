@@ -74,7 +74,8 @@ export const makePayment = async (data: TAppointment, id_cliente:number) => {
       metadata:{
         userId: String(usuario?.id),
         consultaId: String(data.id),
-        disponibilidadeId:JSON.stringify(disponibilidadeSelecionada)
+        disponibilidadeId:JSON.stringify(disponibilidadeSelecionada),
+        psicoId: String(idPsico)
       }
     })
 
@@ -100,7 +101,8 @@ export const makePayment = async (data: TAppointment, id_cliente:number) => {
       metadata: {
         userId: String(usuario?.id),
         consultaId: String(data.id),
-        disponibilidade:JSON.stringify(disponibilidadeSelecionada)
+        disponibilidade:JSON.stringify(disponibilidadeSelecionada),
+        psicoId: String(idPsico)
     },
     });
 

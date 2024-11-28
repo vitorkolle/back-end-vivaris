@@ -29,7 +29,15 @@ const controller_usuario_1 = require("./src/controller/usuario/controller_usuari
 const controller_pagamento_1 = require("./src/controller/pagamento/controller_pagamento");
 const stripe_1 = __importDefault(require("stripe"));
 const config_1 = require("./module/config");
-const bodyParser = require('body-parser');
+const cors_1 = __importDefault(require("cors"));
+const corsOptions = {
+    origin: ['http://localhost:5173', 'http://127.0.0.1:5173', '*'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Métodos permitidos
+    allowedHeaders: ['Content-Type', 'Authorization', 'x-access-token'], // Cabeçalhos permitidos
+    optionsSuccessStatus: 200
+};
+app.use((0, cors_1.default)(corsOptions));
+app.use("/v1/vivaris", route);
 /*****************************Autenticação/JWT****************************************************/
 const verifyJWT = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -73,15 +81,6 @@ const verifyJWTRole = (req, res, next) => __awaiter(void 0, void 0, void 0, func
         return res.status(401).json(config_1.ERROR_INVALID_AUTH_TOKEN.message).end();
     }
 });
-const cors_1 = __importDefault(require("cors"));
-const corsOptions = {
-    origin: ['http://localhost:5173', 'http://127.0.0.1:5173', '*'],
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Métodos permitidos
-    allowedHeaders: ['Content-Type', 'Authorization', 'x-access-token'], // Cabeçalhos permitidos
-    optionsSuccessStatus: 200
-};
-app.use((0, cors_1.default)(corsOptions));
-app.use("/v1/vivaris", route);
 /******************************VideoChamada****************************************************/
 const rooms = {};
 const server = http_1.default.createServer(app);
@@ -139,7 +138,7 @@ server.listen("8080", () => {
     console.log("API funcionando na porta 8080");
 });
 /**********************************************STRIPE***************************************************************/
-route.post("/webhook", bodyParser.raw({ type: "application/json" }), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+route.post("/webhook", express_1.default.raw({ type: "application/json" }), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const signature = req.headers["stripe-signature"];
     if (!signature || typeof signature !== "string") {
         return res
@@ -147,12 +146,9 @@ route.post("/webhook", bodyParser.raw({ type: "application/json" }), (req, res) 
             .json({ error: "Invalid or missing Stripe signature" });
     }
     const event = stripe_1.default.webhooks.constructEvent(req.body, signature, process.env.STRIPE_ENDPOINT_SECRET);
-    console.log("Evento construído com sucesso:", event);
-    console.log("Tipo de evento recebido:", event.type);
     switch (event.type) {
         case "checkout.session.completed":
             try {
-                console.log('OIII');
                 const session = event.data.object;
                 yield (0, controller_pagamento_1.confirmPayment)(session);
                 yield (0, controller_pagamento_1.processarEventoCheckout)(session);
@@ -168,8 +164,9 @@ route.post("/webhook", bodyParser.raw({ type: "application/json" }), (req, res) 
     res.json({ received: true });
 }));
 /****************************************************USUARIO-CLIENTE****************************************************/
+app.use(express_1.default.json());
 //post de clientes
-route.post("/cliente", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+route.post("/cliente", express_1.default.json(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const contentType = req.header("content-type");
     const userData = {
         nome: req.body.nome,
@@ -186,7 +183,7 @@ route.post("/cliente", (req, res) => __awaiter(void 0, void 0, void 0, function*
     res.json(newUser);
 }));
 //post de Preferências de Usuário
-route.post("/cliente/preferencias", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+route.post("/cliente/preferencias", express_1.default.json(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const contentType = req.header("content-type");
     const userData = {
         id_cliente: req.body.id_cliente,
@@ -197,7 +194,7 @@ route.post("/cliente/preferencias", (req, res) => __awaiter(void 0, void 0, void
     res.json(newUserPrefence);
 }));
 //login de usuário
-route.post("/login/usuario", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+route.post("/login/usuario", express_1.default.json(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let email = req.body.email;
     let senha = req.body.senha;
     let user = yield (0, controller_usuario_1.getLogarCliente)(email, senha);
@@ -237,7 +234,7 @@ route.get("/usuario/sexo/:id", (req, res) => __awaiter(void 0, void 0, void 0, f
 }));
 /****************************************************PSICÓLOGO****************************************************/
 //post de psicólogos
-route.post("/psicologo", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+route.post("/psicologo", express_1.default.json(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const contentType = req.header("Content-Type");
     const professionalData = {
         nome: req.body.nome,
@@ -255,7 +252,7 @@ route.post("/psicologo", (req, res) => __awaiter(void 0, void 0, void 0, functio
     res.status(newProfesional.status_code);
     res.json(newProfesional);
 }));
-route.post("/profissional/login", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+route.post("/profissional/login", express_1.default.json(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let email = req.body.email;
     let senha = req.body.senha;
     let user = yield (0, controller_psicologo_1.getLogarPsicologo)(email, senha);
@@ -275,7 +272,7 @@ route.get("/profissionais", verifyJWT, (req, res) => __awaiter(void 0, void 0, v
     res.json(getProfissionais);
 }));
 /****************************************************DISPONIBILIDADE****************************************************/
-route.post("/disponibilidade", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+route.post("/disponibilidade", express_1.default.json(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const contentType = req.header("content-type");
     const disponibilidade = {
         dia_semana: req.body.dia_semana,
@@ -287,7 +284,7 @@ route.post("/disponibilidade", (req, res) => __awaiter(void 0, void 0, void 0, f
     res.status(rsDisponilidade.status_code);
     res.json(rsDisponilidade);
 }));
-route.post("/disponibilidade/psicologo/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+route.post("/disponibilidade/psicologo/:id", express_1.default.json(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let id = Number(req.params.id);
     const availability = {
         disponibilidade_id: req.body.disponibilidade,
@@ -366,7 +363,7 @@ route.get("/preferencias/:id", (req, res) => __awaiter(void 0, void 0, void 0, f
     res.json(preferenceData);
 }));
 /****************************************************PAGAMENTO****************************************************/
-route.post('/create-checkout-session', verifyJWT, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+route.post('/create-checkout-session', verifyJWT, express_1.default.json(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let idConsulta = req.body.id_consulta;
     let idCliente = req.body.id_cliente;
     const result = yield (0, controller_pagamento_1.createPaymentIntent)(idConsulta, idCliente);
@@ -374,7 +371,7 @@ route.post('/create-checkout-session', verifyJWT, (req, res) => __awaiter(void 0
     res.json(result);
 }));
 /*********************************Avaliação************************************/
-route.post('/avaliacao', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+route.post('/avaliacao', express_1.default.json(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let contentType = req.header('content-type');
     let inputData = {
         texto: req.body.texto,
@@ -387,7 +384,7 @@ route.post('/avaliacao', (req, res) => __awaiter(void 0, void 0, void 0, functio
     res.json(assessment);
 }));
 /*******************************Consulta*************************/
-route.post('/consulta', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+route.post('/consulta', express_1.default.json(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let contentType = req.header('content-type');
     let idProfessional = req.body.id_psicologo;
     let idClient = req.body.id_cliente;

@@ -288,14 +288,14 @@ export async function atualizarDisponibilidade(availabilityData: TAvailability, 
   }  
 }
 
-export async function atualizarDisponibilidadeProfissional(availabilityData: TProfessionalAvailability) {
-  console.log('available availability: ' + availabilityData);
+export async function atualizarDisponibilidadeProfissional(availabilityData: any, idPsico:number) {
+  console.log('available availability: ', availabilityData);
   
   try {
     const updateProfessionalAvailbility = await prisma.tbl_psicologo_disponibilidade.updateMany({
       where:{
-        disponibilidade_id: availabilityData.disponibilidade_id,
-        psicologo_id: availabilityData.id_psicologo
+        disponibilidade_id: Number(availabilityData.id), 
+        psicologo_id: Number(idPsico)
       },
       data:{
         status_disponibilidade: 'Confirmado'

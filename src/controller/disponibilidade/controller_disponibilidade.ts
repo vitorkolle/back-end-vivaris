@@ -291,7 +291,7 @@ export async function setAtualizarDisponibilidadeProfissional(availabilityData: 
             return ERROR_NOT_FOUND
         }
 
-        let updateProfessionalAvailbility = await atualizarDisponibilidadeProfissional(availabilityData)
+        let updateProfessionalAvailbility = await atualizarDisponibilidadeProfissional(availabilityData, availabilityData.id_psicologo)
 
         if(!updateProfessionalAvailbility){
             return {

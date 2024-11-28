@@ -61,20 +61,17 @@ export const confirmPayment = async (order:any) => {
 };
 
 export async function processarEventoCheckout(session:stripe.Checkout.Session) {
-    console.log('VIEO AQ');
     
     const disponibilidadeJSON = session.metadata?.disponibilidade;
-    console.log("DISPOJSONMETA:", disponibilidadeJSON);
+    const psicoId = Number(session.metadata?.psicoId)
   
     if (!disponibilidadeJSON) {
       throw new Error("Disponibilidade não encontrada na metadata!");
     }
   
     const disp = JSON.parse(disponibilidadeJSON);
-    console.log("DISP APP:", disp);
-  
-    const result = await atualizarDisponibilidadeProfissional(disp);
-    console.log("Resultado:", result);
+   
+    const result = await atualizarDisponibilidadeProfissional(disp, psicoId);
   }
 
 const extractPaymentInfo = (event:any) => {

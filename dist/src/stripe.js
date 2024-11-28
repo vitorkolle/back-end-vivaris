@@ -63,7 +63,8 @@ const makePayment = (data, id_cliente) => __awaiter(void 0, void 0, void 0, func
             metadata: {
                 userId: String(usuario === null || usuario === void 0 ? void 0 : usuario.id),
                 consultaId: String(data.id),
-                disponibilidadeId: JSON.stringify(disponibilidadeSelecionada)
+                disponibilidadeId: JSON.stringify(disponibilidadeSelecionada),
+                psicoId: String(idPsico)
             }
         });
         const session = yield stripe.checkout.sessions.create({
@@ -87,7 +88,8 @@ const makePayment = (data, id_cliente) => __awaiter(void 0, void 0, void 0, func
             metadata: {
                 userId: String(usuario === null || usuario === void 0 ? void 0 : usuario.id),
                 consultaId: String(data.id),
-                disponibilidade: JSON.stringify(disponibilidadeSelecionada)
+                disponibilidade: JSON.stringify(disponibilidadeSelecionada),
+                psicoId: String(idPsico)
             },
         });
         return { url: session.url };

@@ -33,10 +33,7 @@ function createPayment(intent_payment_id, consultaId) {
     });
 }
 ;
-// const findByIntentPayment = async (intent_payment_id) => {
-// };
 module.exports = {
     selectAllPayments,
-    //findByIntentPayment,
     createPayment,
 };

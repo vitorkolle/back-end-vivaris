@@ -291,14 +291,14 @@ function atualizarDisponibilidade(availabilityData, availabilityId) {
         }
     });
 }
-function atualizarDisponibilidadeProfissional(availabilityData) {
+function atualizarDisponibilidadeProfissional(availabilityData, idPsico) {
     return __awaiter(this, void 0, void 0, function* () {
-        console.log('available availability: ' + availabilityData);
+        console.log('available availability: ', availabilityData);
         try {
             const updateProfessionalAvailbility = yield prisma.tbl_psicologo_disponibilidade.updateMany({
                 where: {
-                    disponibilidade_id: availabilityData.disponibilidade_id,
-                    psicologo_id: availabilityData.id_psicologo
+                    disponibilidade_id: Number(availabilityData.id),
+                    psicologo_id: Number(idPsico)
                 },
                 data: {
                     status_disponibilidade: 'Confirmado'
