@@ -274,76 +274,63 @@ function updateAppointment(data, id) {
         }
     });
 }
-function selectAppointmentByUserId(id_usuario, usuario) {
+function selectAppointmentByUserId(id_usuario) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            if (usuario === 'psicologo') {
-                let getAppointment = yield prisma.tbl_consultas.findMany({
-                    where: {
-                        id_psicologo: id_usuario
-                    },
-                    select: {
-                        id: true,
-                        data_consulta: true,
-                        valor: true,
-                        avaliacao: true,
-                        tbl_psicologos: {
-                            select: {
-                                id: true,
-                                nome: true,
-                                email: true,
-                                telefone: true,
-                                data_nascimento: true,
-                                foto_perfil: true,
-                                link_instagram: true,
-                                tbl_sexo: {
-                                    select: {
-                                        sexo: true
-                                    },
+            let getAppointment = yield prisma.tbl_consultas.findMany({
+                where: {
+                    id_cliente: id_usuario
+                },
+                select: {
+                    id: true,
+                    data_consulta: true,
+                    valor: true,
+                    avaliacao: true,
+                    tbl_clientes: {
+                        select: {
+                            id: true,
+                            nome: true,
+                            email: true,
+                            telefone: true,
+                            data_nascimento: true,
+                            foto_perfil: true,
+                            link_instagram: true,
+                            tbl_sexo: {
+                                select: {
+                                    sexo: true
                                 },
-                                preco: true
                             }
                         }
-                    }
-                });
-                if (!getAppointment) {
-                    return false;
-                }
-                return getAppointment;
-            }
-            else if (usuario === 'cliente') {
-                let getAppointment = yield prisma.tbl_consultas.findMany({
-                    where: {
-                        id_cliente: id_usuario
                     },
-                    select: {
-                        id: true,
-                        data_consulta: true,
-                        valor: true,
-                        avaliacao: true,
-                        tbl_clientes: {
-                            select: {
-                                id: true,
-                                nome: true,
-                                email: true,
-                                telefone: true,
-                                data_nascimento: true,
-                                foto_perfil: true,
-                                link_instagram: true,
-                                tbl_sexo: {
-                                    select: {
-                                        sexo: true
-                                    },
+                    tbl_psicologos: {
+                        select: {
+                            id: true,
+                            nome: true,
+                            email: true,
+                            telefone: true,
+                            data_nascimento: true,
+                            foto_perfil: true,
+                            link_instagram: true,
+                            tbl_sexo: {
+                                select: {
+                                    sexo: true
+                                },
+                            },
+                            preco: true,
+                            descricao: true,
+                            tbl_avaliacoes: {
+                                select: {
+                                    avaliacao: true
                                 }
                             }
                         }
                     }
-                });
-                if (!getAppointment) {
-                    return false;
                 }
-                return getAppointment;
+            });
+            if (!getAppointment) {
+                return false;
             }
+            return getAppointment;
         }
         catch (error) {
             console.error("Erro ao buscar a consulta do profissional:", error);

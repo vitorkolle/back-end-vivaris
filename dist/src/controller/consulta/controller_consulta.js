@@ -188,18 +188,13 @@ function setAtualizarConsulta(id, data, contentType) {
         }
     });
 }
-function getAllAppointmentByUserId(user, user_id, contentType) {
+function getAllAppointmentByUserId(user_id) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            if (String(contentType).toLowerCase() !== 'application/json') {
-                return config_1.ERROR_CONTENT_TYPE;
-            }
-            console.log(user_id);
-            if (!user || !(0, zod_validations_1.isValidUser)(user) ||
-                !user_id || !(0, zod_validations_1.isValidId)(user_id)) {
+            if (!user_id || !(0, zod_validations_1.isValidId)(user_id)) {
                 return config_1.ERROR_REQUIRED_FIELDS;
             }
-            let searchAppointment = yield (0, consulta_1.selectAppointmentByUserId)(user_id, user);
+            let searchAppointment = yield (0, consulta_1.selectAppointmentByUserId)(user_id);
             if (!searchAppointment) {
                 return config_1.ERROR_NOT_FOUND;
             }

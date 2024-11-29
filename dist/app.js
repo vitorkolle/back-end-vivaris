@@ -423,10 +423,8 @@ route.put('/consulta/:id', verifyJWT, (req, res) => __awaiter(void 0, void 0, vo
     res.json(updateAvaibility);
 }));
 route.get('/consulta/usuario/:id', verifyJWT, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const contentType = req.header('content-type');
     let userId = Number(req.params.id);
-    let user = req.body.usuario;
-    let appointment = yield (0, controller_consulta_1.getAllAppointmentByUserId)(user, userId, contentType);
+    let appointment = yield (0, controller_consulta_1.getAllAppointmentByUserId)(userId);
     res.status(appointment.status_code);
     res.json(appointment);
 }));

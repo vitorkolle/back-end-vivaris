@@ -149,62 +149,62 @@ const connectedUsers: Record<string, string> = {};
 
 
 io.on("connection", async (socket) => {
-    console.log(`Usuário conectado: ${socket.id}`);
+  console.log(`Usuário conectado: ${socket.id}`);
 
-    // Salva o usuário conectado
-    socket.on("registerUser", (userId: string) => {
-      connectedUsers[userId] = socket.id;
-      console.log(`Usuário registrado: ${userId} com ID de socket ${socket.id}`);
-    });
-  
-    // Usuário A liga para Usuário B
-    socket.on("callUser", ({ from, to }: { from: string; to: string }) => {
-      const receiverSocketId = connectedUsers[to];
-  
-      if (!receiverSocketId) {
-        socket.emit("callFailed", { message: "Usuário não está disponível." });
-        return;
-      }
-  
-      // Cria uma sala única para a chamada
-      const roomId = uuidv4();
-      console.log(`Chamada iniciada de ${from} para ${to} na sala ${roomId}`);
-  
-      // Notifica o usuário B
-      io.to(receiverSocketId).emit("incomingCall", { from, roomId });
-    });
-  
-    // Usuário B aceita a chamada
-    socket.on("acceptCall", ({ roomId, userId }: { roomId: string; userId: string }) => {
-      console.log(`Usuário ${userId} aceitou a chamada na sala ${roomId}`);
-      socket.join(roomId);
-  
-      // Notifica a outra parte que a chamada foi aceita
-      socket.to(roomId).emit("callAccepted", { userId });
-    });
+  // Salva o usuário conectado
+  socket.on("registerUser", (userId: string) => {
+    connectedUsers[userId] = socket.id;
+    console.log(`Usuário registrado: ${userId} com ID de socket ${socket.id}`);
+  });
 
-    socket.on("declineCall", ({ roomId, from }: { roomId: string; from: string }) => {
-        console.log(`Usuário recusou a chamada na sala ${roomId}`);
-        const callerSocketId = connectedUsers[from];
-        if (callerSocketId) {
-          io.to(callerSocketId).emit("callDeclined", { message: "Chamada recusada." });
-        }
-      });
-    
-      // Limpa o registro ao desconectar
-      socket.on("disconnect", () => {
-        const userId = Object.keys(connectedUsers).find((key) => connectedUsers[key] === socket.id);
-        if (userId) {
-          delete connectedUsers[userId];
-          console.log(`Usuário ${userId} desconectado.`);
-        }
-      });
-      
-    });
-    
-    server.listen("8080", () => {
-      console.log("API funcionando na porta 8080");
-    })
+  // Usuário A liga para Usuário B
+  socket.on("callUser", ({ from, to }: { from: string; to: string }) => {
+    const receiverSocketId = connectedUsers[to];
+
+    if (!receiverSocketId) {
+      socket.emit("callFailed", { message: "Usuário não está disponível." });
+      return;
+    }
+
+    // Cria uma sala única para a chamada
+    const roomId = uuidv4();
+    console.log(`Chamada iniciada de ${from} para ${to} na sala ${roomId}`);
+
+    // Notifica o usuário B
+    io.to(receiverSocketId).emit("incomingCall", { from, roomId });
+  });
+
+  // Usuário B aceita a chamada
+  socket.on("acceptCall", ({ roomId, userId }: { roomId: string; userId: string }) => {
+    console.log(`Usuário ${userId} aceitou a chamada na sala ${roomId}`);
+    socket.join(roomId);
+
+    // Notifica a outra parte que a chamada foi aceita
+    socket.to(roomId).emit("callAccepted", { userId });
+  });
+
+  socket.on("declineCall", ({ roomId, from }: { roomId: string; from: string }) => {
+    console.log(`Usuário recusou a chamada na sala ${roomId}`);
+    const callerSocketId = connectedUsers[from];
+    if (callerSocketId) {
+      io.to(callerSocketId).emit("callDeclined", { message: "Chamada recusada." });
+    }
+  });
+
+  // Limpa o registro ao desconectar
+  socket.on("disconnect", () => {
+    const userId = Object.keys(connectedUsers).find((key) => connectedUsers[key] === socket.id);
+    if (userId) {
+      delete connectedUsers[userId];
+      console.log(`Usuário ${userId} desconectado.`);
+    }
+  });
+
+});
+
+server.listen("8080", () => {
+  console.log("API funcionando na porta 8080");
+})
 
 /**********************************************STRIPE***************************************************************/
 route.post("/webhook", express.raw({ type: "application/json" }), async (req, res) => {
@@ -225,7 +225,7 @@ route.post("/webhook", express.raw({ type: "application/json" }), async (req, re
   switch (event.type) {
     case "checkout.session.completed":
       try {
-        
+
         const session = event.data.object
 
         await confirmPayment(session);
@@ -247,7 +247,7 @@ route.post("/webhook", express.raw({ type: "application/json" }), async (req, re
 app.use(express.json())
 
 //post de clientes
-route.post("/cliente", express.json(),async (req, res) => {
+route.post("/cliente", express.json(), async (req, res) => {
 
   const contentType = req.header("content-type");
 
@@ -269,7 +269,7 @@ route.post("/cliente", express.json(),async (req, res) => {
 });
 
 //post de Preferências de Usuário
-route.post("/cliente/preferencias",express.json(), async (req, res) => {
+route.post("/cliente/preferencias", express.json(), async (req, res) => {
 
   const contentType = req.header("content-type");
 
@@ -285,7 +285,7 @@ route.post("/cliente/preferencias",express.json(), async (req, res) => {
 });
 
 //login de usuário
-route.post("/login/usuario",express.json(), async (req, res) => {
+route.post("/login/usuario", express.json(), async (req, res) => {
 
   let email = req.body.email;
   let senha = req.body.senha;
@@ -344,7 +344,7 @@ route.get("/usuario/sexo/:id", async (req, res) => {
 /****************************************************PSICÓLOGO****************************************************/
 
 //post de psicólogos
-route.post("/psicologo", express.json(),async (req, res) => {
+route.post("/psicologo", express.json(), async (req, res) => {
 
   const contentType = req.header("Content-Type");
 
@@ -371,7 +371,7 @@ route.post("/psicologo", express.json(),async (req, res) => {
   res.json(newProfesional);
 });
 
-route.post("/profissional/login",express.json(), async (req, res) => {
+route.post("/profissional/login", express.json(), async (req, res) => {
 
   let email = req.body.email;
   let senha = req.body.senha;
@@ -401,7 +401,7 @@ route.get("/profissionais", verifyJWT, async (req, res) => {
 });
 
 /****************************************************DISPONIBILIDADE****************************************************/
-route.post("/disponibilidade", express.json(),async (req, res) => {
+route.post("/disponibilidade", express.json(), async (req, res) => {
 
   const contentType = req.header("content-type");
 
@@ -422,7 +422,7 @@ route.post("/disponibilidade", express.json(),async (req, res) => {
   res.json(rsDisponilidade);
 });
 
-route.post("/disponibilidade/psicologo/:id",express.json(), async (req, res) => {
+route.post("/disponibilidade/psicologo/:id", express.json(), async (req, res) => {
 
   let id = Number(req.params.id);
 
@@ -515,7 +515,7 @@ route.put("/psicologo/disponibilidade", verifyJWT, async (req, res) => {
 });
 
 route.delete("/disponibilidade/psicologo/:id", verifyJWT, async (req, res) => {
-  
+
   let contentType = req.header("Content-Type");
   let professionalId = Number(req.params.id);
   let weekDay = req.body.dia_semana;
@@ -554,60 +554,60 @@ route.get("/preferencias/:id", async (req, res) => {
 /****************************************************PAGAMENTO****************************************************/
 route.post('/create-checkout-session', verifyJWT, express.json(), async (req, res) => {
 
-    let idConsulta = req.body.id_consulta
-    
-    let idCliente = req.body.id_cliente
+  let idConsulta = req.body.id_consulta
 
-   const result = await createPaymentIntent(idConsulta, idCliente)
-  
-    res.status(result.status_code)
-    res.json(result)
+  let idCliente = req.body.id_cliente
+
+  const result = await createPaymentIntent(idConsulta, idCliente)
+
+  res.status(result.status_code)
+  res.json(result)
 
 })
 
 /*********************************Avaliação************************************/
-route.post('/avaliacao',express.json(), async (req, res) => {
+route.post('/avaliacao', express.json(), async (req, res) => {
 
-    let contentType = req.header('content-type')
+  let contentType = req.header('content-type')
 
-    let inputData: TAssessment= {
-        texto: req.body.texto,
-        avaliacao: req.body.avaliacao,
-        id_psicologo: req.body.id_psicologo,
-        id_cliente: req.body.id_cliente,
-    }
+  let inputData: TAssessment = {
+    texto: req.body.texto,
+    avaliacao: req.body.avaliacao,
+    id_psicologo: req.body.id_psicologo,
+    id_cliente: req.body.id_cliente,
+  }
 
-    let assessment = await setCadastrarAvaliacao( inputData, contentType)
+  let assessment = await setCadastrarAvaliacao(inputData, contentType)
 
-    res.status(assessment.status_code)
-    res.json(assessment)
+  res.status(assessment.status_code)
+  res.json(assessment)
 })
 
 
 /*******************************Consulta*************************/
-route.post('/consulta', express.json() ,async (req, res) => {
+route.post('/consulta', express.json(), async (req, res) => {
 
-    let contentType = req.header('content-type')
+  let contentType = req.header('content-type')
 
-   let idProfessional = req.body.id_psicologo
+  let idProfessional = req.body.id_psicologo
 
-   let idClient = req.body.id_cliente
+  let idClient = req.body.id_cliente
 
-   let appointmentDate = req.body.data_consulta
+  let appointmentDate = req.body.data_consulta
 
-   let newAppointment = await setCadastrarConsulta(idProfessional, idClient, appointmentDate, contentType)
+  let newAppointment = await setCadastrarConsulta(idProfessional, idClient, appointmentDate, contentType)
 
-   res.status(newAppointment.status_code)
-   res.json(newAppointment)
+  res.status(newAppointment.status_code)
+  res.json(newAppointment)
 })
 
 route.get('/consultas/psicologo/:id_psicologo', verifyJWTRole, async (req, res) => {
-  
+
   let idProfessional = Number(req.params.id_psicologo)
 
   if (!idProfessional) {
     return res.status(400).json({ error: 'O ID do psicólogo é obrigatório.' });
-}
+  }
 
   let consultas = await getBuscarConsultasPorProfissional(idProfessional)
 
@@ -616,42 +616,38 @@ route.get('/consultas/psicologo/:id_psicologo', verifyJWTRole, async (req, res) 
 })
 
 route.get('/consulta/:id', verifyJWT, async (req, res) => {
-    let id = Number(req.params.id)
+  let id = Number(req.params.id)
 
-    let appointment = await getBuscarConsulta(id)
+  let appointment = await getBuscarConsulta(id)
 
-    res.status(appointment.status_code)
-    res.json(appointment)
+  res.status(appointment.status_code)
+  res.json(appointment)
 })
 
 route.delete('/consulta/:id', verifyJWT, async (req, res) => {
-    let id = Number(req.params.id)  
+  let id = Number(req.params.id)
 
-    let deleteAppointment = await setDeletarConsulta(id)
+  let deleteAppointment = await setDeletarConsulta(id)
 
-    res.status(deleteAppointment.status_code)
-    res.json(deleteAppointment)
+  res.status(deleteAppointment.status_code)
+  res.json(deleteAppointment)
 })
 
 route.put('/consulta/:id', verifyJWT, async (req, res) => {
-    const id = Number(req.params.id)
-    const contentType = req.header('content-type')
-    const data = req.body.data_consulta
+  const id = Number(req.params.id)
+  const contentType = req.header('content-type')
+  const data = req.body.data_consulta
 
-    let updateAvaibility = await setAtualizarConsulta(id, data, contentType)
+  let updateAvaibility = await setAtualizarConsulta(id, data, contentType)
 
-    res.status(updateAvaibility.status_code)
-    res.json(updateAvaibility)
+  res.status(updateAvaibility.status_code)
+  res.json(updateAvaibility)
 })
 
 route.get('/consulta/usuario/:id', verifyJWT, async (req, res) => {
-  const contentType = req.header('content-type')
-  
+
   let userId = Number(req.params.id)
-
-  let user = req.body.usuario
-
-  let appointment = await getAllAppointmentByUserId(user, userId, contentType)
+  let appointment = await getAllAppointmentByUserId(userId)
 
   res.status(appointment.status_code)
   res.json(appointment)
