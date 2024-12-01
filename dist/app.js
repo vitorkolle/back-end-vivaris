@@ -30,6 +30,7 @@ const controller_pagamento_1 = require("./src/controller/pagamento/controller_pa
 const stripe_1 = __importDefault(require("stripe"));
 const config_1 = require("./module/config");
 const cors_1 = __importDefault(require("cors"));
+const controller_emocoes_1 = require("./src/controller/emocoes/controller_emocoes");
 const corsOptions = {
     origin: ['http://localhost:5173', 'http://127.0.0.1:5173', '*'],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Métodos permitidos
@@ -371,7 +372,7 @@ route.post('/create-checkout-session', verifyJWT, express_1.default.json(), (req
     res.json(result);
 }));
 /*********************************Avaliação************************************/
-route.post('/avaliacao', express_1.default.json(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+route.post('/avaliacao', verifyJWT, express_1.default.json(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let contentType = req.header('content-type');
     let inputData = {
         texto: req.body.texto,
@@ -384,7 +385,7 @@ route.post('/avaliacao', express_1.default.json(), (req, res) => __awaiter(void 
     res.json(assessment);
 }));
 /*******************************Consulta*************************/
-route.post('/consulta', express_1.default.json(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+route.post('/consulta', express_1.default.json(), verifyJWT, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let contentType = req.header('content-type');
     let idProfessional = req.body.id_psicologo;
     let idClient = req.body.id_cliente;
@@ -393,7 +394,7 @@ route.post('/consulta', express_1.default.json(), (req, res) => __awaiter(void 0
     res.status(newAppointment.status_code);
     res.json(newAppointment);
 }));
-route.get('/consultas/psicologo/:id_psicologo', verifyJWTRole, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+route.get('/consultas/psicologo/:id_psicologo', verifyJWT, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let idProfessional = Number(req.params.id_psicologo);
     if (!idProfessional) {
         return res.status(400).json({ error: 'O ID do psicólogo é obrigatório.' });
@@ -414,7 +415,7 @@ route.delete('/consulta/:id', verifyJWT, (req, res) => __awaiter(void 0, void 0,
     res.status(deleteAppointment.status_code);
     res.json(deleteAppointment);
 }));
-route.put('/consulta/:id', verifyJWT, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+route.put('/consulta/:id', express_1.default.json(), verifyJWT, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const id = Number(req.params.id);
     const contentType = req.header('content-type');
     const data = req.body.data_consulta;
@@ -429,4 +430,18 @@ route.get('/consulta/usuario/:id', verifyJWT, (req, res) => __awaiter(void 0, vo
     let appointment = yield (0, controller_consulta_1.getAllAppointmentByUserId)(user, userId, contentType);
     res.status(appointment.status_code);
     res.json(appointment);
+}));
+/*******************************Emoção*************************/
+// ! caso a emoção tenha nopme composto, ela deve ser mandada com a primeira palavra em maiúsculo e com underscore para a outra
+// * ex: "Muito_feliz"
+route.post('/emocao', express_1.default.json(), verifyJWT, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    let contentType = req.header('content-type');
+    const inputData = {
+        emocao: req.body.emocao,
+        data: req.body.data,
+        id_cliente: req.body.id_cliente
+    };
+    let emotion = yield (0, controller_emocoes_1.setCriarEmocao)(inputData, contentType);
+    res.status(emotion.status_code);
+    res.json(emotion);
 }));

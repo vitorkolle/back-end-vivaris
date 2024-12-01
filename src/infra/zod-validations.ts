@@ -116,3 +116,13 @@ export async function isValidUser(user:string) {
 
     return testUser.success
 }
+
+export async function isValidMood(mood:string) {
+    const moodArray = ["Muito_triste", "Triste", "Neutro", "Feliz", "Muito_feliz"] as const
+
+    const moodSchema = z.enum(moodArray)
+
+    const testMood = moodSchema.safeParse(mood)
+
+    return testMood.success
+}

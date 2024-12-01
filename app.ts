@@ -62,6 +62,8 @@ import { ERROR_INVALID_AUTH_TOKEN } from "./module/config";
 
 
 import cors from "cors";
+import { TEmotion } from './src/domain/entities/emotion-entity';
+import { setCriarEmocao } from './src/controller/emocoes/controller_emocoes';
 
 const corsOptions = {
   origin: ['http://localhost:5173', 'http://127.0.0.1:5173', '*'],
@@ -566,7 +568,7 @@ route.post('/create-checkout-session', verifyJWT, express.json(), async (req, re
 })
 
 /*********************************Avaliação************************************/
-route.post('/avaliacao',express.json(), async (req, res) => {
+route.post('/avaliacao', verifyJWT, express.json(), async (req, res) => {
 
     let contentType = req.header('content-type')
 
@@ -585,7 +587,7 @@ route.post('/avaliacao',express.json(), async (req, res) => {
 
 
 /*******************************Consulta*************************/
-route.post('/consulta', express.json() ,async (req, res) => {
+route.post('/consulta', express.json(), verifyJWT, async (req, res) => {
 
     let contentType = req.header('content-type')
 
@@ -601,7 +603,7 @@ route.post('/consulta', express.json() ,async (req, res) => {
    res.json(newAppointment)
 })
 
-route.get('/consultas/psicologo/:id_psicologo', verifyJWTRole, async (req, res) => {
+route.get('/consultas/psicologo/:id_psicologo', verifyJWT, async (req, res) => {
   
   let idProfessional = Number(req.params.id_psicologo)
 
@@ -633,7 +635,7 @@ route.delete('/consulta/:id', verifyJWT, async (req, res) => {
     res.json(deleteAppointment)
 })
 
-route.put('/consulta/:id', verifyJWT, async (req, res) => {
+route.put('/consulta/:id', express.json(),verifyJWT, async (req, res) => {
     const id = Number(req.params.id)
     const contentType = req.header('content-type')
     const data = req.body.data_consulta
@@ -655,5 +657,23 @@ route.get('/consulta/usuario/:id', verifyJWT, async (req, res) => {
 
   res.status(appointment.status_code)
   res.json(appointment)
+})
+
+/*******************************Emoção*************************/
+// ! caso a emoção tenha nopme composto, ela deve ser mandada com a primeira palavra em maiúsculo e com underscore para a outra
+// * ex: "Muito_feliz"
+route.post('/emocao', express.json(), verifyJWT, async (req, res) => {
+    let contentType = req.header('content-type')
+
+    const inputData: TEmotion = {
+        emocao: req.body.emocao,
+        data: req.body.data,
+        id_cliente: req.body.id_cliente
+    }
+
+    let emotion = await setCriarEmocao(inputData, contentType)
+
+    res.status(emotion.status_code)
+    res.json(emotion)
 })
 
