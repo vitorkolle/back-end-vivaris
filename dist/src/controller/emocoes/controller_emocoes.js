@@ -10,6 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.setCriarEmocao = setCriarEmocao;
+exports.getBuscarEmocao = getBuscarEmocao;
 const config_1 = require("../../../module/config");
 const zod_validations_1 = require("../../infra/zod-validations");
 const usuario_1 = require("../../model/DAO/cliente/usuario");
@@ -69,5 +70,20 @@ function setCriarEmocao(emocao, contentType) {
             console.error("Erro ao criar nova emocao:", error);
             throw new Error("Não foi possível criar a emocao");
         }
+    });
+}
+function getBuscarEmocao(id) {
+    return __awaiter(this, void 0, void 0, function* () {
+        if (!id || !(0, zod_validations_1.isValidId)(id)) {
+            return config_1.ERROR_INVALID_ID;
+        }
+        let emotion = yield (0, emocoes_1.buscarEmocao)(id);
+        if (!emotion) {
+            return config_1.ERROR_NOT_FOUND;
+        }
+        return {
+            status_code: 200,
+            data: emotion
+        };
     });
 }

@@ -432,7 +432,7 @@ route.get('/consulta/usuario/:id', verifyJWT, (req, res) => __awaiter(void 0, vo
     res.json(appointment);
 }));
 /*******************************Emoção*************************/
-// ! caso a emoção tenha nopme composto, ela deve ser mandada com a primeira palavra em maiúsculo e com underscore para a outra
+// ! caso a emoção tenha nome composto, ela deve ser enviada com a primeira palavra em maiúsculo e com underscore para a outra palavra
 // * ex: "Muito_feliz"
 route.post('/emocao', express_1.default.json(), verifyJWT, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let contentType = req.header('content-type');
@@ -442,6 +442,12 @@ route.post('/emocao', express_1.default.json(), verifyJWT, (req, res) => __await
         id_cliente: req.body.id_cliente
     };
     let emotion = yield (0, controller_emocoes_1.setCriarEmocao)(inputData, contentType);
+    res.status(emotion.status_code);
+    res.json(emotion);
+}));
+route.get('/emocao/:id', verifyJWT, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    let id = Number(req.params.id);
+    let emotion = yield (0, controller_emocoes_1.getBuscarEmocao)(id);
     res.status(emotion.status_code);
     res.json(emotion);
 }));

@@ -66,3 +66,35 @@ export async function validarEmocao(emotionInput : TEmotion){
     }
     
 }
+
+export async function buscarEmocao(id:number) {
+    try {
+        let emotion = await prisma.tbl_diario.findUnique({
+            where: {
+                id: id
+            },
+            select: {
+                id: true,
+                data_diario: true,
+                anotacoes: true,
+                tbl_clientes: true,
+                tbl_humor: true
+            }
+        })
+
+        if(!emotion){
+            return false
+        }
+
+        return{
+            id: emotion.id,
+            data_diario: emotion.data_diario.toISOString().split('T')[0],
+            anotacoes: emotion.anotacoes,
+            humor: emotion.tbl_humor?.humor,
+            cliente: emotion.tbl_clientes
+        }
+    } catch (error) {
+        console.error("Erro ao buscar emocao:", error);
+        throw new Error("Erro ao buscar emocao");
+    }
+}

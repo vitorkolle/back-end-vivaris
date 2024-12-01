@@ -63,7 +63,7 @@ import { ERROR_INVALID_AUTH_TOKEN } from "./module/config";
 
 import cors from "cors";
 import { TEmotion } from './src/domain/entities/emotion-entity';
-import { setCriarEmocao } from './src/controller/emocoes/controller_emocoes';
+import { getBuscarEmocao, setCriarEmocao } from './src/controller/emocoes/controller_emocoes';
 
 const corsOptions = {
   origin: ['http://localhost:5173', 'http://127.0.0.1:5173', '*'],
@@ -660,7 +660,7 @@ route.get('/consulta/usuario/:id', verifyJWT, async (req, res) => {
 })
 
 /*******************************Emoção*************************/
-// ! caso a emoção tenha nopme composto, ela deve ser mandada com a primeira palavra em maiúsculo e com underscore para a outra
+// ! caso a emoção tenha nome composto, ela deve ser enviada com a primeira palavra em maiúsculo e com underscore para a outra palavra
 // * ex: "Muito_feliz"
 route.post('/emocao', express.json(), verifyJWT, async (req, res) => {
     let contentType = req.header('content-type')
@@ -672,6 +672,15 @@ route.post('/emocao', express.json(), verifyJWT, async (req, res) => {
     }
 
     let emotion = await setCriarEmocao(inputData, contentType)
+
+    res.status(emotion.status_code)
+    res.json(emotion)
+})
+
+route.get('/emocao/:id', verifyJWT, async (req, res) => {
+    let id = Number(req.params.id)
+
+    let emotion = await getBuscarEmocao(id)
 
     res.status(emotion.status_code)
     res.json(emotion)

@@ -24,3 +24,31 @@ export declare function setCriarEmocao(emocao: TEmotion, contentType: string | u
         } | null;
     };
 }>;
+export declare function getBuscarEmocao(id: number): Promise<{
+    status: boolean;
+    status_code: number;
+    message: string;
+} | {
+    status_code: number;
+    data: {
+        tbl_clientes: {
+            id: number;
+            nome: string;
+            email: string;
+            data_nascimento: Date;
+            cpf: string;
+            senha: string;
+            foto_perfil: string | null;
+            telefone: string;
+            link_instagram: string | null;
+            id_sexo: number | null;
+        } | null;
+        id: number;
+        tbl_humor: {
+            id: number;
+            humor: import(".prisma/client").$Enums.tbl_humor_humor | null;
+        } | null;
+        data_diario: Date;
+        anotacoes: string | null;
+    };
+}>;

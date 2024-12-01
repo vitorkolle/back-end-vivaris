@@ -1,8 +1,8 @@
-import { ERROR_ALREADY_EXISTS_EMOTION, ERROR_ALREADY_EXISTS_PREFRENCE, ERROR_CONTENT_TYPE, ERROR_NOT_CREATED, ERROR_NOT_FOUND_CLIENT, ERROR_REQUIRED_FIELDS } from "../../../module/config";
+import { ERROR_ALREADY_EXISTS_EMOTION, ERROR_ALREADY_EXISTS_PREFRENCE, ERROR_CONTENT_TYPE, ERROR_INVALID_ID, ERROR_NOT_CREATED, ERROR_NOT_FOUND, ERROR_NOT_FOUND_CLIENT, ERROR_REQUIRED_FIELDS } from "../../../module/config";
 import { TEmotion } from "../../domain/entities/emotion-entity";
 import { isValidId, isValidMood } from "../../infra/zod-validations";
 import { buscarCliente } from "../../model/DAO/cliente/usuario";
-import { createEmocao, validarEmocao } from "../../model/DAO/emocoes/emocoes";
+import { buscarEmocao, createEmocao, validarEmocao } from "../../model/DAO/emocoes/emocoes";
 
 export async function setCriarEmocao(emocao: TEmotion, contentType : string | undefined) {
     try {
@@ -74,5 +74,22 @@ export async function setCriarEmocao(emocao: TEmotion, contentType : string | un
     } catch (error) {
         console.error("Erro ao criar nova emocao:", error);
         throw new Error("Não foi possível criar a emocao");
+    }
+}
+
+export async function getBuscarEmocao(id:number) {
+    if (!id || !isValidId(id)) {
+        return ERROR_INVALID_ID
+    }
+
+    let emotion = await buscarEmocao(id)
+
+    if (!emotion) {
+        return ERROR_NOT_FOUND
+    }
+
+    return{
+        status_code: 200,
+        data: emotion
     }
 }
