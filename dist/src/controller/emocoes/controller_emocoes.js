@@ -52,6 +52,10 @@ function setCriarEmocao(emocao, contentType) {
                 data: transformarData(String(emocao.data)),
                 id_cliente: emocao.id_cliente
             };
+            let validateEmotion = yield (0, emocoes_1.validarEmocao)(inputEmocao);
+            if (validateEmotion) {
+                return config_1.ERROR_ALREADY_EXISTS_EMOTION;
+            }
             let emotion = yield (0, emocoes_1.createEmocao)(inputEmocao);
             if (!emotion) {
                 return config_1.ERROR_NOT_CREATED;

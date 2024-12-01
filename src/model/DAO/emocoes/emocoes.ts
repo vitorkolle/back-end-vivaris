@@ -45,3 +45,24 @@ export async function createEmocao(emotionInput : TEmotion){
         throw new Error("Não foi possível criar a emocao");
     }
 }
+
+export async function validarEmocao(emotionInput : TEmotion){
+    try {
+        let mood = await prisma.tbl_diario.findFirst({
+            where : {
+                data_diario : emotionInput.data,
+                id_cliente : emotionInput.id_cliente
+            }
+        })
+
+        if(!mood){
+            return false
+        }
+
+        return true
+    } catch (error) {
+        console.error("Erro ao validar emocao:", error)
+        throw new Error("Erro ao validar emocao")
+    }
+    
+}

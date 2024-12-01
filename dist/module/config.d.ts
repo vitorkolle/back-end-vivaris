@@ -44,6 +44,11 @@ export declare const ERROR_ALREADY_EXISTS_PREFRENCE: {
     status_code: number;
     message: string;
 };
+export declare const ERROR_ALREADY_EXISTS_EMOTION: {
+    status: boolean;
+    status_code: number;
+    message: string;
+};
 export declare const ERROR_INTERNAL_SERVER_DB: {
     status: boolean;
     status_code: number;

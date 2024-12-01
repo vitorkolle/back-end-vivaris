@@ -8,6 +8,7 @@ export const ERROR_NOT_FOUND_CLIENT = {status: false, status_code: 404, message:
 export const ERROR_NOT_FOUND_PREFERENCE = {status: false, status_code: 404, message: 'Não foram encontradas preferências na requisição!!'}
 export const ERROR_NOT_FOUND_AVAILBILITY = {status: false, status_code: 404, message: 'Não foram encontradas disponibilidades na requisição!!'}
 export const ERROR_ALREADY_EXISTS_PREFRENCE = {status: false, status_code: 404, message: 'As preferências da requisição já estão escolhidas!!'}
+export const ERROR_ALREADY_EXISTS_EMOTION = {status: false, status_code: 400, message: 'A emoção já existe!!'}
 export const ERROR_INTERNAL_SERVER_DB = {status: false, status_code: 500, message: 'Não foi possível processar a requisição devido à um problema na comunicação com o Banco de Dados. Contate o Administrador da API!!'}
 export const ERROR_CONTENT_TYPE = {status: false, status_code: 415, message: 'O content-type encaminhado na requisição não é permitido pelo servidor da API. Deve-se utilizar somente application/json!!!' }
 export const ERROR_INTERNAL_SERVER = {status: false, status_code:500, message: 'Não foi possível processar a requisição devido à um problema na camada de negócio/controle do projeto. Contate o administrador da API!!'}

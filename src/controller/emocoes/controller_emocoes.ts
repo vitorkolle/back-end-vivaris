@@ -1,8 +1,8 @@
-import { ERROR_CONTENT_TYPE, ERROR_NOT_CREATED, ERROR_NOT_FOUND_CLIENT, ERROR_REQUIRED_FIELDS } from "../../../module/config";
+import { ERROR_ALREADY_EXISTS_EMOTION, ERROR_ALREADY_EXISTS_PREFRENCE, ERROR_CONTENT_TYPE, ERROR_NOT_CREATED, ERROR_NOT_FOUND_CLIENT, ERROR_REQUIRED_FIELDS } from "../../../module/config";
 import { TEmotion } from "../../domain/entities/emotion-entity";
 import { isValidId, isValidMood } from "../../infra/zod-validations";
 import { buscarCliente } from "../../model/DAO/cliente/usuario";
-import { createEmocao } from "../../model/DAO/emocoes/emocoes";
+import { createEmocao, validarEmocao } from "../../model/DAO/emocoes/emocoes";
 
 export async function setCriarEmocao(emocao: TEmotion, contentType : string | undefined) {
     try {
@@ -53,6 +53,12 @@ export async function setCriarEmocao(emocao: TEmotion, contentType : string | un
             emocao: emocao.emocao,
             data: transformarData(String(emocao.data)),
             id_cliente: emocao.id_cliente
+        }
+
+        let validateEmotion = await validarEmocao(inputEmocao)
+
+        if (validateEmotion) {
+            return ERROR_ALREADY_EXISTS_EMOTION
         }
 
         let emotion = await createEmocao(inputEmocao)

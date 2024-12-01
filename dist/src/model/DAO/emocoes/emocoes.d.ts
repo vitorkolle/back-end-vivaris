@@ -17,3 +17,4 @@ export declare function createEmocao(emotionInput: TEmotion): Promise<false | {
         id_sexo: number | null;
     } | null;
 }>;
+export declare function validarEmocao(emotionInput: TEmotion): Promise<boolean>;

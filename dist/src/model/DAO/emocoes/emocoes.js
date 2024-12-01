@@ -10,6 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createEmocao = createEmocao;
+exports.validarEmocao = validarEmocao;
 const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
 function createEmocao(emotionInput) {
@@ -50,6 +51,26 @@ function createEmocao(emotionInput) {
         catch (error) {
             console.error("Erro ao criar nova emocao:", error);
             throw new Error("Não foi possível criar a emocao");
+        }
+    });
+}
+function validarEmocao(emotionInput) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            let mood = yield prisma.tbl_diario.findFirst({
+                where: {
+                    data_diario: emotionInput.data,
+                    id_cliente: emotionInput.id_cliente
+                }
+            });
+            if (!mood) {
+                return false;
+            }
+            return true;
+        }
+        catch (error) {
+            console.error("Erro ao validar emocao:", error);
+            throw new Error("Erro ao validar emocao");
         }
     });
 }
