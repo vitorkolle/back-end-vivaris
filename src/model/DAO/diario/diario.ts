@@ -33,3 +33,19 @@ export async function updateDiario(diaryInput : TDiary, diaryId : number){
         throw new Error("Erro ao atualizar diario");
     }
 }
+
+export async function deleteDiario(id : number) {
+    try {
+        let sql = `CALL deleteDiario(${id})`
+        let diary = await prisma.$queryRawUnsafe(sql)
+
+        if (!diary) {
+            return false
+        }
+
+        return true
+    } catch (error) {
+        console.error("Erro ao deletar diario:", error)
+        throw new Error("Erro ao deletar diario")
+    }
+}

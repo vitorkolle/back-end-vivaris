@@ -27,3 +27,11 @@ export declare function setAtualizarDiario(diarioInput: TDiary, id: number, cont
         } | null;
     };
 }>;
+export declare function setDeletarDiario(id: number): Promise<{
+    status: boolean;
+    status_code: number;
+    message: string;
+} | {
+    status_code: number;
+    message: string;
+}>;

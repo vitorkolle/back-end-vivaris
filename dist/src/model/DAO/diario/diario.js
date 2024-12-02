@@ -10,6 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.updateDiario = updateDiario;
+exports.deleteDiario = deleteDiario;
 const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
 function updateDiario(diaryInput, diaryId) {
@@ -41,6 +42,22 @@ function updateDiario(diaryInput, diaryId) {
         catch (error) {
             console.error("Erro ao atualizar diario:", error);
             throw new Error("Erro ao atualizar diario");
+        }
+    });
+}
+function deleteDiario(id) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            let sql = `CALL deleteDiario(${id})`;
+            let diary = yield prisma.$queryRawUnsafe(sql);
+            if (!diary) {
+                return false;
+            }
+            return true;
+        }
+        catch (error) {
+            console.error("Erro ao deletar diario:", error);
+            throw new Error("Erro ao deletar diario");
         }
     });
 }

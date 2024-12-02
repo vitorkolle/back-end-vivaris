@@ -20,3 +20,4 @@ export declare function updateDiario(diaryInput: TDiary, diaryId: number): Promi
         humor: import(".prisma/client").$Enums.tbl_humor_humor | null;
     } | null;
 }>;
+export declare function deleteDiario(id: number): Promise<boolean>;

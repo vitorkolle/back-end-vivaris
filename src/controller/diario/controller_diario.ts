@@ -1,8 +1,8 @@
-import { ERROR_CONTENT_TYPE, ERROR_NOT_FOUND_CLIENT, ERROR_NOT_FOUND_EMOTION, ERROR_NOT_UPDATED, ERROR_REQUIRED_FIELDS } from "../../../module/config";
+import { ERROR_CONTENT_TYPE, ERROR_INVALID_ID, ERROR_NOT_DELETED, ERROR_NOT_FOUND_CLIENT, ERROR_NOT_FOUND_EMOTION, ERROR_NOT_UPDATED, ERROR_REQUIRED_FIELDS, SUCCESS_DELETED_ITEM } from "../../../module/config";
 import { TDiary } from "../../domain/entities/diary-entity";
 import { isValidId } from "../../infra/zod-validations";
 import { buscarCliente } from "../../model/DAO/cliente/usuario";
-import { updateDiario } from "../../model/DAO/diario/diario";
+import { deleteDiario, updateDiario } from "../../model/DAO/diario/diario";
 import { getBuscarEmocao } from "../emocoes/controller_emocoes";
 import { getBuscarPreferencia } from "../preferencia/controller_preferencia";
 
@@ -79,5 +79,27 @@ export async function setAtualizarDiario(diarioInput : TDiary, id : number, cont
     } catch (error) {
         console.error("Erro ao atualizar diario:", error);
         throw new Error("Erro ao atualizar diario");
+    }
+}
+
+export async function setDeletarDiario(id : number) {
+    try {
+        if (!id || !isValidId(id)) {
+            return ERROR_INVALID_ID
+        }
+
+        let deleteDiary = await deleteDiario(id)
+
+        if (!deleteDiary) {
+            return ERROR_NOT_DELETED
+        }
+
+        return{
+            status_code: 200,
+            message: SUCCESS_DELETED_ITEM.message
+        }
+    } catch (error) {
+        console.error("Erro ao deletar diario:", error);
+        throw new Error("Erro ao deletar diario");
     }
 }
