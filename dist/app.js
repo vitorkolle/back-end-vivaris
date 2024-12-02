@@ -31,6 +31,7 @@ const stripe_1 = __importDefault(require("stripe"));
 const config_1 = require("./module/config");
 const cors_1 = __importDefault(require("cors"));
 const controller_emocoes_1 = require("./src/controller/emocoes/controller_emocoes");
+const controller_diario_1 = require("./src/controller/diario/controller_diario");
 const corsOptions = {
     origin: ['http://localhost:5173', 'http://127.0.0.1:5173', '*'],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Métodos permitidos
@@ -462,4 +463,18 @@ route.put('/emocao/:id', express_1.default.json(), verifyJWT, (req, res) => __aw
     let updateEmotion = yield (0, controller_emocoes_1.setAtualizarEmocao)(inputEmotion, id, contentType);
     res.status(updateEmotion.status_code);
     res.json(updateEmotion);
+}));
+/************************************DIÁRIO************************************/
+route.put('/diario/:id', express_1.default.json(), verifyJWT, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const id = Number(req.params.id);
+    const contentType = req.header('content-type');
+    const inputDiary = {
+        anotacoes: req.body.anotacoes,
+        data_diario: req.body.data_diario,
+        id_cliente: req.body.id_cliente,
+        id_humor: req.body.id_humor
+    };
+    let updateDiary = yield (0, controller_diario_1.setAtualizarDiario)(inputDiary, id, contentType);
+    res.status(updateDiary.status_code);
+    res.json(updateDiary);
 }));

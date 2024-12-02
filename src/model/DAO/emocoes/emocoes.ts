@@ -152,3 +152,5 @@ export async function updateEmocao(emotionInput:TEmotion, diaryId:number){
         throw new Error("Erro ao atualizar emocao");
     }
 }
+
+

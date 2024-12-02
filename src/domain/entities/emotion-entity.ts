@@ -1,4 +1,4 @@
-type TMood = "Muito_triste" | "Triste" | "Neutro" | "Feliz" | "Muito_feliz"
+export type TMood = "Muito_triste" | "Triste" | "Neutro" | "Feliz" | "Muito_feliz"
 
 export type TEmotion = {
     emocao: TMood,

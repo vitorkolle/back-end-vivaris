@@ -64,6 +64,8 @@ import { ERROR_INVALID_AUTH_TOKEN } from "./module/config";
 import cors from "cors";
 import { TEmotion } from './src/domain/entities/emotion-entity';
 import { getBuscarEmocao, setAtualizarEmocao, setCriarEmocao } from './src/controller/emocoes/controller_emocoes';
+import { TDiary } from './src/domain/entities/diary-entity';
+import { setAtualizarDiario } from './src/controller/diario/controller_diario';
 
 const corsOptions = {
   origin: ['http://localhost:5173', 'http://127.0.0.1:5173', '*'],
@@ -701,3 +703,21 @@ route.put('/emocao/:id', express.json(), verifyJWT, async (req, res) => {
     res.json(updateEmotion)
 })
 
+/************************************DIÁRIO************************************/
+route.put('/diario/:id', express.json(), verifyJWT, async (req, res) => {
+    const id = Number(req.params.id)
+
+    const contentType = req.header('content-type')
+    
+    const inputDiary : TDiary = {
+        anotacoes: req.body.anotacoes,
+        data_diario: req.body.data_diario,
+        id_cliente: req.body.id_cliente,
+        id_humor: req.body.id_humor
+    }
+
+    let updateDiary = await setAtualizarDiario(inputDiary, id, contentType)
+
+    res.status(updateDiary.status_code)
+    res.json(updateDiary)
+})
