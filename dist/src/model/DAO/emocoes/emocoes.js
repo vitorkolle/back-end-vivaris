@@ -11,7 +11,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createEmocao = createEmocao;
 exports.validarEmocao = validarEmocao;
-exports.buscarEmocao = buscarEmocao;
+exports.selectEmocao = selectEmocao;
+exports.updateEmocao = updateEmocao;
 const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
 function createEmocao(emotionInput) {
@@ -62,8 +63,16 @@ function validarEmocao(emotionInput) {
                 where: {
                     data_diario: emotionInput.data,
                     id_cliente: emotionInput.id_cliente
+                },
+                select: {
+                    id: true,
+                    data_diario: true,
+                    anotacoes: true,
+                    tbl_clientes: true,
+                    tbl_humor: true
                 }
             });
+            console.log(mood);
             if (!mood) {
                 return false;
             }
@@ -75,8 +84,9 @@ function validarEmocao(emotionInput) {
         }
     });
 }
-function buscarEmocao(id) {
+function selectEmocao(id) {
     return __awaiter(this, void 0, void 0, function* () {
+        var _a;
         try {
             let emotion = yield prisma.tbl_diario.findUnique({
                 where: {
@@ -93,11 +103,59 @@ function buscarEmocao(id) {
             if (!emotion) {
                 return false;
             }
-            return emotion;
+            return {
+                id: emotion.id,
+                data_diario: emotion.data_diario.toISOString().split('T')[0],
+                anotacoes: emotion.anotacoes,
+                humor: (_a = emotion.tbl_humor) === null || _a === void 0 ? void 0 : _a.humor,
+                cliente: emotion.tbl_clientes
+            };
         }
         catch (error) {
             console.error("Erro ao buscar emocao:", error);
             throw new Error("Erro ao buscar emocao");
+        }
+    });
+}
+function updateEmocao(emotionInput, diaryId) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            let mood = yield prisma.tbl_humor.findFirst({
+                where: {
+                    humor: emotionInput.emocao
+                }
+            });
+            if (!mood) {
+                return false;
+            }
+            let emotion = yield prisma.tbl_diario.update({
+                where: {
+                    id: diaryId
+                },
+                data: {
+                    id_humor: mood.id
+                },
+                select: {
+                    id: true,
+                    data_diario: true,
+                    anotacoes: true,
+                    tbl_clientes: true,
+                }
+            });
+            if (!emotion) {
+                return false;
+            }
+            return {
+                id: emotion.id,
+                data_diario: emotion.data_diario.toISOString().split('T')[0],
+                anotacoes: emotion.anotacoes,
+                humor: mood.humor,
+                cliente: emotion
+            };
+        }
+        catch (error) {
+            console.error("Erro ao atualizar emocao:", error);
+            throw new Error("Erro ao atualizar emocao");
         }
     });
 }

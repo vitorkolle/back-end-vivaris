@@ -451,3 +451,15 @@ route.get('/emocao/:id', verifyJWT, (req, res) => __awaiter(void 0, void 0, void
     res.status(emotion.status_code);
     res.json(emotion);
 }));
+route.put('/emocao/:id', express_1.default.json(), verifyJWT, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const id = Number(req.params.id);
+    const contentType = req.header('content-type');
+    const inputEmotion = {
+        emocao: req.body.emocao,
+        data: req.body.data,
+        id_cliente: req.body.id_cliente
+    };
+    let updateEmotion = yield (0, controller_emocoes_1.setAtualizarEmocao)(inputEmotion, id, contentType);
+    res.status(updateEmotion.status_code);
+    res.json(updateEmotion);
+}));

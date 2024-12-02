@@ -31,7 +31,11 @@ export declare function getBuscarEmocao(id: number): Promise<{
 } | {
     status_code: number;
     data: {
-        tbl_clientes: {
+        id: number;
+        data_diario: string;
+        anotacoes: string | null;
+        humor: import(".prisma/client").$Enums.tbl_humor_humor | null | undefined;
+        cliente: {
             id: number;
             nome: string;
             email: string;
@@ -43,12 +47,35 @@ export declare function getBuscarEmocao(id: number): Promise<{
             link_instagram: string | null;
             id_sexo: number | null;
         } | null;
+    };
+}>;
+export declare function setAtualizarEmocao(emotionInput: TEmotion, diaryId: number, contentType: string | undefined): Promise<{
+    status: boolean;
+    status_code: number;
+    message: string;
+} | {
+    status_code: number;
+    data: {
         id: number;
-        tbl_humor: {
-            id: number;
-            humor: import(".prisma/client").$Enums.tbl_humor_humor | null;
-        } | null;
-        data_diario: Date;
+        data_diario: string;
         anotacoes: string | null;
+        humor: import(".prisma/client").$Enums.tbl_humor_humor | null;
+        cliente: {
+            tbl_clientes: {
+                id: number;
+                nome: string;
+                email: string;
+                data_nascimento: Date;
+                cpf: string;
+                senha: string;
+                foto_perfil: string | null;
+                telefone: string;
+                link_instagram: string | null;
+                id_sexo: number | null;
+            } | null;
+            id: number;
+            data_diario: Date;
+            anotacoes: string | null;
+        };
     };
 }>;

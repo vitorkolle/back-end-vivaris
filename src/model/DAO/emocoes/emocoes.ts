@@ -52,9 +52,18 @@ export async function validarEmocao(emotionInput : TEmotion){
             where : {
                 data_diario : emotionInput.data,
                 id_cliente : emotionInput.id_cliente
+            },
+            select : {
+                id : true,
+                data_diario : true,
+                anotacoes : true,
+                tbl_clientes : true,
+                tbl_humor : true
             }
         })
 
+        console.log(mood);
+        
         if(!mood){
             return false
         }
@@ -67,7 +76,7 @@ export async function validarEmocao(emotionInput : TEmotion){
     
 }
 
-export async function buscarEmocao(id:number) {
+export async function selectEmocao(id:number) {
     try {
         let emotion = await prisma.tbl_diario.findUnique({
             where: {
@@ -96,5 +105,50 @@ export async function buscarEmocao(id:number) {
     } catch (error) {
         console.error("Erro ao buscar emocao:", error);
         throw new Error("Erro ao buscar emocao");
+    }
+}
+
+export async function updateEmocao(emotionInput:TEmotion, diaryId:number){ 
+    try {
+
+        let mood = await prisma.tbl_humor.findFirst({
+            where : {
+                humor : emotionInput.emocao
+            }
+        })
+
+        if (!mood) {
+            return false
+        }
+
+        let emotion = await prisma.tbl_diario.update({
+            where : {
+                id : diaryId
+            },
+            data : {
+                id_humor: mood.id
+            },
+            select:{
+                id : true,
+                data_diario : true,
+                anotacoes : true,
+                tbl_clientes : true,
+            }
+        })
+
+        if (!emotion) {
+            return false
+        }
+
+        return{
+            id: emotion.id,
+            data_diario: emotion.data_diario.toISOString().split('T')[0],
+            anotacoes: emotion.anotacoes,
+            humor: mood.humor,
+            cliente: emotion
+        }
+    } catch (error) {
+        console.error("Erro ao atualizar emocao:", error);
+        throw new Error("Erro ao atualizar emocao");
     }
 }

@@ -63,7 +63,7 @@ import { ERROR_INVALID_AUTH_TOKEN } from "./module/config";
 
 import cors from "cors";
 import { TEmotion } from './src/domain/entities/emotion-entity';
-import { getBuscarEmocao, setCriarEmocao } from './src/controller/emocoes/controller_emocoes';
+import { getBuscarEmocao, setAtualizarEmocao, setCriarEmocao } from './src/controller/emocoes/controller_emocoes';
 
 const corsOptions = {
   origin: ['http://localhost:5173', 'http://127.0.0.1:5173', '*'],
@@ -684,5 +684,20 @@ route.get('/emocao/:id', verifyJWT, async (req, res) => {
 
     res.status(emotion.status_code)
     res.json(emotion)
+})
+
+route.put('/emocao/:id', express.json(), verifyJWT, async (req, res) => {
+    const id = Number(req.params.id)
+    const contentType = req.header('content-type')
+    const inputEmotion : TEmotion = {
+        emocao: req.body.emocao,
+        data: req.body.data,
+        id_cliente: req.body.id_cliente
+    }
+
+    let updateEmotion = await setAtualizarEmocao(inputEmotion, id, contentType)
+
+    res.status(updateEmotion.status_code)
+    res.json(updateEmotion)
 })
 
