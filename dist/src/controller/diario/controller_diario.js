@@ -11,6 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.setAtualizarDiario = setAtualizarDiario;
 exports.setDeletarDiario = setDeletarDiario;
+exports.getBuscarDiario = getBuscarDiario;
 const config_1 = require("../../../module/config");
 const zod_validations_1 = require("../../infra/zod-validations");
 const usuario_1 = require("../../model/DAO/cliente/usuario");
@@ -93,6 +94,27 @@ function setDeletarDiario(id) {
         catch (error) {
             console.error("Erro ao deletar diario:", error);
             throw new Error("Erro ao deletar diario");
+        }
+    });
+}
+function getBuscarDiario(id) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            if (!id || !(0, zod_validations_1.isValidId)(id)) {
+                return config_1.ERROR_INVALID_ID;
+            }
+            let getDiary = yield (0, diario_1.buscarDiario)(id);
+            if (!getDiary) {
+                return config_1.ERROR_NOT_FOUND;
+            }
+            return {
+                status_code: 200,
+                data: getDiary
+            };
+        }
+        catch (error) {
+            console.error("Erro ao buscar diario:", error);
+            throw new Error("Erro ao buscar diario");
         }
     });
 }

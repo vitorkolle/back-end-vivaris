@@ -65,7 +65,7 @@ import cors from "cors";
 import { TEmotion } from './src/domain/entities/emotion-entity';
 import { getBuscarEmocao, setAtualizarEmocao, setCriarEmocao } from './src/controller/emocoes/controller_emocoes';
 import { TDiary } from './src/domain/entities/diary-entity';
-import { setAtualizarDiario, setDeletarDiario } from './src/controller/diario/controller_diario';
+import { getBuscarDiario, setAtualizarDiario, setDeletarDiario } from './src/controller/diario/controller_diario';
 
 const corsOptions = {
   origin: ['http://localhost:5173', 'http://127.0.0.1:5173', '*'],
@@ -729,4 +729,13 @@ route.delete('/diario/:id', verifyJWT, async (req, res) => {
 
     res.status(deleteDiary.status_code)
     res.json(deleteDiary)
+})
+
+route.get('/diario/:id', verifyJWT, async (req, res) => {
+    const id = Number(req.params.id)
+
+    let diary = await getBuscarDiario(id)
+
+    res.status(diary.status_code)
+    res.json(diary)
 })

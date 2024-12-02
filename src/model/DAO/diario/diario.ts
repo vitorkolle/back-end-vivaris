@@ -49,3 +49,29 @@ export async function deleteDiario(id : number) {
         throw new Error("Erro ao deletar diario")
     }
 }
+
+export async function buscarDiario(id : number) {
+    try {
+        let diary = await prisma.tbl_diario.findUnique({
+            where: {
+                id: id
+            },
+            select: {
+                id: true,
+                data_diario: true,
+                anotacoes: true,
+                tbl_clientes: true,
+                tbl_humor: true
+            }
+        })
+
+        if (!diary) {
+            return false
+        }
+
+        return diary
+    } catch (error) {
+        console.error("Erro ao buscar diario:", error)
+        throw new Error("Erro ao buscar diario")
+    }
+}

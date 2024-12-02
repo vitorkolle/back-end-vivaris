@@ -11,6 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.updateDiario = updateDiario;
 exports.deleteDiario = deleteDiario;
+exports.buscarDiario = buscarDiario;
 const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
 function updateDiario(diaryInput, diaryId) {
@@ -58,6 +59,32 @@ function deleteDiario(id) {
         catch (error) {
             console.error("Erro ao deletar diario:", error);
             throw new Error("Erro ao deletar diario");
+        }
+    });
+}
+function buscarDiario(id) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            let diary = yield prisma.tbl_diario.findUnique({
+                where: {
+                    id: id
+                },
+                select: {
+                    id: true,
+                    data_diario: true,
+                    anotacoes: true,
+                    tbl_clientes: true,
+                    tbl_humor: true
+                }
+            });
+            if (!diary) {
+                return false;
+            }
+            return diary;
+        }
+        catch (error) {
+            console.error("Erro ao buscar diario:", error);
+            throw new Error("Erro ao buscar diario");
         }
     });
 }

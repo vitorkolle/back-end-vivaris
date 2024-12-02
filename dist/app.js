@@ -484,3 +484,9 @@ route.delete('/diario/:id', verifyJWT, (req, res) => __awaiter(void 0, void 0, v
     res.status(deleteDiary.status_code);
     res.json(deleteDiary);
 }));
+route.get('/diario/:id', verifyJWT, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const id = Number(req.params.id);
+    let diary = yield (0, controller_diario_1.getBuscarDiario)(id);
+    res.status(diary.status_code);
+    res.json(diary);
+}));
