@@ -136,8 +136,8 @@ io.on("connection", (socket) => __awaiter(void 0, void 0, void 0, function* () {
         }
     });
 }));
-server.listen("8080", () => {
-    console.log("API funcionando na porta 8080");
+server.listen("8000", () => {
+    console.log("API funcionando na porta 8000");
 });
 /**********************************************STRIPE***************************************************************/
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
@@ -386,15 +386,15 @@ route.post('/avaliacao', verifyJWT, express_1.default.json(), (req, res) => __aw
     res.status(assessment.status_code);
     res.json(assessment);
 }));
-//route.get('/avaliacoes/:idPsicologo', verifyJWT,  async(req, res) => {
-//let idPsicologo = req.params.idPsicologo
-// if (!idPsicologo) {
-// return res.status(400).json({ error: 'O ID do psicólogo é obrigatório.' });
-//}
-//let assessments = await getBuscarAvaliacoesPorPsicologo(idPsicologo)
-//res.status(assessments.status_code)
-///res.json(assessments)
-//s})
+route.get('/avaliacoes/:idPsicologo', verifyJWT, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    let idPsicologo = Number(req.params.idPsicologo);
+    if (!idPsicologo) {
+        return res.status(400).json({ error: 'O ID do psicólogo é obrigatório.' });
+    }
+    let assessments = yield (0, controller_avaliacao_1.getBuscarAvaliacoesPorPsicologo)(idPsicologo);
+    res.status(assessments.status_code);
+    res.json(assessments);
+}));
 /*******************************Consulta*************************/
 route.post('/consulta', express_1.default.json(), verifyJWT, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let contentType = req.header('content-type');

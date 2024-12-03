@@ -55,6 +55,17 @@ export declare function getBuscarPsicologo(id: number): Promise<{
 } | {
     data: {
         professional: {
+            tbl_avaliacoes: {
+                tbl_clientes: {
+                    id: number;
+                    nome: string;
+                    email: string;
+                    foto_perfil: string | null;
+                };
+                id: number;
+                texto: string | null;
+                avaliacao: import(".prisma/client").$Enums.tbl_avaliacoes_avaliacao | null;
+            }[];
             tbl_psicologo_disponibilidade: {
                 psicologo_id: number;
                 tbl_disponibilidade: {

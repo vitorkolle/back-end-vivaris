@@ -1,7 +1,7 @@
-import { ERROR_CONTENT_TYPE, ERROR_INTERNAL_SERVER, ERROR_NOT_CREATED, ERROR_NOT_FOUND_CLIENT, ERROR_NOT_FOUND_PROFESSIONAL, ERROR_REQUIRED_FIELDS } from "../../../module/config";
+import { ERROR_CONTENT_TYPE, ERROR_INTERNAL_SERVER, ERROR_NOT_CREATED, ERROR_NOT_FOUND, ERROR_NOT_FOUND_CLIENT, ERROR_NOT_FOUND_PROFESSIONAL, ERROR_REQUIRED_FIELDS } from "../../../module/config";
 import { TAssessment } from "../../domain/entities/assessment";
 import { isValidAssessment, isValidId } from "../../infra/zod-validations";
-import { criarAvaliacao } from "../../model/DAO/avaliacao/avaliacao";
+import { criarAvaliacao, getAvaliacoesPorPsicologo } from "../../model/DAO/avaliacao/avaliacao";
 import { buscarCliente } from "../../model/DAO/cliente/usuario";
 import { buscarPsicologo } from "../../model/DAO/psicologo/usuario";
 
@@ -50,6 +50,27 @@ export async function setCadastrarAvaliacao(avaliacao:TAssessment, contentType:s
         }
     } catch (error) {
         console.error('Erro ao tentar inserir uma nova avaliação:', error);
+        return ERROR_INTERNAL_SERVER;
+    }
+}
+
+export async function getBuscarAvaliacoesPorPsicologo(id:number){
+    try {
+        if (!isValidId(id)) {
+            return ERROR_REQUIRED_FIELDS
+        }
+        let assessmentData = await getAvaliacoesPorPsicologo(id)
+        
+        if(assessmentData){
+            return {
+                data: assessmentData,
+                status_code: 200
+            }
+        }
+        return ERROR_NOT_FOUND
+        
+    } catch (error) {
+        console.error('Erro ao tentar buscar as avaliações de um psicologo:', error);
         return ERROR_INTERNAL_SERVER;
     }
 }

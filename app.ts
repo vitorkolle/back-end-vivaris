@@ -1,5 +1,5 @@
 //Import
-import { setCadastrarAvaliacao } from './src/controller/avaliacao/controller_avaliacao'
+import { getBuscarAvaliacoesPorPsicologo, setCadastrarAvaliacao } from './src/controller/avaliacao/controller_avaliacao'
 import { TAssessment } from './src/domain/entities/assessment'
 import { getAllAppointmentByUserId, getBuscarConsulta, getBuscarConsultasPorProfissional, setAtualizarConsulta, setCadastrarConsulta, setDeletarConsulta } from "./src/controller/consulta/controller_consulta";
 
@@ -203,8 +203,8 @@ io.on("connection", async (socket) => {
 
 });
 
-server.listen("8080", () => {
-  console.log("API funcionando na porta 8080");
+server.listen("8000", () => {
+  console.log("API funcionando na porta 8000");
 })
 
 
@@ -591,18 +591,18 @@ route.post('/avaliacao', verifyJWT, express.json(), async (req, res) => {
   res.json(assessment)
 })
 
-//route.get('/avaliacoes/:idPsicologo', verifyJWT,  async(req, res) => {
-  //let idPsicologo = req.params.idPsicologo
+route.get('/avaliacoes/:idPsicologo', verifyJWT,  async(req, res) => {
+  let idPsicologo = Number(req.params.idPsicologo)
 
- // if (!idPsicologo) {
-   // return res.status(400).json({ error: 'O ID do psicólogo é obrigatório.' });
-  //}
+ if (!idPsicologo) {
+   return res.status(400).json({ error: 'O ID do psicólogo é obrigatório.' });
+  }
 
-  //let assessments = await getBuscarAvaliacoesPorPsicologo(idPsicologo)
+  let assessments = await getBuscarAvaliacoesPorPsicologo(idPsicologo)
 
-  //res.status(assessments.status_code)
-  ///res.json(assessments)
-//s})
+  res.status(assessments.status_code)
+  res.json(assessments)
+})
 
 
 /*******************************Consulta*************************/
