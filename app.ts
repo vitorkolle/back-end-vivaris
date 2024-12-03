@@ -57,11 +57,10 @@ import {
   createPaymentIntent,
   processarEventoCheckout,
 } from "./src/controller/pagamento/controller_pagamento";
-import stripe from "stripe";
 import { ERROR_INVALID_AUTH_TOKEN } from "./module/config";
 
-
 import cors from "cors";
+import { selectUnavailableHours } from './src/model/DAO/consulta/consulta';
 
 const corsOptions = {
   origin: ['http://localhost:5173', 'http://127.0.0.1:5173', '*'],
@@ -71,8 +70,6 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-
-
 app.use("/v1/vivaris", route);
 
 /*****************************Autenticação/JWT****************************************************/
@@ -112,9 +109,9 @@ const verifyJWTRole = async (
     if (!token) {
       return res.status(401).json("É necessário um token de autorização").end();
     }
-
+    
     let role = await getRole(token.toString());
-
+    
     if (role === "Função Inválida") {
       return res.status(401).json("Função Inválida").end();
     }
@@ -206,11 +203,15 @@ server.listen("8080", () => {
   console.log("API funcionando na porta 8080");
 })
 
+
 /**********************************************STRIPE***************************************************************/
-route.post("/webhook", express.raw({ type: "application/json" }), async (req, res) => {
-  const signature = req.headers["stripe-signature"];
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY)
+route.post('/webhook', express.raw({type: 'application/json'}), async (req, res) => {
+  
+  const signature = req.headers['stripe-signature'];  
 
   if (!signature || typeof signature !== "string") {
+    
     return res
       .status(400)
       .json({ error: "Invalid or missing Stripe signature" });
@@ -225,6 +226,7 @@ route.post("/webhook", express.raw({ type: "application/json" }), async (req, re
   switch (event.type) {
     case "checkout.session.completed":
       try {
+        console.log('vadtyavsdsa')
 
         const session = event.data.object
 
@@ -243,9 +245,8 @@ route.post("/webhook", express.raw({ type: "application/json" }), async (req, re
 
   res.json({ received: true });
 });
-/****************************************************USUARIO-CLIENTE****************************************************/
-app.use(express.json())
 
+/****************************************************USUARIO-CLIENTE****************************************************/
 //post de clientes
 route.post("/cliente", express.json(), async (req, res) => {
 
@@ -472,7 +473,7 @@ route.get("/disponibilidade/:id", verifyJWT, async (req, res) => {
   res.json(buscarDisponibilidade);
 });
 
-route.put("/disponibilidade/:id", verifyJWT, async (req, res) => {
+route.put("/disponibilidade/:id", verifyJWT,express.json(), async (req, res) => {
   const id = Number(req.params.id);
 
   const availabilityData: TAvailability = {
@@ -495,7 +496,7 @@ route.put("/disponibilidade/:id", verifyJWT, async (req, res) => {
   res.json(updateAvaibility);
 });
 
-route.put("/psicologo/disponibilidade", verifyJWT, async (req, res) => {
+route.put("/psicologo/disponibilidade", verifyJWT, express.json(), async (req, res) => {
   const availabilityData: TProfessionalAvailability = {
     id_psicologo: req.body.id_psicologo,
     disponibilidade_id: req.body.disponibilidade_id,
@@ -553,12 +554,15 @@ route.get("/preferencias/:id", async (req, res) => {
 
 /****************************************************PAGAMENTO****************************************************/
 route.post('/create-checkout-session', verifyJWT, express.json(), async (req, res) => {
+  console.log('oiiiiiiiii');
+  
 
   let idConsulta = req.body.id_consulta
 
   let idCliente = req.body.id_cliente
 
   const result = await createPaymentIntent(idConsulta, idCliente)
+  
 
   res.status(result.status_code)
   res.json(result)
@@ -615,6 +619,33 @@ route.get('/consultas/psicologo/:id_psicologo', verifyJWTRole, async (req, res) 
   res.json(consultas)
 })
 
+route.get('/v1/vivaris/consulta/horarios', async (req, res) => {
+  const { data, psicologoId } = req.query;
+
+  if (!data || !psicologoId) {
+    return res.status(400).json({ error: 'Data e psicologoId são obrigatórios.' });
+  }
+
+  try {
+    const startOfDay = `${data} 00:00:00`;
+    const endOfDay = `${data} 23:59:59`;
+
+    const results = await selectUnavailableHours(Number(psicologoId), startOfDay, endOfDay);
+
+    const unavailableTimes = results.map(row =>
+      new Date(row.data_consulta).toLocaleTimeString('pt-BR', {
+        hour: '2-digit',
+        minute: '2-digit',
+      })
+    );
+
+    return res.json({ unavailableTimes });
+  } catch (error) {
+    console.error('Erro ao buscar horários indisponíveis:', error);
+    return res.status(500).json({ error: 'Erro ao buscar horários indisponíveis.' });
+  }
+});
+
 route.get('/consulta/:id', verifyJWT, async (req, res) => {
   let id = Number(req.params.id)
 
@@ -633,7 +664,7 @@ route.delete('/consulta/:id', verifyJWT, async (req, res) => {
   res.json(deleteAppointment)
 })
 
-route.put('/consulta/:id', verifyJWT, async (req, res) => {
+route.put('/consulta/:id', verifyJWT, express.json(), async (req, res) => {
   const id = Number(req.params.id)
   const contentType = req.header('content-type')
   const data = req.body.data_consulta

@@ -93,6 +93,46 @@ export async function selectAppointment(id: number): Promise<TAppointment | fals
 
 }
 
+export async function verificarConsultaCliente(idClient: number, data: Date): Promise<boolean> {
+  const consultaExistente = await prisma.tbl_consultas.findFirst({
+    where: {
+      id_cliente: idClient,
+      data_consulta: data,
+    },
+  });
+
+  return consultaExistente !== null; 
+}
+
+export async function verificarConsultaExistente(idProfessional: number, data: Date): Promise<boolean> {
+  const consultaExistente = await prisma.tbl_consultas.findFirst({
+    where: {
+      id_psicologo: idProfessional,
+      data_consulta: data,
+    },
+  });
+
+  return consultaExistente !== null; // Retorna true se encontrar uma consulta
+}
+
+export async function selectUnavailableHours(psicologoId: number,startOfDay:string, endOfDay:string ){
+  const consultas = await prisma.tbl_consultas.findMany({
+    where: {
+      id_psicologo: psicologoId,
+      data_consulta: {
+        gte: startOfDay,
+        lte: endOfDay,
+      },
+      situacao:'Confirmada'
+    },
+    select: {
+      data_consulta: true, 
+    },
+  });
+
+  return consultas
+}
+
 export async function selectAppointmentByProfessional(id: number): Promise<TAppointment[] | false> {
   const appointments = await prisma.tbl_consultas.findMany({
     where: {
@@ -205,7 +245,8 @@ export async function createAppointment(idProfessional: number, idClient: number
           id: idProfessional
         }
       },
-      data_consulta: data
+      data_consulta: data,
+      situacao:'Pendente'
     }
   })
 
@@ -267,6 +308,28 @@ export async function updateAppointment(data: Date, id: number) {
       },
       data: {
         data_consulta: data
+      }
+    })
+
+    if (!appointment) {
+      return false
+    }
+
+    return true
+  } catch (error) {
+    console.error("Erro ao atualizar a consulta do profissional:", error);
+    throw new Error("Não foi possível atualizar a consulta do profissional");
+  }
+}
+
+export async function updateAppointmentStatus(id: number) {
+  try {
+    let appointment = await prisma.tbl_consultas.update({
+      where: {
+        id: id
+      },
+      data: {
+        situacao:'Confirmada'
       }
     })
 

@@ -3,6 +3,10 @@ export declare function setCadastrarConsulta(idProfessional: number, idClient: n
     status_code: number;
     message: string;
 } | {
+    message: string;
+    status_code: number;
+    data?: undefined;
+} | {
     data: {
         consulta: {
             id: number;
@@ -11,6 +15,7 @@ export declare function setCadastrarConsulta(idProfessional: number, idClient: n
             id_psicologo: number;
             data_consulta: Date;
             valor: number;
+            situacao: string;
         };
         psicologo: {
             id: number;
@@ -41,6 +46,7 @@ export declare function setCadastrarConsulta(idProfessional: number, idClient: n
         };
     };
     status_code: number;
+    message?: undefined;
 }>;
 export declare function getBuscarConsulta(id: number): Promise<{
     status: boolean;

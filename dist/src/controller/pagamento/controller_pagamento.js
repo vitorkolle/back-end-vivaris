@@ -53,6 +53,9 @@ const confirmPayment = (order) => __awaiter(void 0, void 0, void 0, function* ()
             return config_1.ERROR_INVALID_PAYMENT_METHOD_ID;
         }
         const payment = yield (0, pagamento_1.createPayment)(order.payment_intent, consultaId);
+        if (payment) {
+            yield (0, consulta_1.updateAppointmentStatus)(consultaId);
+        }
         return { received: true, pagamento: payment };
     }
     catch (error) {
@@ -62,14 +65,16 @@ const confirmPayment = (order) => __awaiter(void 0, void 0, void 0, function* ()
 exports.confirmPayment = confirmPayment;
 function processarEventoCheckout(session) {
     return __awaiter(this, void 0, void 0, function* () {
-        var _a, _b;
+        var _a, _b, _c;
         const disponibilidadeJSON = (_a = session.metadata) === null || _a === void 0 ? void 0 : _a.disponibilidade;
         const psicoId = Number((_b = session.metadata) === null || _b === void 0 ? void 0 : _b.psicoId);
         if (!disponibilidadeJSON) {
             throw new Error("Disponibilidade não encontrada na metadata!");
         }
         const disp = JSON.parse(disponibilidadeJSON);
-        const result = yield (0, disponibilidade_1.atualizarDisponibilidadeProfissional)(disp, psicoId);
+        yield (0, disponibilidade_1.atualizarDisponibilidadeProfissional)(disp, psicoId);
+        const consultaId = Number((_c = session.metadata) === null || _c === void 0 ? void 0 : _c.consultaId);
+        yield (0, consulta_1.updateAppointmentStatus)(consultaId);
     });
 }
 const extractPaymentInfo = (event) => {

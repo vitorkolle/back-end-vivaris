@@ -23,6 +23,8 @@ export const ERROR_INVALID_CARD = {status: false, status_code:400, message:'Os d
 export const ERROR_INVALID_PAYMENT_METHOD_ID = {status: false, status_code:400, message:'Este ID de forma de pagamento não existe!'}
 export const ERROR_INVALID_AUTH_TOKEN = {status: false, status_code:401, message:'O token de autenticação enviado na requisição é inválido!!'}
 export const ERROR_NOT_FOUND_APPOINTMENTS = {status: false, status_code:404, message: 'Não foram encontradas consultas na requisiçã!'}
+export const ERROR_CONFLICT_APPOINTMENT = {status: false, status_code:409, message:'Agendamento indisponível! Já existe uma consulta marcada para o mesmo horário.'}
+
 /****************** Mensagens de Sucesso *********/
 export const SUCCESS_CREATED_ITEM = {status: true, status_code: 201, message: 'Item criado com sucesso!!'}
 export const SUCCESS_DELETED_ITEM = {status: true, status_code: 200, message: 'Item deletado com sucesso!!'}

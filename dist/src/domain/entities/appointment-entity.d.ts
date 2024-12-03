@@ -7,4 +7,5 @@ export type TAppointment = {
     avaliacao: string;
     tbl_clientes_: TUser;
     tbl_psicologos: TProfessional;
+    situacao: string;
 };

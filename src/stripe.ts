@@ -48,6 +48,7 @@ export const makePayment = async (data: TAppointment, id_cliente: number) => {
     }
 
     for (const disp of disponibilidadesArray) {
+      console.log('DISP:', disp)
 
       const diaDisponibilidade = disp.dia_semana;
       const horarioInicio = disp.horario_inicio
@@ -60,7 +61,6 @@ export const makePayment = async (data: TAppointment, id_cliente: number) => {
         horarioConsulta >= horarioInicio &&
         horarioConsulta <= horarioFim
       ) {
-
         disponibilidadeSelecionada = disp;
         break;
       }
@@ -105,7 +105,6 @@ export const makePayment = async (data: TAppointment, id_cliente: number) => {
         psicoId: String(idPsico)
       },
     });
-
 
     return { url: session.url }
 
