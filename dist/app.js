@@ -30,6 +30,9 @@ const controller_pagamento_1 = require("./src/controller/pagamento/controller_pa
 const config_1 = require("./module/config");
 const cors_1 = __importDefault(require("cors"));
 const consulta_1 = require("./src/model/DAO/consulta/consulta");
+
+const controller_emocoes_1 = require("./src/controller/emocoes/controller_emocoes");
+const controller_diario_1 = require("./src/controller/diario/controller_diario");
 const corsOptions = {
     origin: ['http://localhost:5173', 'http://127.0.0.1:5173', '*'],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Métodos permitidos
@@ -345,7 +348,7 @@ route.post('/create-checkout-session', verifyJWT, express_1.default.json(), (req
     res.json(result);
 }));
 /*********************************Avaliação************************************/
-route.post('/avaliacao', express_1.default.json(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+route.post('/avaliacao', verifyJWT, express_1.default.json(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let contentType = req.header('content-type');
     let inputData = {
         texto: req.body.texto,
@@ -358,7 +361,7 @@ route.post('/avaliacao', express_1.default.json(), (req, res) => __awaiter(void 
     res.json(assessment);
 }));
 /*******************************Consulta*************************/
-route.post('/consulta', express_1.default.json(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+route.post('/consulta', express_1.default.json(), verifyJWT, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let contentType = req.header('content-type');
     let idProfessional = req.body.id_psicologo;
     let idClient = req.body.id_cliente;
@@ -367,7 +370,7 @@ route.post('/consulta', express_1.default.json(), (req, res) => __awaiter(void 0
     res.status(newAppointment.status_code);
     res.json(newAppointment);
 }));
-route.get('/consultas/psicologo/:id_psicologo', verifyJWTRole, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+route.get('/consultas/psicologo/:id_psicologo', verifyJWT, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let idProfessional = Number(req.params.id_psicologo);
     if (!idProfessional) {
         return res.status(400).json({ error: 'O ID do psicólogo é obrigatório.' });
@@ -408,7 +411,10 @@ route.delete('/consulta/:id', verifyJWT, (req, res) => __awaiter(void 0, void 0,
     res.status(deleteAppointment.status_code);
     res.json(deleteAppointment);
 }));
-route.put('/consulta/:id', verifyJWT, express_1.default.json(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+
+
+route.put('/consulta/:id', express_1.default.json(), verifyJWT, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+
     const id = Number(req.params.id);
     const contentType = req.header('content-type');
     const data = req.body.data_consulta;
@@ -422,6 +428,7 @@ route.get('/consulta/usuario/:id', verifyJWT, (req, res) => __awaiter(void 0, vo
     res.status(appointment.status_code);
     res.json(appointment);
 }));
+
 /**********************************************STRIPE***************************************************************/
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 route.post('/webhook', express_1.default.raw({ type: 'application/json' }), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -452,4 +459,62 @@ route.post('/webhook', express_1.default.raw({ type: 'application/json' }), (req
             console.log(`Unhandled event type ${event.type}`);
     }
     res.json({ received: true });
+/*******************************Emoção*************************/
+// ! caso a emoção tenha nome composto, ela deve ser enviada com a primeira palavra em maiúsculo e com underscore para a outra palavra
+// * ex: "Muito_feliz"
+route.post('/emocao', express_1.default.json(), verifyJWT, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    let contentType = req.header('content-type');
+    const inputData = {
+        emocao: req.body.emocao,
+        data: req.body.data,
+        id_cliente: req.body.id_cliente
+    };
+    let emotion = yield (0, controller_emocoes_1.setCriarEmocao)(inputData, contentType);
+    res.status(emotion.status_code);
+    res.json(emotion);
+}));
+route.get('/emocao/:id', verifyJWT, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    let id = Number(req.params.id);
+    let emotion = yield (0, controller_emocoes_1.getBuscarEmocao)(id);
+    res.status(emotion.status_code);
+    res.json(emotion);
+}));
+route.put('/emocao/:id', express_1.default.json(), verifyJWT, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const id = Number(req.params.id);
+    const contentType = req.header('content-type');
+    const inputEmotion = {
+        emocao: req.body.emocao,
+        data: req.body.data,
+        id_cliente: req.body.id_cliente
+    };
+    let updateEmotion = yield (0, controller_emocoes_1.setAtualizarEmocao)(inputEmotion, id, contentType);
+    res.status(updateEmotion.status_code);
+    res.json(updateEmotion);
+}));
+/************************************DIÁRIO************************************/
+route.put('/diario/:id', express_1.default.json(), verifyJWT, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const id = Number(req.params.id);
+    const contentType = req.header('content-type');
+    const inputDiary = {
+        anotacoes: req.body.anotacoes,
+        data_diario: req.body.data_diario,
+        id_cliente: req.body.id_cliente,
+        id_humor: req.body.id_humor
+    };
+    let updateDiary = yield (0, controller_diario_1.setAtualizarDiario)(inputDiary, id, contentType);
+    res.status(updateDiary.status_code);
+    res.json(updateDiary);
+}));
+route.delete('/diario/:id', verifyJWT, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const id = Number(req.params.id);
+    let deleteDiary = yield (0, controller_diario_1.setDeletarDiario)(id);
+    res.status(deleteDiary.status_code);
+    res.json(deleteDiary);
+}));
+route.get('/diario/:id', verifyJWT, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const id = Number(req.params.id);
+    let diary = yield (0, controller_diario_1.getBuscarDiario)(id);
+    res.status(diary.status_code);
+    res.json(diary);
+
 }));

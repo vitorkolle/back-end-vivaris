@@ -22,6 +22,7 @@ exports.isValidNumberArray = isValidNumberArray;
 exports.isValidAvailbilityStatus = isValidAvailbilityStatus;
 exports.isValidAssessment = isValidAssessment;
 exports.isValidUser = isValidUser;
+exports.isValidMood = isValidMood;
 const zod_1 = require("zod");
 function isValidId(id) {
     console.log(id);
@@ -91,5 +92,13 @@ function isValidUser(user) {
         const firstUserSchema = zod_1.z.enum(['cliente', 'psicologo']);
         const testUser = firstUserSchema.safeParse(user);
         return testUser.success;
+    });
+}
+function isValidMood(mood) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const moodArray = ["Muito_triste", "Triste", "Neutro", "Feliz", "Muito_feliz"];
+        const moodSchema = zod_1.z.enum(moodArray);
+        const testMood = moodSchema.safeParse(mood);
+        return testMood.success;
     });
 }
