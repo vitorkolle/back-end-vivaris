@@ -37,6 +37,7 @@ import {
   getBuscarPsicologo,
   getListarPsicologos,
   getLogarPsicologo,
+  setAtualizarPsicologo,
   setInserirPsicologo,
 } from "./src/controller/usuario/controller_psicologo";
 import { v4 as uuidv4 } from 'uuid'; // Para gerar IDs únicos
@@ -153,7 +154,7 @@ io.on("connection", async (socket) => {
   console.log(`Usuário conectado: ${socket.id}`);
 
   // Salva o usuário conectado
-  socket.on("registerUser", (userId) => {
+  socket.on("registerUser", (userId: string) => {
     connectedUsers[userId] = socket.id;
     console.log(`Usuário registrado: ${userId} com ID de socket ${socket.id}`);
   });
@@ -206,7 +207,6 @@ io.on("connection", async (socket) => {
 server.listen("8080", () => {
   console.log("API funcionando na porta 8080");
 })
-
 
 /**********************************************STRIPE***************************************************************/
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY)
@@ -405,6 +405,28 @@ route.get("/profissionais", verifyJWT, async (req, res) => {
   res.json(getProfissionais);
 });
 
+route.put("/profissional/:id", express.json(), verifyJWT, async (req, res) => {
+  const id = Number(req.params.id);
+  const contentType = req.header("content-type");
+
+  const professionalData: TProfessional = {
+    nome: req.body.nome,
+    email: req.body.email,
+    senha: req.body.senha,
+    telefone: req.body.telefone,
+    cpf: req.body.cpf,
+    cip: req.body.cip,
+    data_nascimento: req.body.data_nascimento,
+    id_sexo: req.body.id_sexo,
+    preco: req.body.preco
+  };
+
+  let updateProfessional = await setAtualizarPsicologo(professionalData, contentType, id);
+
+  res.status(updateProfessional.status_code);
+  res.json(updateProfessional);
+});
+
 /****************************************************DISPONIBILIDADE****************************************************/
 route.post("/disponibilidade", express.json(), async (req, res) => {
 
@@ -565,7 +587,6 @@ route.post('/create-checkout-session', verifyJWT, express.json(), async (req, re
   let idCliente = req.body.id_cliente
 
   const result = await createPaymentIntent(idConsulta, idCliente)
-  
 
   res.status(result.status_code)
   res.json(result)
@@ -574,8 +595,6 @@ route.post('/create-checkout-session', verifyJWT, express.json(), async (req, re
 
 /*********************************Avaliação************************************/
 route.post('/avaliacao', verifyJWT, express.json(), async (req, res) => {
-
-
   let contentType = req.header('content-type')
 
   let inputData: TAssessment = {
@@ -607,8 +626,6 @@ route.post('/avaliacao', verifyJWT, express.json(), async (req, res) => {
 
 /*******************************Consulta*************************/
 route.post('/consulta', express.json(), verifyJWT, async (req, res) => {
-
-
   let contentType = req.header('content-type')
 
   let idProfessional = req.body.id_psicologo
@@ -623,8 +640,8 @@ route.post('/consulta', express.json(), verifyJWT, async (req, res) => {
   res.json(newAppointment)
 })
 
-route.get('/consultas/psicologo/:id_psicologo', verifyJWTRole, async (req, res) => {
-  
+
+route.get('/consultas/psicologo/:id_psicologo', verifyJWT, async (req, res) => {
   let idProfessional = Number(req.params.id_psicologo)
 
   if (!idProfessional) {
@@ -682,7 +699,7 @@ route.delete('/consulta/:id', verifyJWT, async (req, res) => {
   res.json(deleteAppointment)
 })
 
-route.put('/consulta/:id', verifyJWT, express.json(), async (req, res) => {
+route.put('/consulta/:id', express.json(), verifyJWT, async (req, res) => {
   const id = Number(req.params.id)
   const contentType = req.header('content-type')
   const data = req.body.data_consulta
@@ -694,6 +711,7 @@ route.put('/consulta/:id', verifyJWT, express.json(), async (req, res) => {
 })
 
 route.get('/consulta/usuario/:id', verifyJWT, async (req, res) => {
+  const contentType = req.header('content-type')
 
   let userId = Number(req.params.id)
   let appointment = await getAllAppointmentByUserId(userId)
@@ -706,77 +724,77 @@ route.get('/consulta/usuario/:id', verifyJWT, async (req, res) => {
 // ! caso a emoção tenha nome composto, ela deve ser enviada com a primeira palavra em maiúsculo e com underscore para a outra palavra
 // * ex: "Muito_feliz"
 route.post('/emocao', express.json(), verifyJWT, async (req, res) => {
-    let contentType = req.header('content-type')
+  let contentType = req.header('content-type')
 
-    const inputData: TEmotion = {
-        emocao: req.body.emocao,
-        data: req.body.data,
-        id_cliente: req.body.id_cliente
-    }
+  const inputData: TEmotion = {
+    emocao: req.body.emocao,
+    data: req.body.data,
+    id_cliente: req.body.id_cliente
+  }
 
-    let emotion = await setCriarEmocao(inputData, contentType)
+  let emotion = await setCriarEmocao(inputData, contentType)
 
-    res.status(emotion.status_code)
-    res.json(emotion)
+  res.status(emotion.status_code)
+  res.json(emotion)
 })
 
 route.get('/emocao/:id', verifyJWT, async (req, res) => {
-    let id = Number(req.params.id)
+  let id = Number(req.params.id)
 
-    let emotion = await getBuscarEmocao(id)
+  let emotion = await getBuscarEmocao(id)
 
-    res.status(emotion.status_code)
-    res.json(emotion)
+  res.status(emotion.status_code)
+  res.json(emotion)
 })
 
 route.put('/emocao/:id', express.json(), verifyJWT, async (req, res) => {
-    const id = Number(req.params.id)
-    const contentType = req.header('content-type')
-    const inputEmotion : TEmotion = {
-        emocao: req.body.emocao,
-        data: req.body.data,
-        id_cliente: req.body.id_cliente
-    }
+  const id = Number(req.params.id)
+  const contentType = req.header('content-type')
+  const inputEmotion: TEmotion = {
+    emocao: req.body.emocao,
+    data: req.body.data,
+    id_cliente: req.body.id_cliente
+  }
 
-    let updateEmotion = await setAtualizarEmocao(inputEmotion, id, contentType)
+  let updateEmotion = await setAtualizarEmocao(inputEmotion, id, contentType)
 
-    res.status(updateEmotion.status_code)
-    res.json(updateEmotion)
+  res.status(updateEmotion.status_code)
+  res.json(updateEmotion)
 })
 
 /************************************DIÁRIO************************************/
 route.put('/diario/:id', express.json(), verifyJWT, async (req, res) => {
-    const id = Number(req.params.id)
+  const id = Number(req.params.id)
 
-    const contentType = req.header('content-type')
+  const contentType = req.header('content-type')
 
-    const inputDiary : TDiary = {
-        anotacoes: req.body.anotacoes,
-        data_diario: req.body.data_diario,
-        id_cliente: req.body.id_cliente,
-        id_humor: req.body.id_humor
-    }
+  const inputDiary: TDiary = {
+    anotacoes: req.body.anotacoes,
+    data_diario: req.body.data_diario,
+    id_cliente: req.body.id_cliente,
+    id_humor: req.body.id_humor
+  }
 
-    let updateDiary = await setAtualizarDiario(inputDiary, id, contentType)
+  let updateDiary = await setAtualizarDiario(inputDiary, id, contentType)
 
-    res.status(updateDiary.status_code)
-    res.json(updateDiary)
+  res.status(updateDiary.status_code)
+  res.json(updateDiary)
 })
 
 route.delete('/diario/:id', verifyJWT, async (req, res) => {
-    const id = Number(req.params.id)
+  const id = Number(req.params.id)
 
-    let deleteDiary = await setDeletarDiario(id)
+  let deleteDiary = await setDeletarDiario(id)
 
-    res.status(deleteDiary.status_code)
-    res.json(deleteDiary)
+  res.status(deleteDiary.status_code)
+  res.json(deleteDiary)
 })
 
 route.get('/diario/:id', verifyJWT, async (req, res) => {
-    const id = Number(req.params.id)
+  const id = Number(req.params.id)
 
-    let diary = await getBuscarDiario(id)
+  let diary = await getBuscarDiario(id)
 
-    res.status(diary.status_code)
-    res.json(diary)
+  res.status(diary.status_code)
+  res.json(diary)
 })

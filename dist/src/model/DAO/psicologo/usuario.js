@@ -14,6 +14,7 @@ exports.logarPsicologo = logarPsicologo;
 exports.buscarPsicologo = buscarPsicologo;
 exports.getIdByName = getIdByName;
 exports.listarPsicologos = listarPsicologos;
+exports.atualizarPsicologo = atualizarPsicologo;
 const client_1 = require("@prisma/client");
 const config_1 = require("../../../../module/config");
 const prisma = new client_1.PrismaClient();
@@ -190,6 +191,45 @@ function listarPsicologos() {
         catch (error) {
             console.error("Erro ao obter o usuário", error);
             throw new Error("Não foi possível obter o usuário");
+        }
+    });
+}
+function atualizarPsicologo(id, userInput) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const user = yield prisma.tbl_psicologos.update({
+                where: {
+                    id: id
+                },
+                data: {
+                    nome: userInput.nome,
+                    senha: userInput.senha,
+                    telefone: userInput.telefone,
+                    preco: userInput.preco,
+                    data_nascimento: userInput.data_nascimento,
+                    id_sexo: userInput.id_sexo
+                },
+                select: {
+                    id: true,
+                    nome: true,
+                    email: true,
+                    senha: true,
+                    telefone: true,
+                    preco: true,
+                    cpf: true,
+                    data_nascimento: true,
+                    cip: true,
+                    id_sexo: true
+                }
+            });
+            if (!user) {
+                return false;
+            }
+            return user;
+        }
+        catch (error) {
+            console.error("Erro ao atualizar o profissional:", error);
+            throw new Error("Não foi possível atualizar o profissional.");
         }
     });
 }
