@@ -27,9 +27,9 @@ const controller_psicologo_1 = require("./src/controller/usuario/controller_psic
 const uuid_1 = require("uuid"); // Para gerar IDs únicos
 const controller_usuario_1 = require("./src/controller/usuario/controller_usuario");
 const controller_pagamento_1 = require("./src/controller/pagamento/controller_pagamento");
-const stripe_1 = __importDefault(require("stripe"));
 const config_1 = require("./module/config");
 const cors_1 = __importDefault(require("cors"));
+const consulta_1 = require("./src/model/DAO/consulta/consulta");
 const controller_emocoes_1 = require("./src/controller/emocoes/controller_emocoes");
 const controller_diario_1 = require("./src/controller/diario/controller_diario");
 const corsOptions = {
@@ -140,17 +140,19 @@ server.listen("8080", () => {
     console.log("API funcionando na porta 8080");
 });
 /**********************************************STRIPE***************************************************************/
-route.post("/webhook", express_1.default.raw({ type: "application/json" }), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const signature = req.headers["stripe-signature"];
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+route.post('/webhook', express_1.default.raw({ type: 'application/json' }), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const signature = req.headers['stripe-signature'];
     if (!signature || typeof signature !== "string") {
         return res
             .status(400)
             .json({ error: "Invalid or missing Stripe signature" });
     }
-    const event = stripe_1.default.webhooks.constructEvent(req.body, signature, process.env.STRIPE_ENDPOINT_SECRET);
+    const event = stripe.webhooks.constructEvent(req.body, signature, process.env.STRIPE_ENDPOINT_SECRET);
     switch (event.type) {
         case "checkout.session.completed":
             try {
+                console.log('vadtyavsdsa');
                 const session = event.data.object;
                 yield (0, controller_pagamento_1.confirmPayment)(session);
                 yield (0, controller_pagamento_1.processarEventoCheckout)(session);
@@ -166,7 +168,6 @@ route.post("/webhook", express_1.default.raw({ type: "application/json" }), (req
     res.json({ received: true });
 }));
 /****************************************************USUARIO-CLIENTE****************************************************/
-app.use(express_1.default.json());
 //post de clientes
 route.post("/cliente", express_1.default.json(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const contentType = req.header("content-type");
@@ -336,7 +337,7 @@ route.get("/disponibilidade/:id", verifyJWT, (req, res) => __awaiter(void 0, voi
     res.status(buscarDisponibilidade.status_code);
     res.json(buscarDisponibilidade);
 }));
-route.put("/disponibilidade/:id", verifyJWT, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+route.put("/disponibilidade/:id", verifyJWT, express_1.default.json(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const id = Number(req.params.id);
     const availabilityData = {
         dia_semana: req.body.dia_semana,
@@ -349,7 +350,7 @@ route.put("/disponibilidade/:id", verifyJWT, (req, res) => __awaiter(void 0, voi
     res.status(updateAvaibility.status_code);
     res.json(updateAvaibility);
 }));
-route.put("/psicologo/disponibilidade", verifyJWT, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+route.put("/psicologo/disponibilidade", verifyJWT, express_1.default.json(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const availabilityData = {
         id_psicologo: req.body.id_psicologo,
         disponibilidade_id: req.body.disponibilidade_id,
@@ -403,6 +404,15 @@ route.post('/avaliacao', verifyJWT, express_1.default.json(), (req, res) => __aw
     res.status(assessment.status_code);
     res.json(assessment);
 }));
+//route.get('/avaliacoes/:idPsicologo', verifyJWT,  async(req, res) => {
+//let idPsicologo = req.params.idPsicologo
+// if (!idPsicologo) {
+// return res.status(400).json({ error: 'O ID do psicólogo é obrigatório.' });
+//}
+//let assessments = await getBuscarAvaliacoesPorPsicologo(idPsicologo)
+//res.status(assessments.status_code)
+///res.json(assessments)
+//s})
 /*******************************Consulta*************************/
 route.post('/consulta', express_1.default.json(), verifyJWT, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let contentType = req.header('content-type');
@@ -413,7 +423,7 @@ route.post('/consulta', express_1.default.json(), verifyJWT, (req, res) => __awa
     res.status(newAppointment.status_code);
     res.json(newAppointment);
 }));
-route.get('/consultas/psicologo/:id_psicologo', verifyJWT, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+route.get('/consultas/psicologo/:id_psicologo', verifyJWTRole, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let idProfessional = Number(req.params.id_psicologo);
     if (!idProfessional) {
         return res.status(400).json({ error: 'O ID do psicólogo é obrigatório.' });
@@ -421,6 +431,26 @@ route.get('/consultas/psicologo/:id_psicologo', verifyJWT, (req, res) => __await
     let consultas = yield (0, controller_consulta_1.getBuscarConsultasPorProfissional)(idProfessional);
     res.status(consultas.status_code);
     res.json(consultas);
+}));
+route.get('/v1/vivaris/consulta/horarios', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { data, psicologoId } = req.query;
+    if (!data || !psicologoId) {
+        return res.status(400).json({ error: 'Data e psicologoId são obrigatórios.' });
+    }
+    try {
+        const startOfDay = `${data} 00:00:00`;
+        const endOfDay = `${data} 23:59:59`;
+        const results = yield (0, consulta_1.selectUnavailableHours)(Number(psicologoId), startOfDay, endOfDay);
+        const unavailableTimes = results.map(row => new Date(row.data_consulta).toLocaleTimeString('pt-BR', {
+            hour: '2-digit',
+            minute: '2-digit',
+        }));
+        return res.json({ unavailableTimes });
+    }
+    catch (error) {
+        console.error('Erro ao buscar horários indisponíveis:', error);
+        return res.status(500).json({ error: 'Erro ao buscar horários indisponíveis.' });
+    }
 }));
 route.get('/consulta/:id', verifyJWT, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let id = Number(req.params.id);
@@ -434,7 +464,7 @@ route.delete('/consulta/:id', verifyJWT, (req, res) => __awaiter(void 0, void 0,
     res.status(deleteAppointment.status_code);
     res.json(deleteAppointment);
 }));
-route.put('/consulta/:id', express_1.default.json(), verifyJWT, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+route.put('/consulta/:id', verifyJWT, express_1.default.json(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const id = Number(req.params.id);
     const contentType = req.header('content-type');
     const data = req.body.data_consulta;
@@ -443,10 +473,8 @@ route.put('/consulta/:id', express_1.default.json(), verifyJWT, (req, res) => __
     res.json(updateAvaibility);
 }));
 route.get('/consulta/usuario/:id', verifyJWT, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const contentType = req.header('content-type');
     let userId = Number(req.params.id);
-    let user = req.body.usuario;
-    let appointment = yield (0, controller_consulta_1.getAllAppointmentByUserId)(user, userId, contentType);
+    let appointment = yield (0, controller_consulta_1.getAllAppointmentByUserId)(userId);
     res.status(appointment.status_code);
     res.json(appointment);
 }));

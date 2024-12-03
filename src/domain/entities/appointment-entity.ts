@@ -7,5 +7,6 @@ export type TAppointment ={
     valor: number,
     avaliacao:string
     tbl_clientes_: TUser,
-    tbl_psicologos: TProfessional
+    tbl_psicologos: TProfessional,
+    situacao:string
 }

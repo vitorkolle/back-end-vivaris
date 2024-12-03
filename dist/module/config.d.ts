@@ -134,6 +134,11 @@ export declare const ERROR_NOT_FOUND_APPOINTMENTS: {
     status_code: number;
     message: string;
 };
+export declare const ERROR_CONFLICT_APPOINTMENT: {
+    status: boolean;
+    status_code: number;
+    message: string;
+};
 /****************** Mensagens de Sucesso *********/
 export declare const SUCCESS_CREATED_ITEM: {
     status: boolean;

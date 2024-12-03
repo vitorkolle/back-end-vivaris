@@ -23,10 +23,9 @@ const usuario_2 = require("../../model/DAO/psicologo/usuario");
 function setCadastrarConsulta(idProfessional, idClient, data, contentType) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            if (String(contentType).toLowerCase() !== 'application/json') {
+            if (String(contentType).toLowerCase() !== "application/json") {
                 return config_1.ERROR_CONTENT_TYPE;
             }
-            console.log(data);
             function validarData(data) {
                 if (data.length !== 16)
                     return false;
@@ -41,7 +40,9 @@ function setCadastrarConsulta(idProfessional, idClient, data, contentType) {
                     return false;
                 }
                 const dataTestada = new Date(`${anomesdia}T${hora}:00.000z`);
-                return dataTestada.getFullYear() === ano && dataTestada.getMonth() === mes - 1 && dataTestada.getDate() === dia;
+                return (dataTestada.getFullYear() === ano &&
+                    dataTestada.getMonth() === mes - 1 &&
+                    dataTestada.getDate() === dia);
             }
             function transformarData(data) {
                 if (!validarData(data)) {
@@ -54,7 +55,10 @@ function setCadastrarConsulta(idProfessional, idClient, data, contentType) {
                 const myDate = new Date(`${anomesdia}T${hora}:00.000z`);
                 return myDate;
             }
-            if (!(0, zod_validations_1.isValidId)(idProfessional) || !(0, zod_validations_1.isValidId)(idClient) || !validarData(data.toString()) || !transformarData(data.toString())) {
+            if (!(0, zod_validations_1.isValidId)(idProfessional) ||
+                !(0, zod_validations_1.isValidId)(idClient) ||
+                !validarData(data.toString()) ||
+                !transformarData(data.toString())) {
                 return config_1.ERROR_REQUIRED_FIELDS;
             }
             let validateClient = yield (0, usuario_1.buscarCliente)(idClient);
@@ -66,17 +70,28 @@ function setCadastrarConsulta(idProfessional, idClient, data, contentType) {
                 return config_1.ERROR_NOT_FOUND_PROFESSIONAL;
             }
             let newData = transformarData(data.toString());
+            const existingAppointment = yield (0, consulta_1.verificarConsultaExistente)(idProfessional, newData);
+            if (existingAppointment) {
+                return config_1.ERROR_CONFLICT_APPOINTMENT;
+            }
+            const existingClientAppointment = yield (0, consulta_1.verificarConsultaCliente)(idClient, newData);
+            if (existingClientAppointment) {
+                return {
+                    message: "Você já possui uma consulta marcada nesse horário.",
+                    status_code: 409,
+                };
+            }
             let newAppointment = yield (0, consulta_1.createAppointment)(idProfessional, idClient, newData);
             if (!newAppointment) {
                 return config_1.ERROR_INTERNAL_SERVER_DB;
             }
             return {
                 data: newAppointment,
-                status_code: 201
+                status_code: 201,
             };
         }
         catch (error) {
-            console.error('Erro ao tentar inserir uma nova consulta:', error);
+            console.error("Erro ao tentar inserir uma nova consulta:", error);
             return config_1.ERROR_INTERNAL_SERVER;
         }
     });
@@ -90,7 +105,7 @@ function getBuscarConsulta(id) {
         if (getAppointment) {
             return {
                 data: getAppointment,
-                status_code: 200
+                status_code: 200,
             };
         }
         return config_1.ERROR_NOT_FOUND;
@@ -106,7 +121,7 @@ function getBuscarConsultasPorProfissional(id) {
             if (getAppointmentByProfessional) {
                 return {
                     data: getAppointmentByProfessional,
-                    status_code: 200
+                    status_code: 200,
                 };
             }
             else {
@@ -130,11 +145,11 @@ function setDeletarConsulta(id) {
             }
             return {
                 data: config_1.SUCCESS_DELETED_ITEM.message,
-                status_code: 200
+                status_code: 200,
             };
         }
         catch (error) {
-            console.error('Erro ao tentar deletar a consulta:', error);
+            console.error("Erro ao tentar deletar a consulta:", error);
             return config_1.ERROR_INTERNAL_SERVER;
         }
     });
@@ -142,7 +157,7 @@ function setDeletarConsulta(id) {
 function setAtualizarConsulta(id, data, contentType) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            if (String(contentType).toLowerCase() !== 'application/json') {
+            if (String(contentType).toLowerCase() !== "application/json") {
                 return config_1.ERROR_CONTENT_TYPE;
             }
             function validarData(data) {
@@ -155,7 +170,9 @@ function setAtualizarConsulta(id, data, contentType) {
                 if (mes < 1 || mes > 12)
                     return false;
                 const dataTestada = new Date(ano, mes - 1, dia);
-                return dataTestada.getFullYear() === ano && dataTestada.getMonth() === mes - 1 && dataTestada.getDate() === dia;
+                return (dataTestada.getFullYear() === ano &&
+                    dataTestada.getMonth() === mes - 1 &&
+                    dataTestada.getDate() === dia);
             }
             function transformarData(data) {
                 if (!validarData(data)) {
@@ -163,7 +180,9 @@ function setAtualizarConsulta(id, data, contentType) {
                 }
                 return new Date(data);
             }
-            if (!(0, zod_validations_1.isValidId)(id) || !validarData(data.toString()) || !transformarData(data.toString())) {
+            if (!(0, zod_validations_1.isValidId)(id) ||
+                !validarData(data.toString()) ||
+                !transformarData(data.toString())) {
                 return config_1.ERROR_CONTENT_TYPE;
             }
             let validateAppointment = yield (0, consulta_1.selectAppointment)(id);
@@ -174,42 +193,37 @@ function setAtualizarConsulta(id, data, contentType) {
             if (!appointment) {
                 return {
                     data: config_1.ERROR_INTERNAL_SERVER_DB.message,
-                    status_code: 500
+                    status_code: 500,
                 };
             }
             return {
                 data: config_1.SUCCESS_UPDATED_ITEM.message,
-                status_code: 200
+                status_code: 200,
             };
         }
         catch (error) {
-            console.error('Erro ao tentar atualizar a consulta:', error);
+            console.error("Erro ao tentar atualizar a consulta:", error);
             return config_1.ERROR_INTERNAL_SERVER;
         }
     });
 }
-function getAllAppointmentByUserId(user, user_id, contentType) {
+function getAllAppointmentByUserId(user_id) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            if (String(contentType).toLowerCase() !== 'application/json') {
-                return config_1.ERROR_CONTENT_TYPE;
-            }
-            console.log(user_id);
-            if (!user || !(0, zod_validations_1.isValidUser)(user) ||
-                !user_id || !(0, zod_validations_1.isValidId)(user_id)) {
+            if (!user_id || !(0, zod_validations_1.isValidId)(user_id)) {
                 return config_1.ERROR_REQUIRED_FIELDS;
             }
-            let searchAppointment = yield (0, consulta_1.selectAppointmentByUserId)(user_id, user);
+            let searchAppointment = yield (0, consulta_1.selectAppointmentByUserId)(user_id);
             if (!searchAppointment) {
                 return config_1.ERROR_NOT_FOUND;
             }
             return {
                 data: searchAppointment,
-                status_code: 200
+                status_code: 200,
             };
         }
         catch (error) {
-            console.error('Erro ao tentar buscar a consulta:', error);
+            console.error("Erro ao tentar buscar a consulta:", error);
             return config_1.ERROR_INTERNAL_SERVER;
         }
     });

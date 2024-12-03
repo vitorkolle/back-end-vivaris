@@ -3,6 +3,10 @@ export declare function setCadastrarConsulta(idProfessional: number, idClient: n
     status_code: number;
     message: string;
 } | {
+    message: string;
+    status_code: number;
+    data?: undefined;
+} | {
     data: {
         consulta: {
             id: number;
@@ -11,6 +15,7 @@ export declare function setCadastrarConsulta(idProfessional: number, idClient: n
             id_psicologo: number;
             data_consulta: Date;
             valor: number;
+            situacao: string;
         };
         psicologo: {
             id: number;
@@ -41,6 +46,7 @@ export declare function setCadastrarConsulta(idProfessional: number, idClient: n
         };
     };
     status_code: number;
+    message?: undefined;
 }>;
 export declare function getBuscarConsulta(id: number): Promise<{
     status: boolean;
@@ -74,30 +80,12 @@ export declare function setAtualizarConsulta(id: number, data: Date, contentType
     data: string;
     status_code: number;
 }>;
-export declare function getAllAppointmentByUserId(user: string, user_id: number, contentType: string | undefined): Promise<{
+export declare function getAllAppointmentByUserId(user_id: number): Promise<{
     status: boolean;
     status_code: number;
     message: string;
 } | {
     data: {
-        id: number;
-        tbl_psicologos: {
-            id: number;
-            nome: string;
-            email: string;
-            data_nascimento: Date;
-            foto_perfil: string | null;
-            telefone: string;
-            link_instagram: string | null;
-            tbl_sexo: {
-                sexo: string | null;
-            };
-            preco: number;
-        };
-        avaliacao: import(".prisma/client").$Enums.tbl_consultas_avaliacao;
-        data_consulta: Date;
-        valor: number;
-    }[] | {
         tbl_clientes: {
             id: number;
             nome: string;
@@ -111,6 +99,23 @@ export declare function getAllAppointmentByUserId(user: string, user_id: number,
             } | null;
         };
         id: number;
+        tbl_psicologos: {
+            id: number;
+            nome: string;
+            email: string;
+            data_nascimento: Date;
+            foto_perfil: string | null;
+            telefone: string;
+            link_instagram: string | null;
+            tbl_avaliacoes: {
+                avaliacao: import(".prisma/client").$Enums.tbl_avaliacoes_avaliacao | null;
+            }[];
+            tbl_sexo: {
+                sexo: string | null;
+            };
+            descricao: string | null;
+            preco: number;
+        };
         avaliacao: import(".prisma/client").$Enums.tbl_consultas_avaliacao;
         data_consulta: Date;
         valor: number;

@@ -58,11 +58,10 @@ import {
   createPaymentIntent,
   processarEventoCheckout,
 } from "./src/controller/pagamento/controller_pagamento";
-import stripe from "stripe";
 import { ERROR_INVALID_AUTH_TOKEN } from "./module/config";
 
-
 import cors from "cors";
+import { selectUnavailableHours } from './src/model/DAO/consulta/consulta';
 import { TEmotion } from './src/domain/entities/emotion-entity';
 import { getBuscarEmocao, setAtualizarEmocao, setCriarEmocao } from './src/controller/emocoes/controller_emocoes';
 import { TDiary } from './src/domain/entities/diary-entity';
@@ -76,8 +75,6 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-
-
 app.use("/v1/vivaris", route);
 
 /*****************************Autenticação/JWT****************************************************/
@@ -117,9 +114,9 @@ const verifyJWTRole = async (
     if (!token) {
       return res.status(401).json("É necessário um token de autorização").end();
     }
-
+    
     let role = await getRole(token.toString());
-
+    
     if (role === "Função Inválida") {
       return res.status(401).json("Função Inválida").end();
     }
@@ -212,10 +209,13 @@ server.listen("8080", () => {
 })
 
 /**********************************************STRIPE***************************************************************/
-route.post("/webhook", express.raw({ type: "application/json" }), async (req, res) => {
-  const signature = req.headers["stripe-signature"];
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY)
+route.post('/webhook', express.raw({type: 'application/json'}), async (req, res) => {
+  
+  const signature = req.headers['stripe-signature'];  
 
   if (!signature || typeof signature !== "string") {
+    
     return res
       .status(400)
       .json({ error: "Invalid or missing Stripe signature" });
@@ -230,6 +230,7 @@ route.post("/webhook", express.raw({ type: "application/json" }), async (req, re
   switch (event.type) {
     case "checkout.session.completed":
       try {
+        console.log('vadtyavsdsa')
 
         const session = event.data.object
 
@@ -248,9 +249,8 @@ route.post("/webhook", express.raw({ type: "application/json" }), async (req, re
 
   res.json({ received: true });
 });
-/****************************************************USUARIO-CLIENTE****************************************************/
-app.use(express.json())
 
+/****************************************************USUARIO-CLIENTE****************************************************/
 //post de clientes
 route.post("/cliente", express.json(), async (req, res) => {
 
@@ -499,7 +499,7 @@ route.get("/disponibilidade/:id", verifyJWT, async (req, res) => {
   res.json(buscarDisponibilidade);
 });
 
-route.put("/disponibilidade/:id", verifyJWT, async (req, res) => {
+route.put("/disponibilidade/:id", verifyJWT,express.json(), async (req, res) => {
   const id = Number(req.params.id);
 
   const availabilityData: TAvailability = {
@@ -522,7 +522,7 @@ route.put("/disponibilidade/:id", verifyJWT, async (req, res) => {
   res.json(updateAvaibility);
 });
 
-route.put("/psicologo/disponibilidade", verifyJWT, async (req, res) => {
+route.put("/psicologo/disponibilidade", verifyJWT, express.json(), async (req, res) => {
   const availabilityData: TProfessionalAvailability = {
     id_psicologo: req.body.id_psicologo,
     disponibilidade_id: req.body.disponibilidade_id,
@@ -580,6 +580,7 @@ route.get("/preferencias/:id", async (req, res) => {
 
 /****************************************************PAGAMENTO****************************************************/
 route.post('/create-checkout-session', verifyJWT, express.json(), async (req, res) => {
+  
 
   let idConsulta = req.body.id_consulta
 
@@ -594,7 +595,6 @@ route.post('/create-checkout-session', verifyJWT, express.json(), async (req, re
 
 /*********************************Avaliação************************************/
 route.post('/avaliacao', verifyJWT, express.json(), async (req, res) => {
-
   let contentType = req.header('content-type')
 
   let inputData: TAssessment = {
@@ -610,10 +610,22 @@ route.post('/avaliacao', verifyJWT, express.json(), async (req, res) => {
   res.json(assessment)
 })
 
+//route.get('/avaliacoes/:idPsicologo', verifyJWT,  async(req, res) => {
+  //let idPsicologo = req.params.idPsicologo
+
+ // if (!idPsicologo) {
+   // return res.status(400).json({ error: 'O ID do psicólogo é obrigatório.' });
+  //}
+
+  //let assessments = await getBuscarAvaliacoesPorPsicologo(idPsicologo)
+
+  //res.status(assessments.status_code)
+  ///res.json(assessments)
+//s})
+
 
 /*******************************Consulta*************************/
 route.post('/consulta', express.json(), verifyJWT, async (req, res) => {
-
   let contentType = req.header('content-type')
 
   let idProfessional = req.body.id_psicologo
@@ -628,8 +640,8 @@ route.post('/consulta', express.json(), verifyJWT, async (req, res) => {
   res.json(newAppointment)
 })
 
-route.get('/consultas/psicologo/:id_psicologo', verifyJWT, async (req, res) => {
 
+route.get('/consultas/psicologo/:id_psicologo', verifyJWT, async (req, res) => {
   let idProfessional = Number(req.params.id_psicologo)
 
   if (!idProfessional) {
@@ -641,6 +653,33 @@ route.get('/consultas/psicologo/:id_psicologo', verifyJWT, async (req, res) => {
   res.status(consultas.status_code)
   res.json(consultas)
 })
+
+route.get('/v1/vivaris/consulta/horarios', async (req, res) => {
+  const { data, psicologoId } = req.query;
+
+  if (!data || !psicologoId) {
+    return res.status(400).json({ error: 'Data e psicologoId são obrigatórios.' });
+  }
+
+  try {
+    const startOfDay = `${data} 00:00:00`;
+    const endOfDay = `${data} 23:59:59`;
+
+    const results = await selectUnavailableHours(Number(psicologoId), startOfDay, endOfDay);
+
+    const unavailableTimes = results.map(row =>
+      new Date(row.data_consulta).toLocaleTimeString('pt-BR', {
+        hour: '2-digit',
+        minute: '2-digit',
+      })
+    );
+
+    return res.json({ unavailableTimes });
+  } catch (error) {
+    console.error('Erro ao buscar horários indisponíveis:', error);
+    return res.status(500).json({ error: 'Erro ao buscar horários indisponíveis.' });
+  }
+});
 
 route.get('/consulta/:id', verifyJWT, async (req, res) => {
   let id = Number(req.params.id)
@@ -675,10 +714,7 @@ route.get('/consulta/usuario/:id', verifyJWT, async (req, res) => {
   const contentType = req.header('content-type')
 
   let userId = Number(req.params.id)
-
-  let user = req.body.usuario
-
-  let appointment = await getAllAppointmentByUserId(user, userId, contentType)
+  let appointment = await getAllAppointmentByUserId(userId)
 
   res.status(appointment.status_code)
   res.json(appointment)

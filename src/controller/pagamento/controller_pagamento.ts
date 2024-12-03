@@ -1,6 +1,6 @@
 import stripe from "stripe";
 import { ERROR_REQUIRED_FIELDS, ERROR_INVALID_PAYMENT_METHOD_ID, ERROR_NOT_FOUND, ERROR_NOT_FOUND_ASSESSMENT } from "../../../module/config";
-import { selectAppointment } from "../../model/DAO/consulta/consulta";
+import { selectAppointment, updateAppointment, updateAppointmentStatus } from "../../model/DAO/consulta/consulta";
 import { atualizarDisponibilidadeProfissional } from "../../model/DAO/disponibilidade/disponibilidade";
 import { createPayment } from "../../model/DAO/pagamento/pagamento";
 import { makePayment } from "../../stripe";
@@ -52,6 +52,9 @@ export const confirmPayment = async (order:any) => {
         } 
         
         const payment = await createPayment(order.payment_intent, consultaId );
+        if(payment){
+            await updateAppointmentStatus(consultaId)
+        }
         
         return { received: true, pagamento: payment };
     } catch (error) {
@@ -71,7 +74,9 @@ export async function processarEventoCheckout(session:stripe.Checkout.Session) {
   
     const disp = JSON.parse(disponibilidadeJSON);
    
-    const result = await atualizarDisponibilidadeProfissional(disp, psicoId);
+    await atualizarDisponibilidadeProfissional(disp, psicoId);
+    const consultaId = Number(session.metadata?.consultaId)
+    await updateAppointmentStatus(consultaId)
   }
 
 const extractPaymentInfo = (event:any) => {

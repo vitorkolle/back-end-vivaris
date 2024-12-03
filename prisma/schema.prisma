@@ -58,6 +58,7 @@ model tbl_consultas {
   avaliacao      tbl_consultas_avaliacao
   id_cliente     Int
   id_psicologo   Int
+  situacao         String                  @db.VarChar(12)
   tbl_clientes   tbl_clientes            @relation(fields: [id_cliente], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "CLIENTE_CONSULTA")
   tbl_psicologos tbl_psicologos          @relation(fields: [id_psicologo], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "PSICOLOGO_CONSULTA")
   tbl_pagamentos tbl_pagamentos[]

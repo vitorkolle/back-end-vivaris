@@ -44,6 +44,7 @@ const makePayment = (data, id_cliente) => __awaiter(void 0, void 0, void 0, func
             return `${horas}:${minutos}`;
         }
         for (const disp of disponibilidadesArray) {
+            console.log('DISP:', disp);
             const diaDisponibilidade = disp.dia_semana;
             const horarioInicio = disp.horario_inicio;
             const horarioFim = disp.horario_fim;
