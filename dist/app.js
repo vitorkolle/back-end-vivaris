@@ -273,6 +273,24 @@ route.get("/profissionais", verifyJWT, (req, res) => __awaiter(void 0, void 0, v
     res.status(getProfissionais.status_code);
     res.json(getProfissionais);
 }));
+route.put("/profissional/:id", express_1.default.json(), verifyJWT, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const id = Number(req.params.id);
+    const contentType = req.header("content-type");
+    const professionalData = {
+        nome: req.body.nome,
+        email: req.body.email,
+        senha: req.body.senha,
+        telefone: req.body.telefone,
+        cpf: req.body.cpf,
+        cip: req.body.cip,
+        data_nascimento: req.body.data_nascimento,
+        id_sexo: req.body.id_sexo,
+        preco: req.body.preco
+    };
+    let updateProfessional = yield (0, controller_psicologo_1.setAtualizarPsicologo)(professionalData, contentType, id);
+    res.status(updateProfessional.status_code);
+    res.json(updateProfessional);
+}));
 /****************************************************DISPONIBILIDADE****************************************************/
 route.post("/disponibilidade", express_1.default.json(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const contentType = req.header("content-type");

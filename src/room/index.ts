@@ -1,6 +1,5 @@
 import { Socket } from "socket.io";
 import { v4 as uuidV4 } from "uuid";
-import { any } from "zod";
 
 const rooms: Record<string, string[]> = {};
 

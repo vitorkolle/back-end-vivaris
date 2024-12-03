@@ -93,3 +93,4 @@ export declare function listarPsicologos(): Promise<{
     }[];
     status_code: number;
 }>;
+export declare function atualizarPsicologo(id: number, userInput: TProfessional): Promise<TProfessional | boolean>;
