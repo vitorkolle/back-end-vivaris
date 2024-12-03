@@ -153,7 +153,7 @@ io.on("connection", async (socket) => {
   console.log(`Usuário conectado: ${socket.id}`);
 
   // Salva o usuário conectado
-  socket.on("registerUser", (userId: string) => {
+  socket.on("registerUser", (userId) => {
     connectedUsers[userId] = socket.id;
     console.log(`Usuário registrado: ${userId} com ID de socket ${socket.id}`);
   });
@@ -558,7 +558,6 @@ route.get("/preferencias/:id", async (req, res) => {
 
 /****************************************************PAGAMENTO****************************************************/
 route.post('/create-checkout-session', verifyJWT, express.json(), async (req, res) => {
-  console.log('oiiiiiiiii');
   
 
   let idConsulta = req.body.id_consulta
@@ -591,6 +590,19 @@ route.post('/avaliacao', verifyJWT, express.json(), async (req, res) => {
   res.status(assessment.status_code)
   res.json(assessment)
 })
+
+//route.get('/avaliacoes/:idPsicologo', verifyJWT,  async(req, res) => {
+  //let idPsicologo = req.params.idPsicologo
+
+ // if (!idPsicologo) {
+   // return res.status(400).json({ error: 'O ID do psicólogo é obrigatório.' });
+  //}
+
+  //let assessments = await getBuscarAvaliacoesPorPsicologo(idPsicologo)
+
+  //res.status(assessments.status_code)
+  ///res.json(assessments)
+//s})
 
 
 /*******************************Consulta*************************/
