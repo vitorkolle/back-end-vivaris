@@ -10,6 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.criarAvaliacao = criarAvaliacao;
+exports.getAvaliacoesPorPsicologo = getAvaliacoesPorPsicologo;
 const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
 function criarAvaliacao(avalicacao) {
@@ -31,6 +32,25 @@ function criarAvaliacao(avalicacao) {
         catch (error) {
             console.error("Erro ao criar nova avaliacao:", error);
             throw new Error("Não foi possível criar a avaliação");
+        }
+    });
+}
+function getAvaliacoesPorPsicologo(id) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            let assessments = yield prisma.tbl_avaliacoes.findMany({
+                where: {
+                    id_psicologo: id
+                }
+            });
+            if (!assessments) {
+                return [];
+            }
+            return assessments;
+        }
+        catch (error) {
+            console.error("Erro ao buscar avaliacoes por psicologo:", error);
+            throw new Error("Não foi possível buscar as avaliações");
         }
     });
 }

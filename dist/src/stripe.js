@@ -32,31 +32,36 @@ const makePayment = (data, id_cliente) => __awaiter(void 0, void 0, void 0, func
             : [];
         let disponibilidadeSelecionada = null;
         function getDiaSemana(dataISO) {
-            const diasSemana = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
+            const diasSemana = ['Domingo', 'Segunda', 'Terca', 'Quarta', 'Quinta', 'Sexta', 'Sabado'];
             const dataObj = new Date(dataISO);
             const diaIndex = dataObj.getDay();
             return diasSemana[diaIndex];
         }
         function getHorario(dataISO) {
             const dataObj = new Date(dataISO);
-            const horas = String(dataObj.getUTCHours());
-            const minutos = String(dataObj.getUTCMinutes());
+            const horas = String(dataObj.getUTCHours()).padStart(2, '0');
+            const minutos = String(dataObj.getUTCMinutes()).padStart(2, '0');
             return `${horas}:${minutos}`;
         }
         for (const disp of disponibilidadesArray) {
-            console.log('DISP:', disp);
             const diaDisponibilidade = disp.dia_semana;
             const horarioInicio = disp.horario_inicio;
             const horarioFim = disp.horario_fim;
             const diaConsulta = getDiaSemana(data.data_consulta);
             const horarioConsulta = getHorario(data.data_consulta);
-            if (diaConsulta === diaDisponibilidade &&
-                horarioConsulta >= horarioInicio &&
-                horarioConsulta <= horarioFim) {
+            console.log(diaDisponibilidade, '=', diaConsulta);
+            console.log(horarioConsulta, '<=', horarioFim, '>=', horarioInicio);
+            if (diaConsulta.trim().toLowerCase() === diaDisponibilidade.trim().toLowerCase() &&
+                horarioConsulta.trim() >= horarioInicio.trim() &&
+                horarioConsulta.trim() <= horarioFim.trim()) {
+                console.log('foi');
+                console.log('Condição atendida, selecionando disponibilidade:', disp);
                 disponibilidadeSelecionada = disp;
                 break;
             }
         }
+        // Verifica fora do loop
+        console.log('Disponibilidade selecionada após o loop:', disponibilidadeSelecionada);
         if (!disponibilidadeSelecionada) {
             throw new Error('Nenhuma disponibilidade correspondente encontrada!');
         }
@@ -65,9 +70,10 @@ const makePayment = (data, id_cliente) => __awaiter(void 0, void 0, void 0, func
                 userId: String(usuario === null || usuario === void 0 ? void 0 : usuario.id),
                 consultaId: String(data.id),
                 disponibilidadeId: JSON.stringify(disponibilidadeSelecionada),
-                psicoId: String(idPsico)
-            }
+                psicoId: String(idPsico),
+            },
         });
+        console.log('customer: ', customer);
         const session = yield stripe.checkout.sessions.create({
             line_items: [
                 {
@@ -90,12 +96,13 @@ const makePayment = (data, id_cliente) => __awaiter(void 0, void 0, void 0, func
                 userId: String(usuario === null || usuario === void 0 ? void 0 : usuario.id),
                 consultaId: String(data.id),
                 disponibilidade: JSON.stringify(disponibilidadeSelecionada),
-                psicoId: String(idPsico)
+                psicoId: String(idPsico),
             },
         });
         return { url: session.url };
     }
     catch (error) {
+        console.error(error);
         return error;
     }
 });

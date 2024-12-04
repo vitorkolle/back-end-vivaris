@@ -89,6 +89,21 @@ export async function buscarPsicologo(id: number) {
             }
           },
         },
+        tbl_avaliacoes:{
+          select:{
+            id: true,
+            avaliacao: true,
+            tbl_clientes:{
+              select: {
+                id: true,
+                nome: true,
+                email: true,
+                foto_perfil:true
+              }
+            },
+            texto:true
+          }
+        }
       },
     })
 

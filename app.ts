@@ -1,5 +1,5 @@
 //Import
-import { setCadastrarAvaliacao } from './src/controller/avaliacao/controller_avaliacao'
+import { getBuscarAvaliacoesPorPsicologo, setCadastrarAvaliacao } from './src/controller/avaliacao/controller_avaliacao'
 import { TAssessment } from './src/domain/entities/assessment'
 import { getAllAppointmentByUserId, getBuscarConsulta, getBuscarConsultasPorProfissional, setAtualizarConsulta, setCadastrarConsulta, setDeletarConsulta } from "./src/controller/consulta/controller_consulta";
 
@@ -67,6 +67,7 @@ import { TEmotion } from './src/domain/entities/emotion-entity';
 import { getBuscarEmocao, setAtualizarEmocao, setCriarEmocao } from './src/controller/emocoes/controller_emocoes';
 import { TDiary } from './src/domain/entities/diary-entity';
 import { getBuscarDiario, setAtualizarDiario, setDeletarDiario } from './src/controller/diario/controller_diario';
+import { string } from 'zod';
 
 const corsOptions = {
   origin: ['http://localhost:5173', 'http://127.0.0.1:5173', '*'],
@@ -115,9 +116,9 @@ const verifyJWTRole = async (
     if (!token) {
       return res.status(401).json("É necessário um token de autorização").end();
     }
-    
+
     let role = await getRole(token.toString());
-    
+
     if (role === "Função Inválida") {
       return res.status(401).json("Função Inválida").end();
     }
@@ -148,37 +149,50 @@ const io = new Server(server, {
   },
 });
 
-const connectedUsers: Record<string, string> = {};
 
+// Mova a definição de connectedUsers para o escopo global
+const connectedUsers: any = {};  // Armazenar único socket por usuário
 
-io.on("connection", async (socket) => {
+io.on("connection", (socket) => {
   console.log(`Usuário conectado: ${socket.id}`);
 
-  // Salva o usuário conectado
+  // Quando o usuário se registrar
   socket.on("registerUser", (userId: string) => {
-    connectedUsers[userId] = socket.id;
-    console.log(`Usuário registrado: ${userId} com ID de socket ${socket.id}`);
-  });
+    // Verifica se o usuário já tem algum socket registrado
+    if (connectedUsers[userId]) {
+      const oldSocketId = connectedUsers[userId];
 
-  // Usuário A liga para Usuário B
-  socket.on("callUser", ({ from, to }: { from: string; to: string }) => {
+      // Se já tiver um socket registrado, desconecta o anterior
+      if (oldSocketId !== socket.id) {
+        io.to(oldSocketId).emit("forceDisconnect", { message: "Você foi desconectado devido a uma nova conexão." });
+        console.log(`Usuário ${userId} foi desconectado do socket ${oldSocketId} por uma nova conexão`);
+      }
+    }
+  // Para emitir a chamada para o usuário, pegando o único socket registrado
+  socket.on("callUser", ({ from, to }) => {
+    console.log(`Tentando chamar ${to} de ${from}`);
+    console.log(connectedUsers);
+
     const receiverSocketId = connectedUsers[to];
+    console.log(receiverSocketId);
 
     if (!receiverSocketId) {
+      console.log(`Usuário ${to} não está disponível.`);
       socket.emit("callFailed", { message: "Usuário não está disponível." });
       return;
     }
 
-    // Cria uma sala única para a chamada
+    // Cria um ID único para a sala
     const roomId = uuidv4();
     console.log(`Chamada iniciada de ${from} para ${to} na sala ${roomId}`);
+    console.log(`Enviando chamada para o socket: ${receiverSocketId}`);
 
-    // Notifica o usuário B
+    // Envia a notificação de chamada para o usuário B
     io.to(receiverSocketId).emit("incomingCall", { from, roomId });
   });
 
   // Usuário B aceita a chamada
-  socket.on("acceptCall", ({ roomId, userId }: { roomId: string; userId: string }) => {
+  socket.on("acceptCall", ({ roomId, userId }) => {
     console.log(`Usuário ${userId} aceitou a chamada na sala ${roomId}`);
     socket.join(roomId);
 
@@ -186,7 +200,7 @@ io.on("connection", async (socket) => {
     socket.to(roomId).emit("callAccepted", { userId });
   });
 
-  socket.on("declineCall", ({ roomId, from }: { roomId: string; from: string }) => {
+  socket.on("declineCall", ({ roomId, from }) => {
     console.log(`Usuário recusou a chamada na sala ${roomId}`);
     const callerSocketId = connectedUsers[from];
     if (callerSocketId) {
@@ -196,14 +210,18 @@ io.on("connection", async (socket) => {
 
   // Limpa o registro ao desconectar
   socket.on("disconnect", () => {
-    const userId = Object.keys(connectedUsers).find((key) => connectedUsers[key] === socket.id);
-    if (userId) {
-      delete connectedUsers[userId];
-      console.log(`Usuário ${userId} desconectado.`);
+    // Encontra e remove o socket desconectado
+    for (const userId in connectedUsers) {
+      if (connectedUsers[userId] === socket.id) {
+        delete connectedUsers[userId];  // Remove o usuário da lista
+        console.log(`Usuário ${userId} desconectado e removido da lista.`);
+        break;
+      }
     }
   });
-
 });
+
+
 
 server.listen("8080", () => {
   console.log("API funcionando na porta 8080");
@@ -211,12 +229,12 @@ server.listen("8080", () => {
 
 /**********************************************STRIPE***************************************************************/
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY)
-route.post('/webhook', express.raw({type: 'application/json'}), async (req, res) => {
-  
-  const signature = req.headers['stripe-signature'];  
+route.post('/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
+
+  const signature = req.headers['stripe-signature'];
 
   if (!signature || typeof signature !== "string") {
-    
+
     return res
       .status(400)
       .json({ error: "Invalid or missing Stripe signature" });
@@ -520,7 +538,7 @@ route.get("/disponibilidade/:id", verifyJWT, async (req, res) => {
   res.json(buscarDisponibilidade);
 });
 
-route.put("/disponibilidade/:id", verifyJWT,express.json(), async (req, res) => {
+route.put("/disponibilidade/:id", verifyJWT, express.json(), async (req, res) => {
   const id = Number(req.params.id);
 
   const availabilityData: TAvailability = {
@@ -601,13 +619,14 @@ route.get("/preferencias/:id", async (req, res) => {
 
 /****************************************************PAGAMENTO****************************************************/
 route.post('/create-checkout-session', verifyJWT, express.json(), async (req, res) => {
-  
+
 
   let idConsulta = req.body.id_consulta
 
   let idCliente = req.body.id_cliente
 
   const result = await createPaymentIntent(idConsulta, idCliente)
+
 
   res.status(result.status_code)
   res.json(result)
@@ -631,18 +650,18 @@ route.post('/avaliacao', verifyJWT, express.json(), async (req, res) => {
   res.json(assessment)
 })
 
-//route.get('/avaliacoes/:idPsicologo', verifyJWT,  async(req, res) => {
-  //let idPsicologo = req.params.idPsicologo
+route.get('/avaliacoes/:idPsicologo', verifyJWT, async (req, res) => {
+  let idPsicologo = Number(req.params.idPsicologo)
 
- // if (!idPsicologo) {
-   // return res.status(400).json({ error: 'O ID do psicólogo é obrigatório.' });
-  //}
+  if (!idPsicologo) {
+    return res.status(400).json({ error: 'O ID do psicólogo é obrigatório.' });
+  }
 
-  //let assessments = await getBuscarAvaliacoesPorPsicologo(idPsicologo)
+  let assessments = await getBuscarAvaliacoesPorPsicologo(idPsicologo)
 
-  //res.status(assessments.status_code)
-  ///res.json(assessments)
-//s})
+  res.status(assessments.status_code)
+  res.json(assessments)
+})
 
 
 /*******************************Consulta*************************/
@@ -662,7 +681,9 @@ route.post('/consulta', express.json(), verifyJWT, async (req, res) => {
 })
 
 
+
 route.get('/consultas/psicologo/:id_psicologo', verifyJWT, async (req, res) => {
+
   let idProfessional = Number(req.params.id_psicologo)
 
   if (!idProfessional) {

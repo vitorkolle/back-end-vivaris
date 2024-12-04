@@ -10,6 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.setCadastrarAvaliacao = setCadastrarAvaliacao;
+exports.getBuscarAvaliacoesPorPsicologo = getBuscarAvaliacoesPorPsicologo;
 const config_1 = require("../../../module/config");
 const zod_validations_1 = require("../../infra/zod-validations");
 const avaliacao_1 = require("../../model/DAO/avaliacao/avaliacao");
@@ -51,6 +52,27 @@ function setCadastrarAvaliacao(avaliacao, contentType) {
         }
         catch (error) {
             console.error('Erro ao tentar inserir uma nova avaliação:', error);
+            return config_1.ERROR_INTERNAL_SERVER;
+        }
+    });
+}
+function getBuscarAvaliacoesPorPsicologo(id) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            if (!(0, zod_validations_1.isValidId)(id)) {
+                return config_1.ERROR_REQUIRED_FIELDS;
+            }
+            let assessmentData = yield (0, avaliacao_1.getAvaliacoesPorPsicologo)(id);
+            if (assessmentData) {
+                return {
+                    data: assessmentData,
+                    status_code: 200
+                };
+            }
+            return config_1.ERROR_NOT_FOUND;
+        }
+        catch (error) {
+            console.error('Erro ao tentar buscar as avaliações de um psicologo:', error);
             return config_1.ERROR_INTERNAL_SERVER;
         }
     });
