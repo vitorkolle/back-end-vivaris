@@ -136,8 +136,8 @@ io.on("connection", (socket) => __awaiter(void 0, void 0, void 0, function* () {
         }
     });
 }));
-server.listen("8000", () => {
-    console.log("API funcionando na porta 8000");
+server.listen("8080", () => {
+    console.log("API funcionando na porta 8080");
 });
 /**********************************************STRIPE***************************************************************/
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);

@@ -161,6 +161,7 @@ io.on("connection", async (socket) => {
   // Usuário A liga para Usuário B
   socket.on("callUser", ({ from, to }: { from: string; to: string }) => {
     const receiverSocketId = connectedUsers[to];
+    
 
     if (!receiverSocketId) {
       socket.emit("callFailed", { message: "Usuário não está disponível." });
@@ -203,8 +204,8 @@ io.on("connection", async (socket) => {
 
 });
 
-server.listen("8000", () => {
-  console.log("API funcionando na porta 8000");
+server.listen("8080", () => {
+  console.log("API funcionando na porta 8080");
 })
 
 
