@@ -48,6 +48,7 @@ import {
   getListarClientes,
   getListarSexo,
   getLogarCliente,
+  setAtualizarCliente,
   setInserirUsuario,
 } from "./src/controller/usuario/controller_usuario";
 import { TAvailability } from "./src/domain/entities/availability-entity";
@@ -327,6 +328,26 @@ route.get("/usuarios", verifyJWT, async (req, res) => {
   res.status(allUsers.status_code);
   res.json(allUsers);
 });
+
+route.put("/usuario/:id", express.json(), verifyJWT, async (req, res) => {
+  const id = Number(req.params.id);
+  const contentType = req.header("content-type");
+
+  const userData: TUser = {
+    nome: req.body.nome,
+    email: req.body.email,
+    senha: req.body.senha,
+    telefone: req.body.telefone,
+    cpf: req.body.cpf,
+    data_nascimento: req.body.data_nascimento,
+    id_sexo: req.body.id_sexo
+  }
+
+  let updateUser = await setAtualizarCliente(id, userData, contentType);
+
+  res.status(updateUser.status_code);
+  res.json(updateUser);
+})
 
 /****************************************************GÊNERO****************************************************/
 route.get("/sexo", async (req, res) => {

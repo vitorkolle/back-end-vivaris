@@ -88,3 +88,18 @@ export declare function listarUsuarios(): Promise<false | {
         } | null;
     }[];
 }[]>;
+export declare function validateCLiente(data: TUser): Promise<boolean>;
+export declare function updateUsuario(id: number, data: TUser): Promise<false | {
+    id: number;
+    nome: string;
+    email: string;
+    data_nascimento: Date;
+    cpf: string;
+    senha: string;
+    foto_perfil: string | null;
+    telefone: string;
+    link_instagram: string | null;
+    tbl_sexo: {
+        sexo: string | null;
+    } | null;
+}>;

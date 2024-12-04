@@ -304,3 +304,119 @@ export async function listarUsuarios() {
     throw new Error("Não foi possível obter os usuários");
   }
 }
+
+export async function validateCLiente(data: TUser) {
+  try {
+    let user = await prisma.tbl_clientes.findUnique({
+      where: {
+        email: data.email,
+        cpf: data.cpf
+      },
+      select: {
+        id: true,
+        nome: true,
+        email: true,
+        telefone: true,
+        cpf: true,
+        data_nascimento: true,
+        foto_perfil: true,
+        link_instagram: true,
+        tbl_sexo: {
+          select: {
+            sexo: true
+          }
+        }
+      }
+    })
+
+    if (!user) {
+      return false
+    }
+
+    return true
+  } catch (error) {
+    console.error("Erro ao validar o usuário", error);
+    throw new Error("Erro ao validar o usuário");
+  }
+}
+
+export async function updateUsuario(id: number, data : TUser) {
+  try {
+    if (data.foto_perfil
+    ) {
+      let user = await prisma.tbl_clientes.update({
+        where: {
+          id: id
+        },
+        data:{
+          nome: data.nome,
+          data_nascimento: data.data_nascimento,
+          foto_perfil: data.foto_perfil,
+          link_instagram: data.link_instagram,
+          id_sexo: data.id_sexo
+        },
+        select: {
+          id: true,
+          nome: true,
+          email: true,
+          senha: true,
+          telefone: true,
+          cpf: true,
+          data_nascimento: true,
+          foto_perfil: true,
+          link_instagram: true,
+          tbl_sexo: {
+            select: {
+              sexo: true
+            }
+          }
+        }
+      })
+  
+      if (!user) {
+        return false
+      }
+  
+      return user 
+    }
+
+    let user = await prisma.tbl_clientes.update({
+      where: {
+        id: id
+      },
+      data:{
+        nome: data.nome,
+        data_nascimento: data.data_nascimento,
+        link_instagram: data.link_instagram,
+        id_sexo: data.id_sexo
+      },
+      select: {
+        id: true,
+        nome: true,
+        email: true,
+        senha: true,
+        telefone: true,
+        cpf: true,
+        data_nascimento: true,
+        foto_perfil: true,
+        link_instagram: true,
+        tbl_sexo: {
+          select: {
+            sexo: true
+          }
+        }
+      }
+    })
+
+    if (!user) {
+      return false
+    }
+
+    return user 
+
+
+  } catch (error) {
+    console.error("Erro ao atualizar o usuário", error);
+    throw new Error("Não foi possível atualizar o usuário");
+  }
+}

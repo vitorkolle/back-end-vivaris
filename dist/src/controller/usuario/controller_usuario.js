@@ -16,6 +16,7 @@ exports.getLogarCliente = getLogarCliente;
 exports.getBuscarCliente = getBuscarCliente;
 exports.getBuscarClientePreferencias = getBuscarClientePreferencias;
 exports.getListarClientes = getListarClientes;
+exports.setAtualizarCliente = setAtualizarCliente;
 const config_1 = require("../../../module/config");
 const usuario_1 = require("../../model/DAO/cliente/usuario");
 const sexo_1 = require("../../model/DAO/cliente/sexo");
@@ -207,5 +208,96 @@ function getListarClientes() {
             data: clientData,
             status_code: 200
         };
+    });
+}
+function setAtualizarCliente(id, data, contentType) {
+    return __awaiter(this, void 0, void 0, function* () {
+        var _a;
+        try {
+            if (String(contentType).toLowerCase() !== 'application/json') {
+                return config_1.ERROR_CONTENT_TYPE;
+            }
+            function validarData(data) {
+                if (data.length !== 10)
+                    return false;
+                const partes = data.split("-");
+                const ano = parseInt(partes[0], 10);
+                const mes = parseInt(partes[1], 10);
+                const dia = parseInt(partes[2], 10);
+                if (mes < 1 || mes > 12)
+                    return false;
+                const dataTestada = new Date(ano, mes - 1, dia);
+                return dataTestada.getFullYear() === ano && dataTestada.getMonth() === mes - 1 && dataTestada.getDate() === dia;
+            }
+            function transformarData(data) {
+                if (!validarData(data)) {
+                    throw new Error("Formato de data inválido");
+                }
+                return new Date(data);
+            }
+            if (!id || !(0, zod_validations_1.isValidId)(id) ||
+                !data.nome || !(0, zod_validations_1.isValidName)(data.nome) ||
+                !data.data_nascimento || !validarData(data.data_nascimento.toString()) || !transformarData(data.data_nascimento.toString()) ||
+                !data.id_sexo || !(0, zod_validations_1.isValidId)(data.id_sexo)) {
+                return config_1.ERROR_REQUIRED_FIELDS;
+            }
+            if (data.foto_perfil) {
+                if (((_a = data.foto_perfil) === null || _a === void 0 ? void 0 : _a.length) > 300) {
+                    return config_1.ERROR_REQUIRED_FIELDS;
+                }
+                const inputData = {
+                    foto_perfil: data.foto_perfil,
+                    nome: data.nome,
+                    data_nascimento: transformarData(data.data_nascimento.toString()),
+                    id_sexo: data.id_sexo,
+                    cpf: data.cpf,
+                    email: data.email,
+                    telefone: data.telefone,
+                    senha: data.senha
+                };
+                let validateClient = yield (0, usuario_1.validateCLiente)(inputData);
+                if (!validateClient) {
+                    config_1.ERROR_NOT_FOUND_CLIENT;
+                }
+                let updateClient = yield (0, usuario_1.updateUsuario)(id, inputData);
+                if (updateClient) {
+                    return {
+                        data: updateClient,
+                        status_code: 200
+                    };
+                }
+                else {
+                    return config_1.ERROR_NOT_UPDATED;
+                }
+            }
+            const inputData = {
+                foto_perfil: null,
+                nome: data.nome,
+                data_nascimento: transformarData(data.data_nascimento.toString()),
+                id_sexo: data.id_sexo,
+                cpf: data.cpf,
+                email: data.email,
+                telefone: data.telefone,
+                senha: data.senha
+            };
+            let validateClient = yield (0, usuario_1.validateCLiente)(inputData);
+            if (!validateClient) {
+                config_1.ERROR_NOT_FOUND_CLIENT;
+            }
+            let updateClient = yield (0, usuario_1.updateUsuario)(id, inputData);
+            if (updateClient) {
+                return {
+                    data: updateClient,
+                    status_code: 200
+                };
+            }
+            else {
+                return config_1.ERROR_NOT_UPDATED;
+            }
+        }
+        catch (error) {
+            console.error('Erro ao tentar atualizar os dados do usuário:', error);
+            return config_1.ERROR_INTERNAL_SERVER;
+        }
     });
 }
