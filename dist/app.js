@@ -92,25 +92,41 @@ const io = new socket_io_1.Server(server, {
         origin: "*",
     },
 });
-const connectedUsers = {};
-io.on("connection", (socket) => __awaiter(void 0, void 0, void 0, function* () {
+// Mova a definição de connectedUsers para o escopo global
+const connectedUsers = {}; // Armazenar único socket por usuário
+io.on("connection", (socket) => {
     console.log(`Usuário conectado: ${socket.id}`);
-    // Salva o usuário conectado
+    // Quando o usuário se registrar
     socket.on("registerUser", (userId) => {
+        // Verifica se o usuário já tem algum socket registrado
+        if (connectedUsers[userId]) {
+            const oldSocketId = connectedUsers[userId];
+            // Se já tiver um socket registrado, desconecta o anterior
+            if (oldSocketId !== socket.id) {
+                io.to(oldSocketId).emit("forceDisconnect", { message: "Você foi desconectado devido a uma nova conexão." });
+                console.log(`Usuário ${userId} foi desconectado do socket ${oldSocketId} por uma nova conexão`);
+            }
+        }
+        // Registra o novo socket para o userId
         connectedUsers[userId] = socket.id;
-        console.log(`Usuário registrado: ${userId} com ID de socket ${socket.id}`);
+        console.log(`Usuário registrado: ${userId} com socketId ${socket.id}`);
     });
-    // Usuário A liga para Usuário B
+    // Para emitir a chamada para o usuário, pegando o único socket registrado
     socket.on("callUser", ({ from, to }) => {
+        console.log(`Tentando chamar ${to} de ${from}`);
+        console.log(connectedUsers);
         const receiverSocketId = connectedUsers[to];
+        console.log(receiverSocketId);
         if (!receiverSocketId) {
+            console.log(`Usuário ${to} não está disponível.`);
             socket.emit("callFailed", { message: "Usuário não está disponível." });
             return;
         }
-        // Cria uma sala única para a chamada
+        // Cria um ID único para a sala
         const roomId = (0, uuid_1.v4)();
         console.log(`Chamada iniciada de ${from} para ${to} na sala ${roomId}`);
-        // Notifica o usuário B
+        console.log(`Enviando chamada para o socket: ${receiverSocketId}`);
+        // Envia a notificação de chamada para o usuário B
         io.to(receiverSocketId).emit("incomingCall", { from, roomId });
     });
     // Usuário B aceita a chamada
@@ -129,13 +145,16 @@ io.on("connection", (socket) => __awaiter(void 0, void 0, void 0, function* () {
     });
     // Limpa o registro ao desconectar
     socket.on("disconnect", () => {
-        const userId = Object.keys(connectedUsers).find((key) => connectedUsers[key] === socket.id);
-        if (userId) {
-            delete connectedUsers[userId];
-            console.log(`Usuário ${userId} desconectado.`);
+        // Encontra e remove o socket desconectado
+        for (const userId in connectedUsers) {
+            if (connectedUsers[userId] === socket.id) {
+                delete connectedUsers[userId]; // Remove o usuário da lista
+                console.log(`Usuário ${userId} desconectado e removido da lista.`);
+                break;
+            }
         }
     });
-}));
+});
 server.listen("8080", () => {
     console.log("API funcionando na porta 8080");
 });
