@@ -241,6 +241,22 @@ route.get("/usuarios", verifyJWT, (req, res) => __awaiter(void 0, void 0, void 0
     res.status(allUsers.status_code);
     res.json(allUsers);
 }));
+route.put("/usuario/:id", express_1.default.json(), verifyJWT, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const id = Number(req.params.id);
+    const contentType = req.header("content-type");
+    const userData = {
+        nome: req.body.nome,
+        email: req.body.email,
+        senha: req.body.senha,
+        telefone: req.body.telefone,
+        cpf: req.body.cpf,
+        data_nascimento: req.body.data_nascimento,
+        id_sexo: req.body.id_sexo
+    };
+    let updateUser = yield (0, controller_usuario_1.setAtualizarCliente)(id, userData, contentType);
+    res.status(updateUser.status_code);
+    res.json(updateUser);
+}));
 /****************************************************GÊNERO****************************************************/
 route.get("/sexo", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let allSex = yield (0, controller_usuario_1.getListarSexo)();
@@ -292,6 +308,24 @@ route.get("/profissionais", verifyJWT, (req, res) => __awaiter(void 0, void 0, v
     const getProfissionais = yield (0, controller_psicologo_1.getListarPsicologos)();
     res.status(getProfissionais.status_code);
     res.json(getProfissionais);
+}));
+route.put("/profissional/:id", express_1.default.json(), verifyJWT, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const id = Number(req.params.id);
+    const contentType = req.header("content-type");
+    const professionalData = {
+        nome: req.body.nome,
+        email: req.body.email,
+        senha: req.body.senha,
+        telefone: req.body.telefone,
+        cpf: req.body.cpf,
+        cip: req.body.cip,
+        data_nascimento: req.body.data_nascimento,
+        id_sexo: req.body.id_sexo,
+        preco: req.body.preco
+    };
+    let updateProfessional = yield (0, controller_psicologo_1.setAtualizarPsicologo)(professionalData, contentType, id);
+    res.status(updateProfessional.status_code);
+    res.json(updateProfessional);
 }));
 /****************************************************DISPONIBILIDADE****************************************************/
 route.post("/disponibilidade", express_1.default.json(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -424,7 +458,7 @@ route.post('/consulta', express_1.default.json(), verifyJWT, (req, res) => __awa
     res.status(newAppointment.status_code);
     res.json(newAppointment);
 }));
-route.get('/consultas/psicologo/:id_psicologo', verifyJWTRole, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+route.get('/consultas/psicologo/:id_psicologo', verifyJWT, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let idProfessional = Number(req.params.id_psicologo);
     if (!idProfessional) {
         return res.status(400).json({ error: 'O ID do psicólogo é obrigatório.' });
@@ -465,7 +499,7 @@ route.delete('/consulta/:id', verifyJWT, (req, res) => __awaiter(void 0, void 0,
     res.status(deleteAppointment.status_code);
     res.json(deleteAppointment);
 }));
-route.put('/consulta/:id', verifyJWT, express_1.default.json(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+route.put('/consulta/:id', express_1.default.json(), verifyJWT, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const id = Number(req.params.id);
     const contentType = req.header('content-type');
     const data = req.body.data_consulta;
@@ -474,6 +508,7 @@ route.put('/consulta/:id', verifyJWT, express_1.default.json(), (req, res) => __
     res.json(updateAvaibility);
 }));
 route.get('/consulta/usuario/:id', verifyJWT, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const contentType = req.header('content-type');
     let userId = Number(req.params.id);
     let appointment = yield (0, controller_consulta_1.getAllAppointmentByUserId)(userId);
     res.status(appointment.status_code);

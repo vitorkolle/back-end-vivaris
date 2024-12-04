@@ -142,3 +142,24 @@ export declare function getListarClientes(): Promise<{
     }[];
     status_code: number;
 }>;
+export declare function setAtualizarCliente(id: number, data: TUser, contentType: string | undefined): Promise<{
+    status: boolean;
+    status_code: number;
+    message: string;
+} | {
+    data: {
+        id: number;
+        nome: string;
+        email: string;
+        data_nascimento: Date;
+        cpf: string;
+        senha: string;
+        foto_perfil: string | null;
+        telefone: string;
+        link_instagram: string | null;
+        tbl_sexo: {
+            sexo: string | null;
+        } | null;
+    };
+    status_code: number;
+}>;

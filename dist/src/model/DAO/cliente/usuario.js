@@ -15,6 +15,8 @@ exports.criarPreferenciasUsuario = criarPreferenciasUsuario;
 exports.logarCliente = logarCliente;
 exports.buscarCliente = buscarCliente;
 exports.listarUsuarios = listarUsuarios;
+exports.validateCLiente = validateCLiente;
+exports.updateUsuario = updateUsuario;
 const client_1 = require("@prisma/client");
 const config_1 = require("../../../../module/config");
 const prisma = new client_1.PrismaClient();
@@ -302,6 +304,116 @@ function listarUsuarios() {
         catch (error) {
             console.error("Erro ao obter o usuário", error);
             throw new Error("Não foi possível obter os usuários");
+        }
+    });
+}
+function validateCLiente(data) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            let user = yield prisma.tbl_clientes.findUnique({
+                where: {
+                    email: data.email,
+                    cpf: data.cpf
+                },
+                select: {
+                    id: true,
+                    nome: true,
+                    email: true,
+                    telefone: true,
+                    cpf: true,
+                    data_nascimento: true,
+                    foto_perfil: true,
+                    link_instagram: true,
+                    tbl_sexo: {
+                        select: {
+                            sexo: true
+                        }
+                    }
+                }
+            });
+            if (!user) {
+                return false;
+            }
+            return true;
+        }
+        catch (error) {
+            console.error("Erro ao validar o usuário", error);
+            throw new Error("Erro ao validar o usuário");
+        }
+    });
+}
+function updateUsuario(id, data) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            if (data.foto_perfil) {
+                let user = yield prisma.tbl_clientes.update({
+                    where: {
+                        id: id
+                    },
+                    data: {
+                        nome: data.nome,
+                        data_nascimento: data.data_nascimento,
+                        foto_perfil: data.foto_perfil,
+                        link_instagram: data.link_instagram,
+                        id_sexo: data.id_sexo
+                    },
+                    select: {
+                        id: true,
+                        nome: true,
+                        email: true,
+                        senha: true,
+                        telefone: true,
+                        cpf: true,
+                        data_nascimento: true,
+                        foto_perfil: true,
+                        link_instagram: true,
+                        tbl_sexo: {
+                            select: {
+                                sexo: true
+                            }
+                        }
+                    }
+                });
+                if (!user) {
+                    return false;
+                }
+                return user;
+            }
+            let user = yield prisma.tbl_clientes.update({
+                where: {
+                    id: id
+                },
+                data: {
+                    nome: data.nome,
+                    data_nascimento: data.data_nascimento,
+                    link_instagram: data.link_instagram,
+                    id_sexo: data.id_sexo
+                },
+                select: {
+                    id: true,
+                    nome: true,
+                    email: true,
+                    senha: true,
+                    telefone: true,
+                    cpf: true,
+                    data_nascimento: true,
+                    foto_perfil: true,
+                    link_instagram: true,
+                    tbl_sexo: {
+                        select: {
+                            sexo: true
+                        }
+                    }
+                }
+            });
+            if (!user) {
+                return false;
+            }
+            return user;
+        }
+        catch (error) {
+            console.error("Erro ao atualizar o usuário", error);
+            throw new Error("Não foi possível atualizar o usuário");
         }
     });
 }

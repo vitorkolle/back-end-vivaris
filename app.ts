@@ -37,6 +37,7 @@ import {
   getBuscarPsicologo,
   getListarPsicologos,
   getLogarPsicologo,
+  setAtualizarPsicologo,
   setInserirPsicologo,
 } from "./src/controller/usuario/controller_psicologo";
 import { v4 as uuidv4 } from 'uuid'; // Para gerar IDs únicos
@@ -47,6 +48,7 @@ import {
   getListarClientes,
   getListarSexo,
   getLogarCliente,
+  setAtualizarCliente,
   setInserirUsuario,
 } from "./src/controller/usuario/controller_usuario";
 import { TAvailability } from "./src/domain/entities/availability-entity";
@@ -166,12 +168,6 @@ io.on("connection", (socket) => {
         console.log(`Usuário ${userId} foi desconectado do socket ${oldSocketId} por uma nova conexão`);
       }
     }
-
-    // Registra o novo socket para o userId
-    connectedUsers[userId] = socket.id;
-    console.log(`Usuário registrado: ${userId} com socketId ${socket.id}`);
-  });
-
   // Para emitir a chamada para o usuário, pegando o único socket registrado
   socket.on("callUser", ({ from, to }) => {
     console.log(`Tentando chamar ${to} de ${from}`);
@@ -230,7 +226,6 @@ io.on("connection", (socket) => {
 server.listen("8080", () => {
   console.log("API funcionando na porta 8080");
 })
-
 
 /**********************************************STRIPE***************************************************************/
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY)
@@ -352,6 +347,26 @@ route.get("/usuarios", verifyJWT, async (req, res) => {
   res.json(allUsers);
 });
 
+route.put("/usuario/:id", express.json(), verifyJWT, async (req, res) => {
+  const id = Number(req.params.id);
+  const contentType = req.header("content-type");
+
+  const userData: TUser = {
+    nome: req.body.nome,
+    email: req.body.email,
+    senha: req.body.senha,
+    telefone: req.body.telefone,
+    cpf: req.body.cpf,
+    data_nascimento: req.body.data_nascimento,
+    id_sexo: req.body.id_sexo
+  }
+
+  let updateUser = await setAtualizarCliente(id, userData, contentType);
+
+  res.status(updateUser.status_code);
+  res.json(updateUser);
+})
+
 /****************************************************GÊNERO****************************************************/
 route.get("/sexo", async (req, res) => {
   let allSex = await getListarSexo();
@@ -427,6 +442,28 @@ route.get("/profissionais", verifyJWT, async (req, res) => {
 
   res.status(getProfissionais.status_code);
   res.json(getProfissionais);
+});
+
+route.put("/profissional/:id", express.json(), verifyJWT, async (req, res) => {
+  const id = Number(req.params.id);
+  const contentType = req.header("content-type");
+
+  const professionalData: TProfessional = {
+    nome: req.body.nome,
+    email: req.body.email,
+    senha: req.body.senha,
+    telefone: req.body.telefone,
+    cpf: req.body.cpf,
+    cip: req.body.cip,
+    data_nascimento: req.body.data_nascimento,
+    id_sexo: req.body.id_sexo,
+    preco: req.body.preco
+  };
+
+  let updateProfessional = await setAtualizarPsicologo(professionalData, contentType, id);
+
+  res.status(updateProfessional.status_code);
+  res.json(updateProfessional);
 });
 
 /****************************************************DISPONIBILIDADE****************************************************/
@@ -598,8 +635,6 @@ route.post('/create-checkout-session', verifyJWT, express.json(), async (req, re
 
 /*********************************Avaliação************************************/
 route.post('/avaliacao', verifyJWT, express.json(), async (req, res) => {
-
-
   let contentType = req.header('content-type')
 
   let inputData: TAssessment = {
@@ -631,8 +666,6 @@ route.get('/avaliacoes/:idPsicologo', verifyJWT, async (req, res) => {
 
 /*******************************Consulta*************************/
 route.post('/consulta', express.json(), verifyJWT, async (req, res) => {
-
-
   let contentType = req.header('content-type')
 
   let idProfessional = req.body.id_psicologo
@@ -647,7 +680,9 @@ route.post('/consulta', express.json(), verifyJWT, async (req, res) => {
   res.json(newAppointment)
 })
 
-route.get('/consultas/psicologo/:id_psicologo', verifyJWTRole, async (req, res) => {
+
+
+route.get('/consultas/psicologo/:id_psicologo', verifyJWT, async (req, res) => {
 
   let idProfessional = Number(req.params.id_psicologo)
 
@@ -706,7 +741,7 @@ route.delete('/consulta/:id', verifyJWT, async (req, res) => {
   res.json(deleteAppointment)
 })
 
-route.put('/consulta/:id', verifyJWT, express.json(), async (req, res) => {
+route.put('/consulta/:id', express.json(), verifyJWT, async (req, res) => {
   const id = Number(req.params.id)
   const contentType = req.header('content-type')
   const data = req.body.data_consulta
@@ -718,6 +753,7 @@ route.put('/consulta/:id', verifyJWT, express.json(), async (req, res) => {
 })
 
 route.get('/consulta/usuario/:id', verifyJWT, async (req, res) => {
+  const contentType = req.header('content-type')
 
   let userId = Number(req.params.id)
   let appointment = await getAllAppointmentByUserId(userId)

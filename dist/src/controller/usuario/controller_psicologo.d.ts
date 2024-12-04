@@ -139,3 +139,11 @@ export declare function getListarPsicologos(): Promise<{
     status_code: number;
     status: boolean;
 }>;
+export declare function setAtualizarPsicologo(user: TProfessional, contentType: string | undefined, id: number): Promise<{
+    status: boolean;
+    status_code: number;
+    message: string;
+} | {
+    data: true | TProfessional;
+    status_code: number;
+}>;

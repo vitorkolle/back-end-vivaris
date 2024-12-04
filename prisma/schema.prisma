@@ -56,9 +56,9 @@ model tbl_consultas {
   data_consulta  DateTime                @db.DateTime(0)
   valor          Float                   @db.Float
   avaliacao      tbl_consultas_avaliacao
+  situacao       String                  @db.VarChar(20)
   id_cliente     Int
   id_psicologo   Int
-  situacao         String                  @db.VarChar(12)
   tbl_clientes   tbl_clientes            @relation(fields: [id_cliente], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "CLIENTE_CONSULTA")
   tbl_psicologos tbl_psicologos          @relation(fields: [id_psicologo], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "PSICOLOGO_CONSULTA")
   tbl_pagamentos tbl_pagamentos[]
